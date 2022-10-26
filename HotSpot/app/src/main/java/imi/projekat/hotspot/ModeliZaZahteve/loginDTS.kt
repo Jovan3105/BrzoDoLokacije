@@ -1,4 +1,4 @@
-package imi.projekat.hotspot.Modeli
+package imi.projekat.hotspot.ModeliZaZahteve
 
 data class loginDTS(
     val password: String,

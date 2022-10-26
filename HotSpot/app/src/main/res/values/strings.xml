@@ -11,4 +11,6 @@
     <string name="button_login_text">Log In</string>
     <string name="button_SignUp_text">Sign Up</string>
     <string name="Loading_dialog_text">Loading...</string>
+
+    <string name="ConnectionError">There is a problem with connection, try again later</string>
 </resources>

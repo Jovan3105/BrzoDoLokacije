@@ -1,4 +1,4 @@
-﻿namespace HotSpotAPI.Modeli
+﻿namespace HotSpotAPI.ModeliZaZahteve
 {
     public class LoginDTO
     {

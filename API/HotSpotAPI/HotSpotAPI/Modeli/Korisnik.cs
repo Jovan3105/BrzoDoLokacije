@@ -16,13 +16,14 @@ namespace HotSpotAPI.Modeli
 
         [StringLength(maximumLength: 50)]
         public string Email { get; set; } = string.Empty;
-        public string PasswordHash { get; set; }
+        public byte[] PasswordHash { get; set; }
 
-        
+        public byte[] PasswordSalt { get; set; }
 
         public bool EmailPotvrdjen { get; set; } = false;
         public string EmailToken { get; set; }
         public string ProfileImage { get; set; }
     }
+
 
 }

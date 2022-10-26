@@ -5,20 +5,19 @@ import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.graphics.drawable.toDrawable
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import imi.projekat.hotspot.Interfaces.ApiInterface
-import imi.projekat.hotspot.Modeli.LoginResponse
-import imi.projekat.hotspot.Modeli.loginDTS
+import imi.projekat.hotspot.ModeliZaZahteve.LoginResponse
+import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
+import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
 import imi.projekat.hotspot.databinding.ActivityLoginBinding
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.time.Duration.Companion.seconds
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -71,7 +70,7 @@ class LoginActivity : AppCompatActivity() {
 
 
         binding.signUpLayout.signUpDugme.setOnClickListener {
-
+            signUpData()
         }
 
     }
@@ -124,6 +123,66 @@ class LoginActivity : AppCompatActivity() {
             override fun onFailure(call: Call<LoginResponse?>, t: Throwable) {
                 dijalog.isDismiss()
                 Toast.makeText(this@LoginActivity, t.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun signUpData(){
+        if(binding.signUpLayout.Username.text.toString().isBlank())
+        {
+            Toast.makeText(this@LoginActivity, "Insert your username", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if(binding.signUpLayout.Email.text.toString().isBlank())
+        {
+            Toast.makeText(this@LoginActivity, "Insert your email", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if(binding.signUpLayout.Password.text.toString().isBlank())
+        {
+            Toast.makeText(this@LoginActivity, "Insert your password", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if(!binding.signUpLayout.Password.text.toString().equals(binding.signUpLayout.ConfirmPassword.text.toString()))
+        {
+            Toast.makeText(this@LoginActivity, "Passwords do not match", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val retrofitBuilder=Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("http://10.0.2.2:5140/")
+            .build()
+            .create(ApiInterface::class.java)
+
+        val obj=signUpDTS(password = binding.signUpLayout.Password.text.toString(), username = binding.signUpLayout.Username.text.toString(), email = binding.signUpLayout.Email.text.toString())
+
+        val retrofitData=retrofitBuilder.signUpCall(obj)
+        dijalog.startLoading()
+        retrofitData.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                dijalog.isDismiss()
+                var responseBody= response.body()?.string()
+                //val myStringBuilder=StringBuilder()
+                if(response.code()!=200){
+
+                    val content = response.errorBody()!!.charStream().readText()
+                    Toast.makeText(this@LoginActivity, content, Toast.LENGTH_SHORT).show()
+                    return
+                }
+                if(responseBody!=null){
+                    Toast.makeText(this@LoginActivity, responseBody, Toast.LENGTH_SHORT).show()
+                }
+
+
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                dijalog.isDismiss()
+                Toast.makeText(this@LoginActivity,getString(R.string.ConnectionError), Toast.LENGTH_SHORT).show()
             }
         })
     }
