@@ -16,7 +16,10 @@ namespace HotSpotAPI.Servisi
     {
         public Task<String> registrujKorisnika(RegistracijaDTO zahtev);
         public Korisnik loginKorisnika(LoginDTO zahtev);
-        
+        public string izmeniKorisnika(string username, EditUser user, out bool ind);
+        public bool checkPass(string Username, string Password);
+
+
     }
     public class MySQLServis : IMySQLServis
     {
@@ -143,9 +146,57 @@ namespace HotSpotAPI.Servisi
             }
 
         }
+        public bool checkPass(string Username, string Password)
+        {
+            Korisnik korisnik = _context.Korisnici.Where(x => x.Username == Username).FirstOrDefault();
+            if (korisnik == null)
+                return false;
+            if (VerifyPasswordHash(Password, korisnik.PasswordHash, korisnik.PasswordSalt))
+                return true;
+            return false;
+        }
+        public string izmeniKorisnika(string username, EditUser user, out bool ind)
+        {
+            Korisnik korisnik = _context.Korisnici.Where(x=>x.Username == username).FirstOrDefault();
+            if (korisnik == null)
+            {
+                ind = false;
+                return "";
+            }
 
+            if (user.Username != korisnik.Username)
+            {
+                Korisnik k = _context.Korisnici.FirstOrDefault(x => x.Username == user.Username && x.ID != korisnik.ID);
+                if (k != null)
+                {
+                    ind = false;
+                    return "vec postoji korisink sa ovim username-om";
+                }
+                korisnik.Username = user.Username;
+            }
+            if (user.Email != korisnik.Email)
+            {
+                Korisnik k = _context.Korisnici.FirstOrDefault(x => x.Email == user.Email && x.ID != korisnik.ID);
+                if (k != null)
+                {
+                    ind = false;
+                    return "vec postoji korisink sa ovim email-om";
+                }
+                korisnik.Email = user.Email;
+                /*poslati mail za verifikaciju*/
+            }
 
-        
+            CreatePasswordHash(user.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            if (passwordHash != null && passwordHash != korisnik.PasswordHash)
+            {
+                korisnik.PasswordHash = passwordHash;
+                korisnik.PasswordSalt = passwordSalt;
+            }
+
+            _context.SaveChanges();
+            ind = true;
+            return "uspesna izmena";
+        }
     }
 
 }

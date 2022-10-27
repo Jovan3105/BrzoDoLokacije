@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HotSpotAPI.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Migracija : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
