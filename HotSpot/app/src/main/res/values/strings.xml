@@ -7,10 +7,20 @@
     <string name="input_login_Username_text">Username</string>
     <string name="input_login_password_text">Password</string>
     <string name="input_Register_ConfirmPassword_text">Confirm password</string>
-    <string name="forgotPasswordText">Forgot password?</string>
     <string name="button_login_text">Log In</string>
     <string name="button_SignUp_text">Sign Up</string>
     <string name="Loading_dialog_text">Loading...</string>
 
+
+
+
+    //InputErrors
+    <string name="forgotPasswordText">Forgot password?</string>
+    <string name="InsertYourEmailOrUsername">Insert your email or username</string>
+    <string name="InsertYourPassword">Insert your password</string>
+
+
+    //errorsFromAPI
     <string name="ConnectionError">There is a problem with connection, try again later</string>
+    <string name="WrongUsernameOrPasswordError">Wrong username or password</string>
 </resources>

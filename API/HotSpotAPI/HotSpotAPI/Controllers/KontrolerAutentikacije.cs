@@ -38,10 +38,10 @@ namespace HotSpotAPI.Controllers
             var korisnik =mySQLServis.loginKorisnika(zahtev);
             if (korisnik == null)
             {
-                Debug.WriteLine("SEX/n");
+                
                 return BadRequest(new LoginResponse
                 {
-                    Message = "Wrong username or password",
+                    Message = "WrongUsernameOrPasswordError",
                     Data = null
                 });
             }

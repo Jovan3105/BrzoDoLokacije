@@ -54,6 +54,9 @@ namespace HotSpotAPI.Servisi
         public Korisnik loginKorisnika(LoginDTO zahtev) 
         {
             var korisnik = _context.Korisnici.Where(x => x.Username.Equals(zahtev.Username) || x.Email.Equals(zahtev.Username)).FirstOrDefault();
+            if (korisnik == null)
+                return null;
+
             if (!VerifyPasswordHash(zahtev.Password, korisnik.PasswordHash, korisnik.PasswordSalt))
             {
                 return null;

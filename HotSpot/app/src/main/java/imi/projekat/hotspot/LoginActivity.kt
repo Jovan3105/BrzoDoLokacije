@@ -11,6 +11,7 @@ import imi.projekat.hotspot.Interfaces.ApiInterface
 import imi.projekat.hotspot.ModeliZaZahteve.LoginResponse
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
+import imi.projekat.hotspot.Ostalo.APIservis
 import imi.projekat.hotspot.databinding.ActivityLoginBinding
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -18,6 +19,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.InputStream
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -73,33 +75,30 @@ class LoginActivity : AppCompatActivity() {
             signUpData()
         }
 
+
     }
 
     private fun getMyData() {
 
+
         if(binding.logInLayout.Email.text.toString().isBlank()){
             //binding.logInLayout.Password.background=resources.getDrawable(R.drawable.dugme_pozadina,null)
-            Toast.makeText(this@LoginActivity, "Insert your email or username", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, R.string.InsertYourEmailOrUsername, Toast.LENGTH_SHORT).show()
             return
         }
 
         if(binding.logInLayout.Password.text.toString().isBlank()){
             //binding.logInLayout.Password.background=resources.getDrawable(R.drawable.dugme_pozadina,null)
-            Toast.makeText(this@LoginActivity, "Insert your password", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, R.string.InsertYourPassword, Toast.LENGTH_SHORT).show()
             return
         }
 
 
 
-        val retrofitBuilder=Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://10.0.2.2:5140/")
-            .build()
-            .create(ApiInterface::class.java)
-
         val obj=loginDTS(password = binding.logInLayout.Password.text.toString(), username = binding.logInLayout.Email.text.toString())
 
-        val retrofitData=retrofitBuilder.loginCall(obj)
+        val retrofitData=APIservis.Servis.loginCall(obj)
+
         dijalog.startLoading()
         retrofitData.enqueue(object : Callback<LoginResponse?> {
             override fun onResponse(call: Call<LoginResponse?>, response: Response<LoginResponse?>) {
@@ -114,9 +113,8 @@ class LoginActivity : AppCompatActivity() {
                     return
                 }
                 if(responseBody!=null){
-                    Toast.makeText(this@LoginActivity, "You clicked on"+responseBody.toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, responseBody.toString(), Toast.LENGTH_SHORT).show()
                 }
-
 
             }
 
@@ -152,15 +150,13 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        val retrofitBuilder=Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("http://10.0.2.2:5140/")
-            .build()
-            .create(ApiInterface::class.java)
 
-        val obj=signUpDTS(password = binding.signUpLayout.Password.text.toString(), username = binding.signUpLayout.Username.text.toString(), email = binding.signUpLayout.Email.text.toString())
 
-        val retrofitData=retrofitBuilder.signUpCall(obj)
+
+
+        val obj= signUpDTS(password = binding.signUpLayout.Password.text.toString(), username = binding.signUpLayout.Username.text.toString(), email = binding.signUpLayout.Email.text.toString())
+
+        val retrofitData=APIservis.Servis.signUpCall(obj)
         dijalog.startLoading()
         retrofitData.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {

@@ -14,5 +14,5 @@ interface ApiInterface {
     fun loginCall(@Body dts: loginDTS):Call<LoginResponse>
 
     @POST("KontrolerAutentikacije/signUp")
-    fun signUpCall(@Body dts:signUpDTS):Call<ResponseBody>
+    fun signUpCall(@Body dts: signUpDTS):Call<ResponseBody>
 }
