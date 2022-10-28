@@ -1,5 +1,6 @@
 package imi.projekat.hotspot
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -62,8 +63,8 @@ class LoginActivity : AppCompatActivity() {
 
         binding.logInLayout.loginButton.setOnClickListener {
             getMyData()
-            //val intent = Intent(this@LoginActivity, MainActivity::class.java)
-            //startActivity(intent)
+            val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
+            startActivity(intent)
         }
 
 
