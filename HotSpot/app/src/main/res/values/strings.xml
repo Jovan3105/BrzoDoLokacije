@@ -18,7 +18,9 @@
     <string name="forgotPasswordText">Forgot password?</string>
     <string name="InsertYourEmailOrUsername">Insert your email or username</string>
     <string name="InsertYourPassword">Insert your password</string>
-
+    <string name="InsertYourUsername">Insert your username</string>
+    <string name="InsertYourEmail">Insert your Email</string>
+    <string name="PasswordsAreNotTheSame">Confirm your password</string>
 
     //errorsFromAPI
     <string name="ConnectionError">There is a problem with connection, try again later</string>

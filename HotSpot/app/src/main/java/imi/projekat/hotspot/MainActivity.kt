@@ -1,6 +1,7 @@
 package imi.projekat.hotspot
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -17,21 +18,20 @@ class MainActivity : AppCompatActivity() {
 
         val intent = Intent(this@MainActivity, LoginActivity::class.java)
         startActivity(intent)
-        companion.setContext(applicationContext)
+        companion.setContext(this.application)
 
     }
 
 
-    @SuppressLint("StaticFieldLeak")
     object companion{
 
-        private lateinit var context: Context
+        private lateinit var application: Application
 
-        fun setContext(con: Context) {
-            context=con
+        fun setContext(app: Application) {
+            application=app
         }
         fun getContext(): Context {
-            return context
+            return application.applicationContext
         }
     }
 }

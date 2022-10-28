@@ -1,13 +1,12 @@
 package imi.projekat.hotspot
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import imi.projekat.hotspot.Interfaces.ApiInterface
 import imi.projekat.hotspot.ModeliZaZahteve.LoginResponse
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
@@ -17,9 +16,6 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.io.InputStream
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -95,11 +91,11 @@ class LoginActivity : AppCompatActivity() {
 
 
 
-        val obj=loginDTS(password = binding.logInLayout.Password.text.toString(), username = binding.logInLayout.Email.text.toString())
-
-        val retrofitData=APIservis.Servis.loginCall(obj)
 
         dijalog.startLoading()
+        val obj=loginDTS(password = binding.logInLayout.Password.text.toString(), username = binding.logInLayout.Email.text.toString())
+        val retrofitData=APIservis.Servis.loginCall(obj)
+
         retrofitData.enqueue(object : Callback<LoginResponse?> {
             override fun onResponse(call: Call<LoginResponse?>, response: Response<LoginResponse?>) {
                 dijalog.isDismiss()
@@ -108,45 +104,57 @@ class LoginActivity : AppCompatActivity() {
                 if(response.code()!=200){
                     val gson = Gson()
                     val type = object : TypeToken<LoginResponse>() {}.type
+
                     var errorResponse: LoginResponse = gson.fromJson(response.errorBody()!!.charStream(), type)
-                    Toast.makeText(this@LoginActivity, errorResponse.message, Toast.LENGTH_SHORT).show()
+//                    val resourceID = MainActivity.companion.getContext().resources.getIdentifier(
+//                        errorResponse.message,
+//                        "string",
+//                        MainActivity.companion.getContext().packageName
+//                    )
+                    Toast.makeText(this@LoginActivity,errorResponse.message, Toast.LENGTH_SHORT).show()
                     return
                 }
-                if(responseBody!=null){
-                    Toast.makeText(this@LoginActivity, responseBody.toString(), Toast.LENGTH_SHORT).show()
+                else if(responseBody!=null){
+                    Toast.makeText(this@LoginActivity,responseBody.toString(), Toast.LENGTH_SHORT).show()
+                    return
                 }
 
             }
 
             override fun onFailure(call: Call<LoginResponse?>, t: Throwable) {
                 dijalog.isDismiss()
-                Toast.makeText(this@LoginActivity, t.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity,t.message, Toast.LENGTH_SHORT).show()
             }
         })
+
+
+
+
+
     }
 
     private fun signUpData(){
         if(binding.signUpLayout.Username.text.toString().isBlank())
         {
-            Toast.makeText(this@LoginActivity, "Insert your username", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, R.string.InsertYourUsername, Toast.LENGTH_SHORT).show()
             return
         }
 
         if(binding.signUpLayout.Email.text.toString().isBlank())
         {
-            Toast.makeText(this@LoginActivity, "Insert your email", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, R.string.InsertYourEmail, Toast.LENGTH_SHORT).show()
             return
         }
 
         if(binding.signUpLayout.Password.text.toString().isBlank())
         {
-            Toast.makeText(this@LoginActivity, "Insert your password", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, R.string.InsertYourPassword, Toast.LENGTH_SHORT).show()
             return
         }
 
         if(!binding.signUpLayout.Password.text.toString().equals(binding.signUpLayout.ConfirmPassword.text.toString()))
         {
-            Toast.makeText(this@LoginActivity, "Passwords do not match", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, R.string.PasswordsAreNotTheSame, Toast.LENGTH_SHORT).show()
             return
         }
 
