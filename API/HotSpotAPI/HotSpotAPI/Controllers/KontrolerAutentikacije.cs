@@ -121,6 +121,25 @@ namespace HotSpotAPI.Controllers
                         }
                     );
         }
+        [HttpPost("{username}/changepass")]
+        public async Task<ActionResult<string>> ChangePass(string username)
+        {
+            bool indl;
+            string res = userService.ChangePassword(username, out bool ind);
+            if(ind)
+            return Ok(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
 
+            return BadRequest(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+        }
     }
 }
