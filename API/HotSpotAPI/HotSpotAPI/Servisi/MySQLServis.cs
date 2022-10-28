@@ -28,8 +28,9 @@ namespace HotSpotAPI.Servisi
 
         public MySQLServis(IConfiguration configuration, MySqlDbContext context)
         {
-            this._context = context;
+            _context = context;
             this.configuration = configuration;
+            
         }
 
         public async Task<String> registrujKorisnika(RegistracijaDTO zahtev)
@@ -50,7 +51,10 @@ namespace HotSpotAPI.Servisi
             _context.Korisnici.Add(korisnik);
             await _context.SaveChangesAsync();
 
-            return "UspesnaRegistracija";
+            
+            return "Uspesna Registracija";
+
+
 
         }
 

@@ -23,11 +23,13 @@ namespace HotSpotAPI.Controllers
 
         private readonly IConfiguration configuration;
         private readonly IUserService userService;
-        public KontrolerAutentikacije(IConfiguration configuration, IMySQLServis mySQLServis, IUserService userService)
+        private readonly ImailService mail;
+        public KontrolerAutentikacije(IConfiguration configuration, IMySQLServis mySQLServis, IUserService userService, ImailService mail)
         {
             this.configuration = configuration;
             this.mySQLServis = mySQLServis;
             this.userService = userService;
+            this.mail = mail;
         }
 
 
@@ -68,8 +70,30 @@ namespace HotSpotAPI.Controllers
                 try
                 {
                     object value = await mySQLServis.registrujKorisnika(zahtev);
+                    //string url = configuration.GetSection("Front_Server_Config:host").Value + ":" + configuration.GetSection("Front_Server_Config:port").Value;
+                    MailPotvrdeRegistracije mailsend = new MailPotvrdeRegistracije();
+                    mailsend.Name = zahtev.Username;
+                    mailsend.Email = zahtev.Email;
+                    // mailsend.UrlZaRegistraciju = url;
+                    //MailData maildata = new MailData(new List<string> { zahtev.Email }, "Potvrda registracije", mail.GetEmailTemplate("PotvrdaRegistracije", mailsend));
+                    MailData maildata = new MailData(new List<string> { zahtev.Email }, "Potvrda registracije");
+                    bool sendResult = await mail.SendAsync(maildata, new CancellationToken());
+                    if (sendResult)
+                    {
+                        return Ok(new
+                        {
+                            success = true,
+                            data = new
+                            {
+                                message = "Uspešna registracija"
+                            }
+                        });
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "Došlo je do greške prilikom slanja email-a.");
+                    }
 
-                    return Ok("Uspesna Registracija");
                 }
                 catch (Exception ex)
                 {

@@ -1,4 +1,5 @@
 using HotSpotAPI.Data;
+using HotSpotAPI.Ostalo;
 using HotSpotAPI.Servisi;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMySQLServis, MySQLServis>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.Configure<MailPodesavanja>(builder.Configuration.GetSection(nameof(MailPodesavanja)));
+builder.Services.AddTransient<ImailService, MailService>();
 
 //BAZA mySql
 var KonekcioniStringZaMySql = builder.Configuration.GetConnectionString("DefaultConnection");
