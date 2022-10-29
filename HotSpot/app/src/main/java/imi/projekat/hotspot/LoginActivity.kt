@@ -33,7 +33,6 @@ class LoginActivity : AppCompatActivity() {
 
 
 
-
         binding.linearlayout1.startAnimation(btpAnimacija)
 
 
@@ -63,8 +62,6 @@ class LoginActivity : AppCompatActivity() {
 
         binding.logInLayout.loginButton.setOnClickListener {
             getMyData()
-            val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
-            startActivity(intent)
         }
 
 
@@ -117,6 +114,8 @@ class LoginActivity : AppCompatActivity() {
                 }
                 else if(responseBody!=null){
                     Toast.makeText(this@LoginActivity,responseBody.toString(), Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
+                    startActivity(intent)
                     return
                 }
 
