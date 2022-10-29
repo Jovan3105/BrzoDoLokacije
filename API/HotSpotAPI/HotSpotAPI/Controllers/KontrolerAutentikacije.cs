@@ -39,10 +39,10 @@ namespace HotSpotAPI.Controllers
         public async Task<ActionResult<LoginResponse>> Login(LoginDTO zahtev)
         {
 
-            var korisnik =mySQLServis.loginKorisnika(zahtev);
+            var korisnik = mySQLServis.loginKorisnika(zahtev);
             if (korisnik == null)
             {
-                
+
                 return BadRequest(new LoginResponse
                 {
                     Message = "WrongUsernameOrPasswordError",
@@ -121,9 +121,9 @@ namespace HotSpotAPI.Controllers
             if (pass == false)
                 return BadRequest
                     (
-                        new messageresponse 
-                        { 
-                            message="pogresan password"
+                        new messageresponse
+                        {
+                            message = "pogresan password"
                         }
                     );
             string res = mySQLServis.izmeniKorisnika(username, zahtev, out bool ind);
@@ -149,13 +149,13 @@ namespace HotSpotAPI.Controllers
         public async Task<ActionResult<string>> ChangePass(string username)
         {
             string res = userService.ChangePassword(username, out bool ind);
-            if(ind)
-            return Ok(
-                        new messageresponse
-                        {
-                            message = res
-                        }
-                    );
+            if (ind)
+                return Ok(
+                            new messageresponse
+                            {
+                                message = res
+                            }
+                        );
 
             return BadRequest(
                         new messageresponse
@@ -168,7 +168,7 @@ namespace HotSpotAPI.Controllers
         [HttpPut("{Username}/setpass")]
         public async Task<ActionResult<string>> Setpass(string Username, password pass)
         {
-            if(pass == null)
+            if (pass == null)
                 return BadRequest(
                         new messageresponse
                         {
@@ -179,4 +179,5 @@ namespace HotSpotAPI.Controllers
             string res = userService.chengePassInDataBase(Username, pass, out bool ind);
             return "Aa";
         }
+    }
 }
