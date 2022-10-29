@@ -85,7 +85,7 @@ namespace HotSpotAPI.Controllers
                             success = true,
                             data = new
                             {
-                                message = "Uspešna registracija"
+                                message = "Proverite vas email"
                             }
                         });
                     }
@@ -148,7 +148,6 @@ namespace HotSpotAPI.Controllers
         [HttpPost("{username}/changepass")]
         public async Task<ActionResult<string>> ChangePass(string username)
         {
-            bool indl;
             string res = userService.ChangePassword(username, out bool ind);
             if(ind)
             return Ok(
@@ -165,5 +164,19 @@ namespace HotSpotAPI.Controllers
                         }
                     );
         }
-    }
+
+        [HttpPut("{Username}/setpass")]
+        public async Task<ActionResult<string>> Setpass(string Username, password pass)
+        {
+            if(pass == null)
+                return BadRequest(
+                        new messageresponse
+                        {
+                            message = "Greska pri slanju"
+                        }
+                    );
+
+            string res = userService.chengePassInDataBase(Username, pass, out bool ind);
+            return "Aa";
+        }
 }

@@ -1,6 +1,8 @@
 ﻿using HotSpotAPI.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using HotSpotAPI.Modeli;
+using HotSpotAPI.ModeliZaZahteve;
 
 namespace HotSpotAPI.Servisi
 {
@@ -8,16 +10,21 @@ namespace HotSpotAPI.Servisi
     {
         public int GetUserId();
         public string ChangePassword(string username, out bool ind);
+        string chengePassInDataBase(String username, password password, out bool ind);
     }
     public class UserService : IUserService
     {
         private readonly IHttpContextAccessor httpContext;
         private MySqlDbContext context;
+        private readonly ImailService mailService;
+        private readonly IMySQLServis mysqlServis;
 
-        public UserService(IHttpContextAccessor httpContext, MySqlDbContext context)
+        public UserService(IHttpContextAccessor httpContext, MySqlDbContext context, ImailService mailService, IMySQLServis mysqlServis)
         {
             this.httpContext = httpContext;
             this.context = context;
+            this.mailService = mailService;
+            this.mysqlServis = mysqlServis;
         }
 
         public int GetUserId()
@@ -41,11 +48,42 @@ namespace HotSpotAPI.Servisi
                 ind = false;
                 return "wrong username";
             }
-            //POSLATI E-MAIL 
 
+            string email = user.Email;
+            if (email == null)
+            {
+                ind = false;
+                return "korisnikov mail je nevalidan";
+            }
+
+            MailData maildata = new MailData(new List<string> { user.Email }, "Izmena lozinke");
+            Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken());
+            if (sendResult != null)
+            {
+                ind = true;
+                return "Proverite vas email i pratite dalja uputstva za izmenu lozinke";
+            }
+            else
+            {
+                ind = false;
+                return "greska pri slanju e-mail-a";
+            }
+        }
+
+        public string chengePassInDataBase(string username, password password, out bool ind)
+        {
+            var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
+            if(user == null)
+            {
+                ind = false;
+                return "korisnik sa ovim usernameom ne postoji";
+            }
+
+            mysqlServis.CreatePasswordHash(password.oldpassword, out byte[] passhash, out byte[] passsalt);
+
+            //if(mysqlServis.VerifyPasswordHash()
             ind = true;
-            return "Proverite vas email";
-
+            return "a";
         }
     }
 }

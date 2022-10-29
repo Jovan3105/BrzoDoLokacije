@@ -30,4 +30,9 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string message { get; set; } = string.Empty;
     }
 
+    public class password
+    {
+        public string oldpassword { get; set; } = string.Empty;
+        public string newpassword { get; set; } = string.Empty;
+    }
 }
