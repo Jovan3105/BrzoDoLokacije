@@ -19,7 +19,7 @@ import kotlin.math.log
 object APIservis {
 
     private val BASE_URL:String by lazy {
-        KonfigAplikacije.getInstanca(MainActivity.companion.getContext())!!.AppSettings.baseURL
+        KonfigAplikacije.getInstanca(MainActivity.Companion.getContext())!!.AppSettings.baseURL
     }
 
 
