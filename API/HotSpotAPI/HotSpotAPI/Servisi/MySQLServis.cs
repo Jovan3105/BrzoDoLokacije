@@ -18,6 +18,8 @@ namespace HotSpotAPI.Servisi
         public Korisnik loginKorisnika(LoginDTO zahtev);
         public string izmeniKorisnika(string username, EditUser user, out bool ind);
         public bool checkPass(string Username, string Password);
+        public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
+        public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
 
 
     }
@@ -25,11 +27,13 @@ namespace HotSpotAPI.Servisi
     {
         private MySqlDbContext _context;
         private IConfiguration configuration;
+        private ImailService mail;
 
-        public MySQLServis(IConfiguration configuration, MySqlDbContext context)
+        public MySQLServis(IConfiguration configuration, MySqlDbContext context, ImailService mail)
         {
-            this._context = context;
+            _context = context;
             this.configuration = configuration;
+            this.mail = mail;
         }
 
         public async Task<String> registrujKorisnika(RegistracijaDTO zahtev)
@@ -50,7 +54,10 @@ namespace HotSpotAPI.Servisi
             _context.Korisnici.Add(korisnik);
             await _context.SaveChangesAsync();
 
-            return "UspesnaRegistracija";
+            
+            return "Uspesna Registracija";
+
+
 
         }
 
@@ -70,7 +77,7 @@ namespace HotSpotAPI.Servisi
 
 
 
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        public  void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
             {
@@ -80,7 +87,7 @@ namespace HotSpotAPI.Servisi
         }
 
 
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        public  bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512(passwordSalt))
             {
@@ -157,11 +164,12 @@ namespace HotSpotAPI.Servisi
         }
         public string izmeniKorisnika(string username, EditUser user, out bool ind)
         {
+            bool pom = false;
             Korisnik korisnik = _context.Korisnici.Where(x=>x.Username == username).FirstOrDefault();
             if (korisnik == null)
             {
                 ind = false;
-                return "";
+                return "ne postoji korisnik sa ovim usernameom";
             }
 
             if (user.Username != korisnik.Username)
@@ -183,7 +191,18 @@ namespace HotSpotAPI.Servisi
                     return "vec postoji korisink sa ovim email-om";
                 }
                 korisnik.Email = user.Email;
-                /*poslati mail za verifikaciju*/
+                MailData maildata = new MailData(new List<string> { user.Email }, "Izmena Emal-a");
+                Task<bool> sendResult = mail.SendAsync(maildata, new CancellationToken());
+                if (sendResult != null)
+                {
+                    pom = true;
+                    korisnik.EmailPotvrdjen = false;
+                }
+                else
+                {
+                    ind = false;
+                    return "greska pri slanju e-mail-a";
+                }
             }
 
             CreatePasswordHash(user.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
@@ -194,9 +213,16 @@ namespace HotSpotAPI.Servisi
             }
 
             _context.SaveChanges();
-            ind = true;
-            return "uspesna izmena";
+
+            if (pom == true)
+            {
+                ind = true;
+                return "Uspesna izmena, proverite vas email";
+            }
+            ind = false;
+            return null;
         }
+
     }
 
 }

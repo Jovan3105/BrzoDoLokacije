@@ -30,6 +30,10 @@ class LoginActivity : AppCompatActivity() {
         val rtlAnimacija=AnimationUtils.loadAnimation(this,R.anim.rigth_to_left)
         val btpAnimacija=AnimationUtils.loadAnimation(this,R.anim.bot_to_top)
 
+        binding.logInLayout.ForgotPassword.setOnClickListener {
+            val intent = Intent(this, ForgottenPasswordActivity::class.java)
+            startActivity(intent)
+        }
 
 
 

@@ -23,11 +23,13 @@ namespace HotSpotAPI.Controllers
 
         private readonly IConfiguration configuration;
         private readonly IUserService userService;
-        public KontrolerAutentikacije(IConfiguration configuration, IMySQLServis mySQLServis, IUserService userService)
+        private readonly ImailService mail;
+        public KontrolerAutentikacije(IConfiguration configuration, IMySQLServis mySQLServis, IUserService userService, ImailService mail)
         {
             this.configuration = configuration;
             this.mySQLServis = mySQLServis;
             this.userService = userService;
+            this.mail = mail;
         }
 
 
@@ -37,10 +39,10 @@ namespace HotSpotAPI.Controllers
         public async Task<ActionResult<LoginResponse>> Login(LoginDTO zahtev)
         {
 
-            var korisnik =mySQLServis.loginKorisnika(zahtev);
+            var korisnik = mySQLServis.loginKorisnika(zahtev);
             if (korisnik == null)
             {
-                
+
                 return BadRequest(new LoginResponse
                 {
                     Message = "WrongUsernameOrPasswordError",
@@ -68,8 +70,30 @@ namespace HotSpotAPI.Controllers
                 try
                 {
                     object value = await mySQLServis.registrujKorisnika(zahtev);
+                    //string url = configuration.GetSection("Front_Server_Config:host").Value + ":" + configuration.GetSection("Front_Server_Config:port").Value;
+                    MailPotvrdeRegistracije mailsend = new MailPotvrdeRegistracije();
+                    mailsend.Name = zahtev.Username;
+                    mailsend.Email = zahtev.Email;
+                    // mailsend.UrlZaRegistraciju = url;
+                    //MailData maildata = new MailData(new List<string> { zahtev.Email }, "Potvrda registracije", mail.GetEmailTemplate("PotvrdaRegistracije", mailsend));
+                    MailData maildata = new MailData(new List<string> { zahtev.Email }, "Potvrda registracije");
+                    bool sendResult = await mail.SendAsync(maildata, new CancellationToken());
+                    if (sendResult)
+                    {
+                        return Ok(new
+                        {
+                            success = true,
+                            data = new
+                            {
+                                message = "Proverite vas email"
+                            }
+                        });
+                    }
+                    else
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "Došlo je do greške prilikom slanja email-a.");
+                    }
 
-                    return Ok("Uspesna Registracija");
                 }
                 catch (Exception ex)
                 {
@@ -97,9 +121,9 @@ namespace HotSpotAPI.Controllers
             if (pass == false)
                 return BadRequest
                     (
-                        new messageresponse 
-                        { 
-                            message="pogresan password"
+                        new messageresponse
+                        {
+                            message = "pogresan password"
                         }
                     );
             string res = mySQLServis.izmeniKorisnika(username, zahtev, out bool ind);
@@ -121,6 +145,54 @@ namespace HotSpotAPI.Controllers
                         }
                     );
         }
+        [HttpPost("{username}/changepass")]
+        public async Task<ActionResult<string>> ChangePass(string username)
+        {
+            string res = userService.ChangePassword(username, out bool ind);
+            if (ind)
+                return Ok(
+                            new messageresponse
+                            {
+                                message = res
+                            }
+                        );
 
+            return BadRequest(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+        }
+
+        [HttpPut("{Username}/setpass")]
+        public async Task<ActionResult<string>> Setpass(string Username, password pass)
+        {
+            if (pass == null)
+                return BadRequest(
+                        new messageresponse
+                        {
+                            message = "Greska pri slanju"
+                        }
+                    );
+
+            string res = userService.chengePassInDataBase(Username, pass, out bool ind);
+            if(ind)
+            {
+                return Ok(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+            }
+            return BadRequest(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+
+        }
     }
 }
