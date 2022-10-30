@@ -12,6 +12,9 @@
     <string name="Loading_dialog_text">Loading...</string>
     <string name="Forgotten_Password_title">Password recovery</string>
     <string name="Recover_button">Recover</string>
+    <string name="VericiationCodeTitle">Enter the code</string>
+  <string name="VerificationCode">Verification code</string>
+    <string name="SendVerificationCodeButton">SEND</string>
 
 
     //InputErrors

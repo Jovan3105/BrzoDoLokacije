@@ -20,4 +20,6 @@ interface ApiInterface {
     @POST("KontrolerAutentikacije/{username}/changepass")
     fun ForgotPasswordCall(@Path("username") username:String):Call<ForgotPasswordResponse>
 
+
+
 }
