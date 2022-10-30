@@ -9,5 +9,5 @@ import imi.projekat.hotspot.R
 
 import androidx.fragment.app.Fragment
 
-class FragmentAddPost:Fragment(R.layout.fragment_add_post) {
+class FragmentProfilePage:Fragment(R.layout.fragment_profile) {
 }

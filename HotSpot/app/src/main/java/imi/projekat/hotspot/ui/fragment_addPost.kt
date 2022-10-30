@@ -9,5 +9,5 @@ import imi.projekat.hotspot.R
 
 import androidx.fragment.app.Fragment
 
-class FirstFragment:Fragment(R.layout.fragment_home) {
+class FragmentAddPost:Fragment(R.layout.fragment_add_post) {
 }
