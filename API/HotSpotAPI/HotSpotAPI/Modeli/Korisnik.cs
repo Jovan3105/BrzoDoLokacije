@@ -23,6 +23,7 @@ namespace HotSpotAPI.Modeli
         public bool EmailPotvrdjen { get; set; } = false;
         public string EmailToken { get; set; }
         public string ProfileImage { get; set; }
+        public int Code { get; set; } = 0;
     }
 
 
