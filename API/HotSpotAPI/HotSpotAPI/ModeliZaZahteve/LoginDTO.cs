@@ -34,4 +34,9 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public string newpassword { get; set; } = string.Empty;
     }
+
+    public class vercode
+    {
+        public int code { get; set; } = 0;
+    }
 }

@@ -165,6 +165,37 @@ namespace HotSpotAPI.Controllers
                     );
         }
 
+        [HttpPost("{username}/code")]
+        public async Task<ActionResult<string>> CompareCode(string username, vercode code)
+        {
+            if(code==null)
+            {
+                if (code == null)
+                    return BadRequest(
+                            new messageresponse
+                            {
+                                message = "Greska pri slanju"
+                            }
+                        );
+            }
+
+            string res = userService.ConfirmCode(username, code.code, out bool ind);
+            if (ind)
+            {
+                return Ok(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+            }
+            return BadRequest(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+        }
         [HttpPut("{Username}/setpass")]
         public async Task<ActionResult<string>> Setpass(string Username, password pass)
         {
