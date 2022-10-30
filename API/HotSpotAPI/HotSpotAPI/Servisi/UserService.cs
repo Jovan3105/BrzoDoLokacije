@@ -57,7 +57,7 @@ namespace HotSpotAPI.Servisi
             }
 
             MailData maildata = new MailData(new List<string> { user.Email }, "Izmena lozinke");
-            Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken());
+            Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken(), username);
             if (sendResult != null)
             {
                 ind = true;
@@ -79,11 +79,17 @@ namespace HotSpotAPI.Servisi
                 return "korisnik sa ovim usernameom ne postoji";
             }
 
-            mysqlServis.CreatePasswordHash(password.oldpassword, out byte[] passhash, out byte[] passsalt);
-
-            //if(mysqlServis.VerifyPasswordHash()
-            ind = true;
-            return "a";
+            mysqlServis.CreatePasswordHash(password.newpassword, out byte[] passhash, out byte[] passsalt);
+            if(passhash != null && passsalt!=null)
+            {
+                user.PasswordSalt = passsalt;
+                user.PasswordHash = passhash;
+                context.SaveChanges();
+                ind = true;
+                return "Uspesno izmenjena lozinka";
+            }
+            ind = false;
+            return "Greska pri kreiranju lozinke";
         }
     }
 }

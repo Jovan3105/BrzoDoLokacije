@@ -177,7 +177,22 @@ namespace HotSpotAPI.Controllers
                     );
 
             string res = userService.chengePassInDataBase(Username, pass, out bool ind);
-            return "Aa";
+            if(ind)
+            {
+                return Ok(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+            }
+            return BadRequest(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+
         }
     }
 }

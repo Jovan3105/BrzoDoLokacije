@@ -32,7 +32,6 @@ namespace HotSpotAPI.ModeliZaZahteve
 
     public class password
     {
-        public string oldpassword { get; set; } = string.Empty;
         public string newpassword { get; set; } = string.Empty;
     }
 }
