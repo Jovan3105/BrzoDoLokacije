@@ -16,6 +16,8 @@ class LoadingDialog(val myActivity:Activity) {
     }
 
     fun isDismiss(){
+        if(!this::isdialog.isInitialized)
+            return
         isdialog.dismiss()
     }
 }
