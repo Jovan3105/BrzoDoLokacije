@@ -3,6 +3,7 @@ package imi.projekat.hotspot
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -19,25 +20,28 @@ import retrofit2.Response
 
 class ForgottenPasswordActivity : AppCompatActivity() {
     private lateinit var binding: ActivityForgottenPasswordBinding
+    private lateinit var userName:String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityForgottenPasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.recoverButton.setOnClickListener {
+        binding.forma1.recoverButton.setOnClickListener {
             sendData()
 
+        }
+        binding.forma2.sendButton.setOnClickListener {
+            sendVerCode()
         }
 
 
     }
     private fun sendData(){
-        if(binding.EmailRecover.text.toString().isBlank()){
+        if(binding.forma1.EmailRecover.text.toString().isBlank()){
             //binding.logInLayout.Password.background=resources.getDrawable(R.drawable.dugme_pozadina,null)
             Toast.makeText(this, R.string.InsertYourEmailOrUsername, Toast.LENGTH_SHORT).show()
             return
         }
-        val obj=binding.EmailRecover.text.toString()
-        Log.d("TAG", obj)
+        val obj=binding.forma1.EmailRecover.text.toString()
         val retrofitData= APIservis.Servis.ForgotPasswordCall(obj)
 
         retrofitData.enqueue(object : Callback<ForgotPasswordResponse?> {
@@ -59,6 +63,9 @@ class ForgottenPasswordActivity : AppCompatActivity() {
                 }
                 else if(responseBody!=null){
                     Toast.makeText(this@ForgottenPasswordActivity,responseBody.toString(), Toast.LENGTH_SHORT).show()
+                    binding.forma1.root.visibility= View.GONE
+                    binding.forma2.root.visibility=View.VISIBLE
+                    userName=obj
                     return
                 }
 
@@ -69,5 +76,9 @@ class ForgottenPasswordActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    private fun sendVerCode(){
+        Log.d("Tag",userName)
     }
 }
