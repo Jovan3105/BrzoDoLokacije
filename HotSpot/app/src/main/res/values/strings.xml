@@ -24,6 +24,7 @@
     <string name="InsertYourUsername">Insert your username</string>
     <string name="InsertYourEmail">Insert your Email</string>
     <string name="PasswordsAreNotTheSame">Confirm your password</string>
+    <string name="InsertYourVerificationCode">Insert you verification code</string>
 
     //errorsFromAPI
     <string name="ConnectionError">There is a problem with connection, try again later</string>

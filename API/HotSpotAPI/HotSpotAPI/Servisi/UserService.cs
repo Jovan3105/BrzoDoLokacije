@@ -11,7 +11,7 @@ namespace HotSpotAPI.Servisi
         public int GetUserId();
         public string ChangePassword(string username, out bool ind);
         string chengePassInDataBase(String username, password password, out bool ind);
-        public string ConfirmCode(string username, int code, out bool ind);
+        public string ConfirmCode(string username, string code, out bool ind);
     }
     public class UserService : IUserService
     {
@@ -77,7 +77,7 @@ namespace HotSpotAPI.Servisi
             }
         }
 
-        public string ConfirmCode(string username, int code, out bool ind)
+        public string ConfirmCode(string username, string code, out bool ind)
         {
             var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
             if (user == null)
@@ -85,8 +85,8 @@ namespace HotSpotAPI.Servisi
                 ind = false;
                 return "Username ne postoji";
             }
-
-            if(user.Code == code)
+            int kod=int.Parse(code);
+            if(user.Code == kod)
             {
                 ind = true;
                 return "Kod je validan";

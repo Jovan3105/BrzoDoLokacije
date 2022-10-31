@@ -37,6 +37,7 @@ namespace HotSpotAPI.ModeliZaZahteve
 
     public class vercode
     {
-        public int code { get; set; } = 0;
+        public string username { get; set; } = string.Empty;
+        public string code { get; set; } = string.Empty;
     }
 }

@@ -165,9 +165,10 @@ namespace HotSpotAPI.Controllers
                     );
         }
 
-        [HttpPost("{username}/code")]
-        public async Task<ActionResult<string>> CompareCode(string username, vercode code)
+        [HttpPost("code")]
+        public async Task<ActionResult<string>> CompareCode(vercode code)
         {
+            Debug.WriteLine(code.code);
             if(code==null)
             {
                 if (code == null)
@@ -179,7 +180,7 @@ namespace HotSpotAPI.Controllers
                         );
             }
 
-            string res = userService.ConfirmCode(username, code.code, out bool ind);
+            string res = userService.ConfirmCode(code.username, code.code, out bool ind);
             if (ind)
             {
                 return Ok(
