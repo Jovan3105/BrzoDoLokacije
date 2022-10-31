@@ -3,17 +3,21 @@ package imi.projekat.hotspot
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputLayout
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
 import imi.projekat.hotspot.Ostalo.APIservis
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
 import imi.projekat.hotspot.databinding.ActivityLoginBinding
+import kotlinx.android.synthetic.main.login_tab_fragment.view.*
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -59,6 +63,20 @@ class LoginActivity : AppCompatActivity() {
         binding.linearlayout1.startAnimation(btpAnimacija)
 
 
+        binding.logInLayout.Password.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable) {}
+
+            override fun beforeTextChanged(s: CharSequence, start: Int,
+                                           count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int,
+                                       before: Int, count: Int) {
+                binding.logInLayout.passwordWrapper.endIconMode=TextInputLayout.END_ICON_PASSWORD_TOGGLE
+            }
+        })
+
         binding.singUp.setOnClickListener{
             binding.singUp.startAnimation(ltrAnimacija)
             //Toast.makeText(this@LoginActivity, "You clicked on TextView1 'Click Me'.", Toast.LENGTH_SHORT).show()
@@ -96,18 +114,20 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun getMyData() {
-        if(binding.logInLayout.Email.text.toString().isBlank()){
-            //binding.logInLayout.Password.background=resources.getDrawable(R.drawable.dugme_pozadina,null)
-            Toast.makeText(this@LoginActivity, R.string.InsertYourEmailOrUsername, Toast.LENGTH_SHORT).show()
+        var Username:String=binding.logInLayout.Email.text.toString().trim()
+
+        if(Username.isBlank()){
+            binding.logInLayout.Email.setError(getString(R.string.InsertYourEmailOrUsername))
             return
         }
 
-        if(binding.logInLayout.Password.text.toString().isBlank()){
-            //binding.logInLayout.Password.background=resources.getDrawable(R.drawable.dugme_pozadina,null)
-            Toast.makeText(this@LoginActivity, R.string.InsertYourPassword, Toast.LENGTH_SHORT).show()
+        var Password:String=binding.logInLayout.Password.text.toString().trim()
+        if(Password.isBlank()){
+            binding.logInLayout.passwordWrapper.endIconMode=TextInputLayout.END_ICON_NONE
+            binding.logInLayout.Password.setError(getString(R.string.InsertYourPassword))
             return
         }
-        val obj= loginDTS(password = binding.logInLayout.Password.text.toString(), username = binding.logInLayout.Email.text.toString())
+        val obj= loginDTS(Username, Password)
         viewModel.login(obj)
     }
 

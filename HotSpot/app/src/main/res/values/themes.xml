@@ -20,4 +20,11 @@
         <item name="cornerFamilyBottomLeft">rounded</item>
         <item name="cornerFamilyBottomRight">rounded</item>
     </style>
+
+    <style name="HintText" parent="TextAppearance.Design.Hint">
+        <item name="android:textColor">@color/pink2</item>
+    </style>
+    <style name="ErrorText">
+        <item name="android:textColor">@color/pink2</item>
+    </style>
 </resources>

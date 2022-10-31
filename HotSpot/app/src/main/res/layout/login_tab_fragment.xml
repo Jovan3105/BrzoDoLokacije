@@ -23,7 +23,11 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:hintEnabled="true"
+            app:hintTextAppearance="@style/HintText"
+            app:errorTextAppearance="@style/ErrorText"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/Email"
@@ -37,13 +41,20 @@
                 android:padding="10dp"
                 android:textColor="#000000"
                 android:textColorHint="#000000"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordWrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:endIconMode="password_toggle">
+            app:endIconMode="password_toggle"
+            app:hintEnabled="true"
+            app:hintTextAppearance="@style/HintText"
+            app:errorTextAppearance="@style/ErrorText"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/Password"
@@ -59,7 +70,6 @@
                 android:textColor="#000000"
                 android:textColorHint="#000000"
                 android:textSize="20sp"
-
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
