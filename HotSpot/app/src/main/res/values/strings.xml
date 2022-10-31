@@ -15,6 +15,9 @@
     <string name="VericiationCodeTitle">Enter the code</string>
   <string name="VerificationCode">Verification code</string>
     <string name="SendVerificationCodeButton">SEND</string>
+    <string name="newpassword">New password</string>
+    <string name="NewPasswordTitle">Enter new password</string>
+    <string name="confirmButton">Confirm</string>
 
 
     //InputErrors
@@ -24,7 +27,10 @@
     <string name="InsertYourUsername">Insert your username</string>
     <string name="InsertYourEmail">Insert your Email</string>
     <string name="PasswordsAreNotTheSame">Confirm your password</string>
-    <string name="InsertYourVerificationCode">Insert you verification code</string>
+    <string name="InsertYourVerificationCode">Insert your verification code</string>
+    <string name="InsertYourNewPassword">Insert your new password</string>
+    <string name="ConfirmPasswordError">New password and confirm password are not the same</string>
+
 
     //errorsFromAPI
     <string name="ConnectionError">There is a problem with connection, try again later</string>
