@@ -10,6 +10,7 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
@@ -63,19 +64,13 @@ class LoginActivity : AppCompatActivity() {
         binding.linearlayout1.startAnimation(btpAnimacija)
 
 
-        binding.logInLayout.Password.addTextChangedListener(object : TextWatcher {
+        binding.logInLayout.Password.doAfterTextChanged{
+            binding.logInLayout.passwordWrapper.endIconMode=TextInputLayout.END_ICON_PASSWORD_TOGGLE
+        }
 
-            override fun afterTextChanged(s: Editable) {}
-
-            override fun beforeTextChanged(s: CharSequence, start: Int,
-                                           count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int,
-                                       before: Int, count: Int) {
-                binding.logInLayout.passwordWrapper.endIconMode=TextInputLayout.END_ICON_PASSWORD_TOGGLE
-            }
-        })
+        binding.signUpLayout.Password.doAfterTextChanged {
+            binding.signUpLayout.passwordWrapper.endIconMode=TextInputLayout.END_ICON_PASSWORD_TOGGLE
+        }
 
         binding.singUp.setOnClickListener{
             binding.singUp.startAnimation(ltrAnimacija)
@@ -132,27 +127,31 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signUpData(){
-        if(binding.signUpLayout.Username.text.toString().isBlank())
+        var Username:String=binding.signUpLayout.Username.text.toString().trim()
+        if(Username.isBlank())
         {
-            Toast.makeText(this@LoginActivity, R.string.InsertYourUsername, Toast.LENGTH_SHORT).show()
+            binding.signUpLayout.Username.setError(getString(R.string.InsertYourUsername))
             return
         }
 
-        if(binding.signUpLayout.Email.text.toString().isBlank())
+        var Email:String=binding.signUpLayout.Email.text.toString().trim()
+        if(Email.isBlank())
         {
-            Toast.makeText(this@LoginActivity, R.string.InsertYourEmail, Toast.LENGTH_SHORT).show()
+            binding.signUpLayout.Email.setError(getString(R.string.InsertYourEmail))
             return
         }
 
-        if(binding.signUpLayout.Password.text.toString().isBlank())
+        var Password:String=binding.signUpLayout.Password.text.toString().trim()
+        if(Password.isBlank())
         {
-            Toast.makeText(this@LoginActivity, R.string.InsertYourPassword, Toast.LENGTH_SHORT).show()
+            binding.signUpLayout.passwordWrapper.endIconMode=TextInputLayout.END_ICON_NONE
+            binding.signUpLayout.Password.setError(getString(R.string.InsertYourPassword))
             return
         }
 
-        if(!binding.signUpLayout.Password.text.toString().equals(binding.signUpLayout.ConfirmPassword.text.toString()))
+        if(Password.equals(binding.signUpLayout.ConfirmPassword.text.toString()))
         {
-            Toast.makeText(this@LoginActivity, R.string.PasswordsAreNotTheSame, Toast.LENGTH_SHORT).show()
+            binding.signUpLayout.ConfirmPassword.setError(getString(R.string.PasswordsAreNotTheSame))
             return
         }
 
@@ -160,7 +159,7 @@ class LoginActivity : AppCompatActivity() {
 
 
 
-        val obj= signUpDTS(password = binding.signUpLayout.Password.text.toString(), username = binding.signUpLayout.Username.text.toString(), email = binding.signUpLayout.Email.text.toString())
+        val obj= signUpDTS(Email,Password,Username)
 
         val retrofitData=APIservis.Servis.signUpCall(obj)
         dijalog.startLoading()
