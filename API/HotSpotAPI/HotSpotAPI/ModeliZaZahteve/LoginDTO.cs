@@ -32,6 +32,13 @@ namespace HotSpotAPI.ModeliZaZahteve
 
     public class password
     {
+        public string username { get; set; }= string.Empty;
         public string newpassword { get; set; } = string.Empty;
+    }
+
+    public class vercode
+    {
+        public string username { get; set; } = string.Empty;
+        public string code { get; set; } = string.Empty;
     }
 }

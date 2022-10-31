@@ -165,9 +165,43 @@ namespace HotSpotAPI.Controllers
                     );
         }
 
-        [HttpPut("{Username}/setpass")]
-        public async Task<ActionResult<string>> Setpass(string Username, password pass)
+        [HttpPost("code")]
+        public async Task<ActionResult<string>> CompareCode(vercode code)
         {
+            Debug.WriteLine(code.code);
+            if(code==null)
+            {
+                if (code == null)
+                    return BadRequest(
+                            new messageresponse
+                            {
+                                message = "Greska pri slanju"
+                            }
+                        );
+            }
+
+            string res = userService.ConfirmCode(code.username, code.code, out bool ind);
+            if (ind)
+            {
+                return Ok(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+            }
+            return BadRequest(
+                        new messageresponse
+                        {
+                            message = res
+                        }
+                    );
+        }
+        [HttpPut("Setpass")]
+        public async Task<ActionResult<string>> Setpass(password pass)
+        {
+            Debug.WriteLine(pass.username);
+            Debug.WriteLine(pass.newpassword);
             if (pass == null)
                 return BadRequest(
                         new messageresponse
@@ -176,7 +210,7 @@ namespace HotSpotAPI.Controllers
                         }
                     );
 
-            string res = userService.chengePassInDataBase(Username, pass, out bool ind);
+            string res = userService.chengePassInDataBase(pass.username, pass, out bool ind);
             if(ind)
             {
                 return Ok(

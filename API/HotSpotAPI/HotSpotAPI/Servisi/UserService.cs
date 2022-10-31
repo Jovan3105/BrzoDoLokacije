@@ -11,6 +11,7 @@ namespace HotSpotAPI.Servisi
         public int GetUserId();
         public string ChangePassword(string username, out bool ind);
         string chengePassInDataBase(String username, password password, out bool ind);
+        public string ConfirmCode(string username, string code, out bool ind);
     }
     public class UserService : IUserService
     {
@@ -56,8 +57,14 @@ namespace HotSpotAPI.Servisi
                 return "korisnikov mail je nevalidan";
             }
 
+            Random rnd = new Random();
+            int code = rnd.Next(1000,9999);
+
+            user.Code = code;
+            context.SaveChanges();
+
             MailData maildata = new MailData(new List<string> { user.Email }, "Izmena lozinke");
-            Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken(), username);
+            Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken(), code);
             if (sendResult != null)
             {
                 ind = true;
@@ -70,6 +77,24 @@ namespace HotSpotAPI.Servisi
             }
         }
 
+        public string ConfirmCode(string username, string code, out bool ind)
+        {
+            var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
+            if (user == null)
+            {
+                ind = false;
+                return "Username ne postoji";
+            }
+            int kod=int.Parse(code);
+            if(user.Code == kod)
+            {
+                ind = true;
+                return "Kod je validan";
+            }
+
+            ind = false;
+            return "Kod nije validan";
+        }
         public string chengePassInDataBase(string username, password password, out bool ind)
         {
             var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
