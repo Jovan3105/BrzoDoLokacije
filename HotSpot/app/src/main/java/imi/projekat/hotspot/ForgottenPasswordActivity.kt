@@ -1,5 +1,6 @@
 package imi.projekat.hotspot
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -69,5 +70,12 @@ class ForgottenPasswordActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(this@ForgottenPasswordActivity, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+        startActivity(intent)
     }
 }

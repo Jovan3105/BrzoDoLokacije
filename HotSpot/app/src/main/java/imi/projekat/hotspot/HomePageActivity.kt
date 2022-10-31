@@ -1,12 +1,12 @@
 package imi.projekat.hotspot
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import imi.projekat.hotspot.databinding.ActivityHomePageBinding
-import imi.projekat.hotspot.ui.FragmentAddPost
-import imi.projekat.hotspot.ui.FragmentHome
-import imi.projekat.hotspot.ui.FragmentProfilePage
+import imi.projekat.hotspot.NavBarUI.FragmentAddPost
+import imi.projekat.hotspot.NavBarUI.FragmentHome
+import imi.projekat.hotspot.NavBarUI.FragmentProfilePage
 import kotlinx.android.synthetic.main.activity_home_page.*
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -21,7 +21,7 @@ class HomePageActivity : AppCompatActivity() {
 
         setCurrentFragment(firstFragment)
 
-        bottomNavigationView2.setOnNavigationItemSelectedListener {
+        bottomNavigationView2.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> setCurrentFragment(firstFragment)
                 R.id.add -> setCurrentFragment(secondFragment)
@@ -37,4 +37,11 @@ class HomePageActivity : AppCompatActivity() {
             replace(R.id.frame_layout, fragment)
             commit()
         }
+
+    override fun onBackPressed() {
+        val intent = Intent(this@HomePageActivity, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+        startActivity(intent)
+    }
 }
