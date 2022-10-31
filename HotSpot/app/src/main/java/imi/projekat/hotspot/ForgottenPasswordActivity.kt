@@ -179,4 +179,11 @@ class ForgottenPasswordActivity : AppCompatActivity() {
         startActivity(Intent(this, LoginActivity::class.java))
         finish()
     }
+
+    override fun onBackPressed() {
+        val intent = Intent(this@ForgottenPasswordActivity, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+        startActivity(intent)
+    }
 }
