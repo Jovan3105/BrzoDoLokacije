@@ -21,8 +21,9 @@ class LoginActivityViewModel(private val repository:Repository=Repository()) :Vi
     var handleJob: Job?=null
 
     val exceptionHandler=CoroutineExceptionHandler{_,throwable->onError(
-        "Exception:${throwable.localizedMessage}"
+        "ConfirmPasswordError"
     )
+        Log.d("Exception",throwable.localizedMessage.toString())
     }
 
 

@@ -122,7 +122,7 @@ class LoginActivity : AppCompatActivity() {
             binding.logInLayout.Password.setError(getString(R.string.InsertYourPassword))
             return
         }
-        val obj= loginDTS(Username, Password)
+        val obj= loginDTS(Password,Username)
         viewModel.login(obj)
     }
 
@@ -149,7 +149,7 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        if(Password.equals(binding.signUpLayout.ConfirmPassword.text.toString()))
+        if(!Password.equals(binding.signUpLayout.ConfirmPassword.text.toString()))
         {
             binding.signUpLayout.ConfirmPassword.setError(getString(R.string.PasswordsAreNotTheSame))
             return
