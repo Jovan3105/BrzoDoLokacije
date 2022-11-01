@@ -10,8 +10,10 @@ namespace HotSpotAPI.Servisi
     {
         public int GetUserId();
         public string ChangePassword(string username, out bool ind);
-        string chengePassInDataBase(String username, password password, out bool ind);
+        string chengePassInDataBase(password password, out bool ind);
         public string ConfirmCode(string username, string code, out bool ind);
+        public bool checkCode(vercode ver);
+        public void verifyUser(string username);
     }
     public class UserService : IUserService
     {
@@ -60,8 +62,12 @@ namespace HotSpotAPI.Servisi
             Random rnd = new Random();
             int code = rnd.Next(1000,9999);
 
-            user.Code = code;
-            context.SaveChanges();
+            var kod = context.Kodovi.FirstOrDefault(x => x.UserID == user.ID);
+            if (kod != null)
+            {
+                kod.ForgotPassCode = code;
+                context.SaveChanges();
+            }
 
             MailData maildata = new MailData(new List<string> { user.Email }, "Izmena lozinke");
             Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken(), code);
@@ -86,7 +92,8 @@ namespace HotSpotAPI.Servisi
                 return "Username ne postoji";
             }
             int kod=int.Parse(code);
-            if(user.Code == kod)
+            var kod2 = context.Kodovi.FirstOrDefault(x => x.UserID == user.ID);
+            if(kod2.ForgotPassCode == kod)
             {
                 ind = true;
                 return "Kod je validan";
@@ -95,16 +102,32 @@ namespace HotSpotAPI.Servisi
             ind = false;
             return "Kod nije validan";
         }
-        public string chengePassInDataBase(string username, password password, out bool ind)
+        public string chengePassInDataBase(password password, out bool ind)
         {
-            var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
+            var user = context.Korisnici.FirstOrDefault(x => x.Username == password.username);
             if(user == null)
             {
                 ind = false;
                 return "korisnik sa ovim usernameom ne postoji";
             }
 
-            mysqlServis.CreatePasswordHash(password.newpassword, out byte[] passhash, out byte[] passsalt);
+            var lozinke = context.NovaLozinka.FirstOrDefault(x => x.UserID == user.ID);
+            if (lozinke == null)
+            {
+                Novalozinka nl = new Novalozinka();
+                nl.UserID = user.ID;
+                nl.Password = password.newpassword;
+                context.NovaLozinka.Add(nl);
+                context.SaveChanges();
+            }
+            else
+            {
+                lozinke.Password = password.newpassword;
+                context.SaveChanges();
+            }
+            ind = true;
+            return "Uspesno dodata lozinka";
+            /*mysqlServis.CreatePasswordHash(password.newpassword, out byte[] passhash, out byte[] passsalt);
             if(passhash != null && passsalt!=null)
             {
                 user.PasswordSalt = passsalt;
@@ -114,7 +137,29 @@ namespace HotSpotAPI.Servisi
                 return "Uspesno izmenjena lozinka";
             }
             ind = false;
-            return "Greska pri kreiranju lozinke";
+            return "Greska pri kreiranju lozinke";*/
+        }
+        public bool checkCode(vercode ver)
+        {
+            var user = context.Korisnici.FirstOrDefault(x => x.Username == ver.username);
+            if (user == null)
+                return false;
+
+            var code = context.Kodovi.FirstOrDefault(x => x.UserID == user.ID);
+            if(code!=null && code.RegisterCode == int.Parse(ver.code))
+            {
+                return true;
+            }
+            return false;
+        }
+        public void verifyUser(string username)
+        {
+            var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
+            if (user != null)
+            {
+                user.EmailPotvrdjen = true;
+                context.SaveChanges();
+            }
         }
     }
 }

@@ -7,9 +7,8 @@ namespace HotSpotAPI.Data
     {
         public MySqlDbContext(DbContextOptions<MySqlDbContext> options) : base(options) { }
         public DbSet<Korisnik> Korisnici { get; set; }
-        
-
-
+        public DbSet<Kod> Kodovi { get; set; }
+        public DbSet<Novalozinka> NovaLozinka { get; set; }
     }
 
 }

@@ -19,13 +19,30 @@ namespace HotSpotAPI.Migrations
                 .HasAnnotation("ProductVersion", "6.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("HotSpotAPI.Modeli.Korisnik", b =>
+            modelBuilder.Entity("HotSpotAPI.Modeli.Kod", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("Code")
+                    b.Property<int>("ForgotPassCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RegisterCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Kodovi");
+                });
+
+            modelBuilder.Entity("HotSpotAPI.Modeli.Korisnik", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
