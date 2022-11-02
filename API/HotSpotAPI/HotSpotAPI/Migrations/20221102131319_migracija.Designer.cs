@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotSpotAPI.Migrations
 {
     [DbContext(typeof(MySqlDbContext))]
-    [Migration("20221030225014_migracija")]
+    [Migration("20221102131319_migracija")]
     partial class migracija
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,13 +21,30 @@ namespace HotSpotAPI.Migrations
                 .HasAnnotation("ProductVersion", "6.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("HotSpotAPI.Modeli.Korisnik", b =>
+            modelBuilder.Entity("HotSpotAPI.Modeli.Kod", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("Code")
+                    b.Property<int>("ForgotPassCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RegisterCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Kodovi");
+                });
+
+            modelBuilder.Entity("HotSpotAPI.Modeli.Korisnik", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -68,6 +85,24 @@ namespace HotSpotAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Korisnici");
+                });
+
+            modelBuilder.Entity("HotSpotAPI.Modeli.Novalozinka", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("NovaLozinka");
                 });
 #pragma warning restore 612, 618
         }

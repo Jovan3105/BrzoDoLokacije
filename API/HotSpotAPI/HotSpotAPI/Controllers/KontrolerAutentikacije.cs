@@ -70,6 +70,7 @@ namespace HotSpotAPI.Controllers
                 try
                 {
                     object value = await mySQLServis.registrujKorisnika(zahtev);
+                    int dodajkod = mySQLServis.dodajKod(zahtev.Username);
                     //string url = configuration.GetSection("Front_Server_Config:host").Value + ":" + configuration.GetSection("Front_Server_Config:port").Value;
                     MailPotvrdeRegistracije mailsend = new MailPotvrdeRegistracije();
                     mailsend.Name = zahtev.Username;
@@ -77,7 +78,7 @@ namespace HotSpotAPI.Controllers
                     // mailsend.UrlZaRegistraciju = url;
                     //MailData maildata = new MailData(new List<string> { zahtev.Email }, "Potvrda registracije", mail.GetEmailTemplate("PotvrdaRegistracije", mailsend));
                     MailData maildata = new MailData(new List<string> { zahtev.Email }, "Potvrda registracije");
-                    bool sendResult = await mail.SendAsync(maildata, new CancellationToken());
+                    bool sendResult = await mail.SendAsync(maildata, new CancellationToken(), dodajkod);
                     if (sendResult)
                     {
                         return Ok(new
@@ -110,7 +111,30 @@ namespace HotSpotAPI.Controllers
             return BadRequest("Neuspesna registracija");
 
         }
+        [HttpPost("verifyuser")]
+        public async Task<ActionResult<string>> VerifyUser(vercode ver)
+        {
+            bool res = userService.checkCode(ver);
+            if(res)
+            {
+                userService.verifyUser(ver.username);
+                return Ok
+                    (
+                        new messageresponse
+                        {
+                            message = "Nalog je uspesno verifikovan, mozete se ulogovati"
+                        }
+                    );
 
+            }
+            return BadRequest
+                    (
+                        new messageresponse
+                        {
+                            message = "Kod nije validan, proverite da li ste uneli vazeci kod"
+                        }
+                    );
+        }
         [HttpPut("{username}/edituser")]
         public async Task<ActionResult<string>> EditUser(string username, EditUser zahtev)
         {
@@ -145,7 +169,7 @@ namespace HotSpotAPI.Controllers
                         }
                     );
         }
-        [HttpPost("{username}/changepass")]
+        /*[HttpPost("{username}/changepass")]
         public async Task<ActionResult<string>> ChangePass(string username)
         {
             string res = userService.ChangePassword(username, out bool ind);
@@ -163,7 +187,7 @@ namespace HotSpotAPI.Controllers
                             message = res
                         }
                     );
-        }
+        }*/
 
         [HttpPost("code")]
         public async Task<ActionResult<string>> CompareCode(vercode code)
@@ -200,8 +224,6 @@ namespace HotSpotAPI.Controllers
         [HttpPut("Setpass")]
         public async Task<ActionResult<string>> Setpass(password pass)
         {
-            Debug.WriteLine(pass.username);
-            Debug.WriteLine(pass.newpassword);
             if (pass == null)
                 return BadRequest(
                         new messageresponse
@@ -210,7 +232,7 @@ namespace HotSpotAPI.Controllers
                         }
                     );
 
-            string res = userService.chengePassInDataBase(pass.username, pass, out bool ind);
+            string res = userService.chengePassInDataBase(pass, out bool ind);
             if(ind)
             {
                 return Ok(

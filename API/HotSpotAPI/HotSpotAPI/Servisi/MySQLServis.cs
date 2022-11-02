@@ -20,8 +20,7 @@ namespace HotSpotAPI.Servisi
         public bool checkPass(string Username, string Password);
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
-
-
+        public int dodajKod(string username);
     }
     public class MySQLServis : IMySQLServis
     {
@@ -61,9 +60,25 @@ namespace HotSpotAPI.Servisi
 
         }
 
+        public int dodajKod(string username)
+        {
+            Random rnd = new Random();
+            int code = rnd.Next(1000, 9999);
+
+            var user = _context.Korisnici.FirstOrDefault(x=>x.Username== username);
+            if (user == null)
+                return -1;
+            Kod k = new Kod();
+            k.UserID = user.ID;
+            k.RegisterCode = code;
+            _context.Kodovi.Add(k);
+            _context.SaveChanges();
+            return code;
+        }
+
         public Korisnik loginKorisnika(LoginDTO zahtev) 
         {
-            var korisnik = _context.Korisnici.Where(x => x.Username.Equals(zahtev.Username) || x.Email.Equals(zahtev.Username)).FirstOrDefault();
+            var korisnik = _context.Korisnici.Where(x => x.Username.Equals(zahtev.Username) && x.EmailPotvrdjen == true).FirstOrDefault();
             if (korisnik == null)
                 return null;
 
@@ -74,8 +89,6 @@ namespace HotSpotAPI.Servisi
 
             return korisnik;
         }
-
-
 
         public  void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {

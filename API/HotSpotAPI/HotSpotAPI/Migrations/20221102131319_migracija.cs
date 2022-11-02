@@ -14,6 +14,22 @@ namespace HotSpotAPI.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Kodovi",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    RegisterCode = table.Column<int>(type: "int", nullable: false),
+                    ForgotPassCode = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Kodovi", x => x.ID);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Korisnici",
                 columns: table => new
                 {
@@ -29,12 +45,27 @@ namespace HotSpotAPI.Migrations
                     EmailToken = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ProfileImage = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Code = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Korisnici", x => x.ID);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "NovaLozinka",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    Password = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NovaLozinka", x => x.ID);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -54,7 +85,13 @@ namespace HotSpotAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Kodovi");
+
+            migrationBuilder.DropTable(
                 name: "Korisnici");
+
+            migrationBuilder.DropTable(
+                name: "NovaLozinka");
         }
     }
 }

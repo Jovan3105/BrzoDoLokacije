@@ -9,9 +9,10 @@ namespace HotSpotAPI.Servisi
     public interface IUserService
     {
         public int GetUserId();
-        public string ChangePassword(string username, out bool ind);
-        string chengePassInDataBase(String username, password password, out bool ind);
+        string chengePassInDataBase(password password, out bool ind);
         public string ConfirmCode(string username, string code, out bool ind);
+        public bool checkCode(vercode ver);
+        public void verifyUser(string username);
     }
     public class UserService : IUserService
     {
@@ -41,7 +42,7 @@ namespace HotSpotAPI.Servisi
             }
             return rez;
         }
-        public string ChangePassword(string username, out bool ind)
+        /*public string ChangePassword(string username, out bool ind)
         {
             var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
             if (user == null)
@@ -60,8 +61,93 @@ namespace HotSpotAPI.Servisi
             Random rnd = new Random();
             int code = rnd.Next(1000,9999);
 
-            user.Code = code;
-            context.SaveChanges();
+            var kod = context.Kodovi.FirstOrDefault(x => x.UserID == user.ID);
+            if (kod != null)
+            {
+                kod.ForgotPassCode = code;
+                context.SaveChanges();
+            }
+
+            MailData maildata = new MailData(new List<string> { user.Email }, "Izmena lozinke");
+            Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken(), code);
+            if (sendResult != null)
+            {
+                ind = true;
+                return "Proverite vas email i pratite dalja uputstva za izmenu lozinke";
+            }
+            else
+            {
+                ind = false;
+                return "greska pri slanju e-mail-a";
+            }
+        }*/
+
+        public string ConfirmCode(string username, string code, out bool ind)
+        {
+            var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
+            if (user == null)
+            {
+                ind = false;
+                return "Username ne postoji";
+            }
+            int kod=int.Parse(code);
+            var kod2 = context.Kodovi.FirstOrDefault(x => x.UserID == user.ID);
+            if(kod2 != null && kod2.ForgotPassCode == kod)
+            {
+                var lozinka = context.NovaLozinka.FirstOrDefault(x=>x.UserID == user.ID);
+                if(lozinka == null)
+                {
+                    ind = false;
+                    return "Ovaj korisnik ne zeli da promeni lozinku";
+                }
+                mysqlServis.CreatePasswordHash(lozinka.Password, out byte[] passhash, out byte[] passsalt);
+                if (passhash != null && passsalt != null)
+                {
+                    user.PasswordSalt = passsalt;
+                    user.PasswordHash = passhash;
+                    context.SaveChanges();
+                    ind = true;
+                    return "Uspesno izmenjena lozinka";
+                }
+                ind = false;
+                return "neuspesno kreiranje novog passworda";
+            }
+            ind = false;
+            return "Kod nije validan";
+        }
+        public string chengePassInDataBase(password password, out bool ind)
+        {
+            var user = context.Korisnici.FirstOrDefault(x => x.Username == password.username);
+            if(user == null)
+            {
+                ind = false;
+                return "korisnik sa ovim usernameom ne postoji";
+            }
+
+            var lozinke = context.NovaLozinka.FirstOrDefault(x => x.UserID == user.ID);
+            if (lozinke == null)
+            {
+                Novalozinka nl = new Novalozinka();
+                nl.UserID = user.ID;
+                nl.Password = password.newpassword;
+                context.NovaLozinka.Add(nl);
+                context.SaveChanges();
+            }
+            else
+            {
+                lozinke.Password = password.newpassword;
+                context.SaveChanges();
+            }
+
+            Random rnd = new Random();
+            int code = rnd.Next(1000, 9999);
+
+            var kod = context.Kodovi.FirstOrDefault(x => x.UserID == user.ID);
+            if (kod != null)
+            {
+                kod.ForgotPassCode = code;
+                context.SaveChanges();
+            }
 
             MailData maildata = new MailData(new List<string> { user.Email }, "Izmena lozinke");
             Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken(), code);
@@ -76,45 +162,27 @@ namespace HotSpotAPI.Servisi
                 return "greska pri slanju e-mail-a";
             }
         }
-
-        public string ConfirmCode(string username, string code, out bool ind)
+        public bool checkCode(vercode ver)
         {
-            var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
+            var user = context.Korisnici.FirstOrDefault(x => x.Username == ver.username);
             if (user == null)
-            {
-                ind = false;
-                return "Username ne postoji";
-            }
-            int kod=int.Parse(code);
-            if(user.Code == kod)
-            {
-                ind = true;
-                return "Kod je validan";
-            }
+                return false;
 
-            ind = false;
-            return "Kod nije validan";
+            var code = context.Kodovi.FirstOrDefault(x => x.UserID == user.ID);
+            if(code!=null && code.RegisterCode == int.Parse(ver.code))
+            {
+                return true;
+            }
+            return false;
         }
-        public string chengePassInDataBase(string username, password password, out bool ind)
+        public void verifyUser(string username)
         {
             var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
-            if(user == null)
+            if (user != null)
             {
-                ind = false;
-                return "korisnik sa ovim usernameom ne postoji";
-            }
-
-            mysqlServis.CreatePasswordHash(password.newpassword, out byte[] passhash, out byte[] passsalt);
-            if(passhash != null && passsalt!=null)
-            {
-                user.PasswordSalt = passsalt;
-                user.PasswordHash = passhash;
+                user.EmailPotvrdjen = true;
                 context.SaveChanges();
-                ind = true;
-                return "Uspesno izmenjena lozinka";
             }
-            ind = false;
-            return "Greska pri kreiranju lozinke";
         }
     }
 }
