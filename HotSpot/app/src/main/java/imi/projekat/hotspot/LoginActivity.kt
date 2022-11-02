@@ -57,8 +57,26 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this@LoginActivity, it.poruka, Toast.LENGTH_SHORT).show()
                 }
             }
-
         }
+
+        viewModel.liveRegisterResponse.observe(this){
+            dijalog.isDismiss()
+            when(it){
+                is BaseResponse.Loading->{
+                    dijalog.startLoading()
+                }
+                is BaseResponse.Success->{
+                    Toast.makeText(this@LoginActivity, it.data.toString(), Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
+                    startActivity(intent)
+                }
+                is BaseResponse.Error->{
+                    Toast.makeText(this@LoginActivity, it.poruka, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+
 
 
         binding.linearlayout1.startAnimation(btpAnimacija)
@@ -160,32 +178,31 @@ class LoginActivity : AppCompatActivity() {
 
 
         val obj= signUpDTS(Email,Password,Username)
+        viewModel.signUp(obj)
 
-        val retrofitData=APIservis.Servis.signUpCall(obj)
-        dijalog.startLoading()
-        retrofitData.enqueue(object : Callback<ResponseBody?> {
-            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-                dijalog.isDismiss()
-                var responseBody= response.body()?.string()
-                //val myStringBuilder=StringBuilder()
-                if(response.code()!=200){
-
-                    val content = response.errorBody()!!.charStream().readText()
-                    Toast.makeText(this@LoginActivity, content, Toast.LENGTH_SHORT).show()
-                    return
-                }
-                if(responseBody!=null){
-                    Toast.makeText(this@LoginActivity, responseBody, Toast.LENGTH_SHORT).show()
-                }
-
-
-            }
-
-            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                dijalog.isDismiss()
-                Toast.makeText(this@LoginActivity,getString(R.string.ConnectionError), Toast.LENGTH_SHORT).show()
-            }
-        })
+//        retrofitData.enqueue(object : Callback<ResponseBody?> {
+//            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+//                dijalog.isDismiss()
+//                var responseBody= response.body()?.string()
+//                //val myStringBuilder=StringBuilder()
+//                if(response.code()!=200){
+//
+//                    val content = response.errorBody()!!.charStream().readText()
+//                    Toast.makeText(this@LoginActivity, content, Toast.LENGTH_SHORT).show()
+//                    return
+//                }
+//                if(responseBody!=null){
+//                    Toast.makeText(this@LoginActivity, responseBody, Toast.LENGTH_SHORT).show()
+//                }
+//
+//
+//            }
+//
+//            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+//                dijalog.isDismiss()
+//                Toast.makeText(this@LoginActivity,getString(R.string.ConnectionError), Toast.LENGTH_SHORT).show()
+//            }
+//        })
     }
 
 

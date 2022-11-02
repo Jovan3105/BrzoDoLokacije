@@ -17,7 +17,7 @@ interface ApiInterface {
     suspend fun loginCall(@Body dts: loginDTS):Response<LoginResponse>
 
     @POST("KontrolerAutentikacije/signUp")
-    fun signUpCall(@Body dts: signUpDTS):Call<ResponseBody>
+    suspend fun signUpCall(@Body dts: signUpDTS):Response<ResponseBody>
 
     @POST("KontrolerAutentikacije/{username}/changepass")
     fun ForgotPasswordCall(@Path("username") username:String):Call<ForgotPasswordResponse>
