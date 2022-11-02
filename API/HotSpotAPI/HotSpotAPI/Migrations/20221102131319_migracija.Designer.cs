@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotSpotAPI.Migrations
 {
     [DbContext(typeof(MySqlDbContext))]
-    [Migration("20221101143309_migracija")]
+    [Migration("20221102131319_migracija")]
     partial class migracija
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,6 +85,24 @@ namespace HotSpotAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Korisnici");
+                });
+
+            modelBuilder.Entity("HotSpotAPI.Modeli.Novalozinka", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("NovaLozinka");
                 });
 #pragma warning restore 612, 618
         }

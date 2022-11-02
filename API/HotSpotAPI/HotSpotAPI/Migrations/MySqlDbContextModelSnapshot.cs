@@ -84,6 +84,24 @@ namespace HotSpotAPI.Migrations
 
                     b.ToTable("Korisnici");
                 });
+
+            modelBuilder.Entity("HotSpotAPI.Modeli.Novalozinka", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("NovaLozinka");
+                });
 #pragma warning restore 612, 618
         }
     }

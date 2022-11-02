@@ -169,7 +169,7 @@ namespace HotSpotAPI.Controllers
                         }
                     );
         }
-        [HttpPost("{username}/changepass")]
+        /*[HttpPost("{username}/changepass")]
         public async Task<ActionResult<string>> ChangePass(string username)
         {
             string res = userService.ChangePassword(username, out bool ind);
@@ -187,7 +187,7 @@ namespace HotSpotAPI.Controllers
                             message = res
                         }
                     );
-        }
+        }*/
 
         [HttpPost("code")]
         public async Task<ActionResult<string>> CompareCode(vercode code)

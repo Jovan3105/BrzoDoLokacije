@@ -53,6 +53,22 @@ namespace HotSpotAPI.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "NovaLozinka",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserID = table.Column<int>(type: "int", nullable: false),
+                    Password = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NovaLozinka", x => x.ID);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Korisnici_Email",
                 table: "Korisnici",
@@ -73,6 +89,9 @@ namespace HotSpotAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "Korisnici");
+
+            migrationBuilder.DropTable(
+                name: "NovaLozinka");
         }
     }
 }
