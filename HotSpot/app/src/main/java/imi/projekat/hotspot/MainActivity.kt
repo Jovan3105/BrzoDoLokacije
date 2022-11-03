@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.addFlags(FLAG_ACTIVITY_NO_HISTORY)
             startActivity(intent)
+            finish()
         }
 
     }
@@ -41,5 +42,6 @@ class MainActivity : AppCompatActivity() {
             return application.applicationContext
         }
     }
+
 }
 
