@@ -49,11 +49,18 @@ namespace HotSpotAPI.Controllers
                     Data = null
                 });
             }
-
+            if (korisnik.EmailPotvrdjen == false)
+            {
+                return BadRequest(new LoginResponse
+                {
+                    Message = "EmailNotVerified",
+                    Data = null
+                });
+            }
 
             return Ok(new LoginResponse
             {
-                Message = "Uspesan login",
+                Message = "SuccessfulLogin",
                 Data = zahtev
             });
 
@@ -81,18 +88,11 @@ namespace HotSpotAPI.Controllers
                     bool sendResult = await mail.SendAsync(maildata, new CancellationToken(), dodajkod);
                     if (sendResult)
                     {
-                        return Ok(new
-                        {
-                            success = true,
-                            data = new
-                            {
-                                message = "Proverite vas email"
-                            }
-                        });
+                        return Ok("SuccessfulRegistration");
                     }
                     else
                     {
-                        return StatusCode(StatusCodes.Status500InternalServerError, "Došlo je do greške prilikom slanja email-a.");
+                        return StatusCode(StatusCodes.Status500InternalServerError, "ErrorWithSendingEmail");
                     }
 
                 }
@@ -100,15 +100,15 @@ namespace HotSpotAPI.Controllers
                 {
 
                     if (ex.InnerException.Message.Contains("IX_Korisnici_Email"))
-                        return BadRequest("Email je vec povezan sa drugim nalogom");
+                        return BadRequest("EmailIsAlreadyTaken");
 
                     if (ex.InnerException.Message.Contains("IX_Korisnici_Username"))
-                        return BadRequest("Vec postoji korisnik sa datim username-om");
+                        return BadRequest("UsernameIsAlreadyTaken");
 
 
                 }
             }
-            return BadRequest("Neuspesna registracija");
+            return BadRequest("UnsuccessfulRegistration");
 
         }
         [HttpPost("verifyuser")]

@@ -28,7 +28,7 @@ class LoginActivityViewModel(private val repository:Repository=Repository()) :Vi
     var handleJob: Job?=null
 
     val exceptionHandler=CoroutineExceptionHandler{_,throwable->onError(
-        "ConfirmPasswordError"
+        "ConnectionError"
     )
         Log.d("Exception",throwable.localizedMessage.toString())
     }
@@ -76,10 +76,13 @@ class LoginActivityViewModel(private val repository:Repository=Repository()) :Vi
 
                 }
                 else{
-                    val gson = Gson()
-                    val type = object : TypeToken<LoginResponse>() {}.type
-                    var errorResponse: LoginResponse = gson.fromJson(response.errorBody()!!.charStream(), type)
-                    onError(errorResponse.message.toString())
+
+//                    val gson = Gson()
+//                    val type = object : TypeToken<ResponseBody>() {}.type
+//                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
+
+                    val content = response.errorBody()!!.charStream().readText()
+                    onError(content)
                 }
             }
         }

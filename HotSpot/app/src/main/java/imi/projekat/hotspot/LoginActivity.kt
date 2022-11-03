@@ -12,10 +12,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
 import imi.projekat.hotspot.Ostalo.APIservis
 import imi.projekat.hotspot.Ostalo.BaseResponse
+import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
 import imi.projekat.hotspot.databinding.ActivityLoginBinding
 import kotlinx.android.synthetic.main.login_tab_fragment.view.*
@@ -54,7 +57,8 @@ class LoginActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 is BaseResponse.Error->{
-                    Toast.makeText(this@LoginActivity, it.poruka, Toast.LENGTH_SHORT).show()
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),applicationContext)
+                    Toast.makeText(this@LoginActivity, id, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -66,9 +70,16 @@ class LoginActivity : AppCompatActivity() {
                     dijalog.startLoading()
                 }
                 is BaseResponse.Success->{
-                    Toast.makeText(this@LoginActivity, it.data.toString(), Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
-                    startActivity(intent)
+                    val content = it.data!!.charStream().readText()
+                    val id = UpravljanjeResursima.getResourceString(content,applicationContext)
+//                    val gson = Gson()
+//                    val type = object : TypeToken<ResponseBody>() {}.type
+//                    val errorResponse: ResponseBody = gson.fromJson(it.data!!.charStream(), type)
+
+                    Toast.makeText(this@LoginActivity,id, Toast.LENGTH_SHORT).show()
+
+//                    val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
+//                    startActivity(intent)
                 }
                 is BaseResponse.Error->{
                     Toast.makeText(this@LoginActivity, it.poruka, Toast.LENGTH_SHORT).show()

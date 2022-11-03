@@ -13,7 +13,7 @@
     <string name="Forgotten_Password_title">Password recovery</string>
     <string name="Recover_button">Recover</string>
     <string name="VericiationCodeTitle">Enter the code</string>
-  <string name="VerificationCode">Verification code</string>
+    <string name="VerificationCode">Verification code</string>
     <string name="SendVerificationCodeButton">SEND</string>
     <string name="newpassword">New password</string>
     <string name="NewPasswordTitle">Enter new password</string>
@@ -35,4 +35,17 @@
     //errorsFromAPI
     <string name="ConnectionError">There is a problem with connection, try again later</string>
     <string name="WrongUsernameOrPasswordError">Wrong username or password</string>
+    <string name="EmailIsAlreadyTaken">Email is already taken</string>
+    <string name="UsernameIsAlreadyTaken">Username is already taken</string>
+    <string name="ErrorWithSendingEmail">Error with sending email</string>
+    <string name="EmailNotVerified">Account not verified, please check you email</string>
+
+
+    //success
+    <string name="SuccessfulLogin">Successful login</string>
+    <string name="SuccessfulRegistration">Successful registration</string>
+    <string name="UnsuccessfulRegistration">Unsuccessful registration</string>
+
+
+
 </resources>
