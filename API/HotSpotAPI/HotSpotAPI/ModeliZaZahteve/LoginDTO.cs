@@ -14,6 +14,11 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string Token { get; set; } = string.Empty;
     }
 
+    public class UserInfo
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+    }
     public class EditUser
     {
         [Required(ErrorMessage = "Nije unet username")]

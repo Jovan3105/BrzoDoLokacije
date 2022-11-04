@@ -41,6 +41,7 @@ builder.Services.AddSwaggerGen(options => {
 });
 builder.Services.AddScoped<IMySQLServis, MySQLServis>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IStorageService, StorageService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<MailPodesavanja>(builder.Configuration.GetSection(nameof(MailPodesavanja)));
 builder.Services.AddTransient<ImailService, MailService>();

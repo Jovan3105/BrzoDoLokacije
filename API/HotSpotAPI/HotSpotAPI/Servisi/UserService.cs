@@ -13,6 +13,9 @@ namespace HotSpotAPI.Servisi
         public string ConfirmCode(string username, string code, out bool ind);
         public bool checkCode(vercode ver);
         public void verifyUser(string username);
+        public UserInfo getUserInfo(int id);
+        public string getPhoto(int id);
+        public bool ChangePhoto(int id, IFormFile photo);
     }
     public class UserService : IUserService
     {
@@ -20,13 +23,15 @@ namespace HotSpotAPI.Servisi
         private MySqlDbContext context;
         private readonly ImailService mailService;
         private readonly IMySQLServis mysqlServis;
+        private readonly IStorageService storageService;
 
-        public UserService(IHttpContextAccessor httpContext, MySqlDbContext context, ImailService mailService, IMySQLServis mysqlServis)
+        public UserService(IHttpContextAccessor httpContext, MySqlDbContext context, ImailService mailService, IMySQLServis mysqlServis, IStorageService storageService)
         {
             this.httpContext = httpContext;
             this.context = context;
             this.mailService = mailService;
             this.mysqlServis = mysqlServis;
+            this.storageService = storageService;
         }
 
         public int GetUserId()
@@ -144,6 +149,49 @@ namespace HotSpotAPI.Servisi
                 user.EmailPotvrdjen = true;
                 context.SaveChanges();
             }
+        }
+        public UserInfo getUserInfo(int id)
+        {
+            var kor = context.Korisnici.Find(id);
+            if (kor == null)
+                return null;
+
+            UserInfo ui = new UserInfo();
+            ui.Username = kor.Username;
+            ui.Email = kor.Email;
+
+            return ui;
+        }
+        public string getPhoto(int id)
+        {
+            var kor = context.Korisnici.Find(id);
+            if (kor == null)
+                return null;
+
+            return kor.ProfileImage;
+        }
+        public bool ChangePhoto(int id, IFormFile photo)
+        {
+            var user = context.Korisnici.Find(id);
+            if (user == null)
+                return false;
+
+            string path = storageService.CreatePhoto();
+            if(!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            path = Path.Combine(path, "user" + id + ".jpg");
+            if(File.Exists(path))
+                System.IO.File.Delete(path);
+            user.ProfileImage = path;
+            context.SaveChanges();
+
+            using (FileStream stream = System.IO.File.Create(path))
+            {
+                photo.CopyTo(stream);
+                stream.Flush();
+            }
+            return true;
         }
     }
 }
