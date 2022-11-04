@@ -2,6 +2,7 @@
 using HotSpotAPI.Modeli;
 using HotSpotAPI.ModeliZaZahteve;
 using HotSpotAPI.Servisi;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -46,7 +47,7 @@ namespace HotSpotAPI.Controllers
                 return BadRequest(new LoginResponse
                 {
                     Message = "WrongUsernameOrPasswordError",
-                    Data = null
+                    Token = null
                 });
             }
             if (korisnik.EmailPotvrdjen == false)
@@ -54,14 +55,15 @@ namespace HotSpotAPI.Controllers
                 return BadRequest(new LoginResponse
                 {
                     Message = "EmailNotVerified",
-                    Data = null
+                    Token = null
                 });
             }
 
+            string token = mySQLServis.CreateToken(korisnik, 3600);
             return Ok(new LoginResponse
             {
                 Message = "SuccessfulLogin",
-                Data = zahtev
+                Token = token
             });
 
 
@@ -135,12 +137,12 @@ namespace HotSpotAPI.Controllers
                         }
                     );
         }
-        [HttpPut("{username}/edituser")]
+        [HttpPut("{username}/edituser"), Authorize]
         public async Task<ActionResult<string>> EditUser(string username, EditUser zahtev)
         {
-            /*int id = userService.GetUserId();
+            int id = userService.GetUserId();
             if (id == -1)
-                return Ok("korisnik sa usernameom ne postoji");*/
+                return Ok("korisnik sa usernameom ne postoji");
             bool pass = mySQLServis.checkPass(username, zahtev.OldPassword);
             if (pass == false)
                 return BadRequest
@@ -169,25 +171,6 @@ namespace HotSpotAPI.Controllers
                         }
                     );
         }
-        /*[HttpPost("{username}/changepass")]
-        public async Task<ActionResult<string>> ChangePass(string username)
-        {
-            string res = userService.ChangePassword(username, out bool ind);
-            if (ind)
-                return Ok(
-                            new messageresponse
-                            {
-                                message = res
-                            }
-                        );
-
-            return BadRequest(
-                        new messageresponse
-                        {
-                            message = res
-                        }
-                    );
-        }*/
 
         [HttpPost("code")]
         public async Task<ActionResult<string>> CompareCode(vercode code)

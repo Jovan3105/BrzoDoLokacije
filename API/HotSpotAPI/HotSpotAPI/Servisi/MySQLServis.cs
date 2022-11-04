@@ -21,6 +21,7 @@ namespace HotSpotAPI.Servisi
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
         public int dodajKod(string username);
+        public string CreateToken(Korisnik korisnik, int trajanjeUMinutima);
     }
     public class MySQLServis : IMySQLServis
     {
@@ -109,12 +110,14 @@ namespace HotSpotAPI.Servisi
             }
         }
 
-        private string CreateToken(Korisnik korisnik, int trajanjeUMinutima)
+        public string CreateToken(Korisnik korisnik, int trajanjeUMinutima)
         {
+            string uid = korisnik.ID + "";
             List<Claim> claims = new List<Claim>
             {
                 new Claim("username",korisnik.Username),
-                new Claim("email",korisnik.Email)
+                new Claim("email",korisnik.Email),
+                new Claim("id", uid)
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
@@ -232,8 +235,8 @@ namespace HotSpotAPI.Servisi
                 ind = true;
                 return "Uspesna izmena, proverite vas email";
             }
-            ind = false;
-            return null;
+            ind = true;
+            return "Uspesna izmena podataka";
         }
 
     }

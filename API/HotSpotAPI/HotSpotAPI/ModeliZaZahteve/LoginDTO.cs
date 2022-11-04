@@ -11,7 +11,7 @@ namespace HotSpotAPI.ModeliZaZahteve
     public class LoginResponse
     {
         public string Message { get; set; } = string.Empty;
-        public LoginDTO Data { get; set; } = null;
+        public string Token { get; set; } = string.Empty;
     }
 
     public class EditUser

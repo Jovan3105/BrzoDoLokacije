@@ -32,8 +32,8 @@ namespace HotSpotAPI.Servisi
         public int GetUserId()
         {
             int rez = -1; // ako nije ulogovan vraca -1
-            var pom = httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) != null)
+            var pom = httpContext.HttpContext.User.FindFirstValue("id");
+            if (httpContext.HttpContext.User.FindFirstValue("id") != null)
             {
                 rez = int.Parse(httpContext.HttpContext.User.FindFirstValue("id"));
                 var dbid = context.Korisnici.Find(rez);
@@ -42,45 +42,6 @@ namespace HotSpotAPI.Servisi
             }
             return rez;
         }
-        /*public string ChangePassword(string username, out bool ind)
-        {
-            var user = context.Korisnici.FirstOrDefault(x => x.Username == username);
-            if (user == null)
-            {
-                ind = false;
-                return "wrong username";
-            }
-
-            string email = user.Email;
-            if (email == null)
-            {
-                ind = false;
-                return "korisnikov mail je nevalidan";
-            }
-
-            Random rnd = new Random();
-            int code = rnd.Next(1000,9999);
-
-            var kod = context.Kodovi.FirstOrDefault(x => x.UserID == user.ID);
-            if (kod != null)
-            {
-                kod.ForgotPassCode = code;
-                context.SaveChanges();
-            }
-
-            MailData maildata = new MailData(new List<string> { user.Email }, "Izmena lozinke");
-            Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken(), code);
-            if (sendResult != null)
-            {
-                ind = true;
-                return "Proverite vas email i pratite dalja uputstva za izmenu lozinke";
-            }
-            else
-            {
-                ind = false;
-                return "greska pri slanju e-mail-a";
-            }
-        }*/
 
         public string ConfirmCode(string username, string code, out bool ind)
         {
