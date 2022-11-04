@@ -36,6 +36,7 @@
     <string name="ErrorEmailForm">Invalid email</string>
     <string name="ShortPasswordLength">Password must contain at least five characters</string>
     <string name="PasswordLongLegth">Password can not contain more than twenty characters</string>
+    <string name="TokenEmpty">Verificaion token is required</string>
 
     //errorsFromAPI
     <string name="ConnectionError">There is a problem with connection, try again later</string>

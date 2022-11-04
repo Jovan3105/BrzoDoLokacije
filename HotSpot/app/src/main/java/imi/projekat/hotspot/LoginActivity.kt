@@ -3,43 +3,22 @@ package imi.projekat.hotspot
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.doAfterTextChanged
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import com.google.android.material.textfield.TextInputLayout
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import imi.projekat.hotspot.Dialogs.LoadingDialog
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
-import imi.projekat.hotspot.Ostalo.APIservis
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
 import imi.projekat.hotspot.databinding.ActivityLoginBinding
-import kotlinx.android.synthetic.main.fragment_login_and_register.view.*
-import kotlinx.android.synthetic.main.fragment_login_and_register.view.signUpLayout
-import kotlinx.android.synthetic.main.login_tab_fragment.view.*
-import kotlinx.android.synthetic.main.login_tab_fragment.view.Email
-import kotlinx.android.synthetic.main.login_tab_fragment.view.Password
-import kotlinx.android.synthetic.main.login_tab_fragment.view.logInLayout
-import kotlinx.android.synthetic.main.login_tab_fragment.view.passwordWrapper
-import kotlinx.android.synthetic.main.register_tab_fragment.view.*
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private val viewModel by viewModels<LoginActivityViewModel>()
-    val dijalog=LoadingDialog(this)
+    val dijalog= LoadingDialog(this)
 
 
 
