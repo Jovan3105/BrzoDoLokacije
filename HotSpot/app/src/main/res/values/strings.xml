@@ -18,6 +18,7 @@
     <string name="newpassword">New password</string>
     <string name="NewPasswordTitle">Enter new password</string>
     <string name="confirmButton">Confirm</string>
+    <string name="CheckEmailAdress">Check your email adress to verify changes</string>
 
 
     //InputErrors
@@ -30,7 +31,11 @@
     <string name="InsertYourVerificationCode">Insert your verification code</string>
     <string name="InsertYourNewPassword">Insert your new password</string>
     <string name="ConfirmPasswordError">New password and confirm password are not the same</string>
-
+    <string name="UserNameShortLength">Username must contain at least four characters</string>
+    <string name="UserNameLongLength">Username can not contain more than twenty characters</string>
+    <string name="ErrorEmailForm">Invalid email</string>
+    <string name="ShortPasswordLength">Password must contain at least five characters</string>
+    <string name="PasswordLongLegth">Password can not contain more than twenty characters</string>
 
     //errorsFromAPI
     <string name="ConnectionError">There is a problem with connection, try again later</string>

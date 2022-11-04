@@ -119,6 +119,17 @@ class LoginAndRegister : Fragment() {
             binding.signUpLayout.Username.setError(getString(R.string.InsertYourUsername))
             return
         }
+        if(Username.length<4)
+        {
+            binding.signUpLayout.Username.setError(getString(R.string.UserNameShortLength))
+            return
+        }
+
+        if(binding.signUpLayout.Username.text.toString().length>20)
+        {
+            binding.signUpLayout.Username.setError(getString(R.string.UserNameLongLength))
+            return
+        }
 
         var Email:String=binding.signUpLayout.Email.text.toString().trim()
         if(Email.isBlank())
@@ -127,11 +138,32 @@ class LoginAndRegister : Fragment() {
             return
         }
 
+        val regexforemail="^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$".toRegex()
+        if(!regexforemail.matches(Email))
+        {
+            binding.signUpLayout.Email.setError(getString(R.string.ErrorEmailForm))
+            return
+        }
+
+
         var Password:String=binding.signUpLayout.Password.text.toString().trim()
         if(Password.isBlank())
         {
             binding.signUpLayout.passwordWrapper.endIconMode=TextInputLayout.END_ICON_NONE
             binding.signUpLayout.Password.setError(getString(R.string.InsertYourPassword))
+            return
+        }
+        if(Password.length<5)
+        {
+            binding.signUpLayout.passwordWrapper.endIconMode=TextInputLayout.END_ICON_NONE
+            binding.signUpLayout.Password.setError(getString(R.string.ShortPasswordLength))
+            return
+        }
+
+        if(Password.length>20)
+        {
+            binding.signUpLayout.passwordWrapper.endIconMode=TextInputLayout.END_ICON_NONE
+            binding.signUpLayout.Password.setError(getString(R.string.PasswordLongLegth))
             return
         }
 
