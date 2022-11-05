@@ -15,4 +15,7 @@ class Repository(){
     suspend fun signUp(registerDATA:signUpDTS): Response<ResponseBody> {
         return APIservis.Servis.signUpCall(registerDATA)
     }
+    suspend fun VerifyEmail(EmailToken:String):Response<ResponseBody>{
+        return APIservis.Servis.VerifyEmail(EmailToken)
+    }
 }

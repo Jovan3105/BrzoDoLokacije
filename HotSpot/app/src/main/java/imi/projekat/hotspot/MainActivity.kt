@@ -33,13 +33,13 @@ class MainActivity : AppCompatActivity() {
 
     object Companion{
 
-        private lateinit var application: Application
+        private lateinit var aplikacija: Application
 
         fun setContext(app: Application) {
-            application=app
+            aplikacija=app
         }
         fun getContext(): Context {
-            return application.applicationContext
+            return aplikacija.applicationContext
         }
     }
 

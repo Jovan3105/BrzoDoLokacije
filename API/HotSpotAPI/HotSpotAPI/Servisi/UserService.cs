@@ -111,7 +111,7 @@ namespace HotSpotAPI.Servisi
             }
 
             MailData maildata = new MailData(new List<string> { user.Email }, "Izmena lozinke");
-            Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken(), code);
+            Task<bool> sendResult = mailService.SendAsync(maildata, new CancellationToken(), code.ToString());
             if (sendResult != null)
             {
                 ind = true;

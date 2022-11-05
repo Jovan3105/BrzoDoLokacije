@@ -28,6 +28,6 @@ interface ApiInterface {
     @PUT("KontrolerAutentikacije/Setpass")
     fun SendNewPassword(@Body dts:NewPasswordDTS):Call<ForgotPasswordResponse>
 
-    @POST("KontrolerAutentikacije/VerifyEmail")
-    suspend fun VerifyEmail()
+    @POST("KontrolerAutentikacije/VerifyEmail/{EmailToken}")
+    suspend fun VerifyEmail(@Path("EmailToken") EmailToken:String):Response<ResponseBody>
 }

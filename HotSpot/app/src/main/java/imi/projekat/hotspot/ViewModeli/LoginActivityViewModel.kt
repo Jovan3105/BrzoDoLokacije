@@ -16,12 +16,17 @@ import okhttp3.ResponseBody
 class LoginActivityViewModel(private val repository:Repository=Repository()) :ViewModel(){
     private var _liveLoginResponse=MutableLiveData<BaseResponse<LoginResponse>>()
     private var _liveRegisterResponse=MutableLiveData<BaseResponse<ResponseBody>>()
+    private var _liveValidationResponse=MutableLiveData<BaseResponse<ResponseBody>>()
+
 
     val liveLoginResponse: MutableLiveData<BaseResponse<LoginResponse>>
         get() = _liveLoginResponse
 
     val liveRegisterResponse: MutableLiveData<BaseResponse<ResponseBody>>
         get() = _liveRegisterResponse
+
+    val liveValidationResponse: MutableLiveData<BaseResponse<ResponseBody>>
+        get() = _liveValidationResponse
 
 
 
@@ -59,7 +64,7 @@ class LoginActivityViewModel(private val repository:Repository=Repository()) :Vi
                     val gson = Gson()
                     val type = object : TypeToken<LoginResponse>() {}.type
                     var errorResponse: LoginResponse = gson.fromJson(response.errorBody()!!.charStream(), type)
-                    onError(errorResponse.message.toString())
+                    _liveLoginResponse.postValue(BaseResponse.Error(errorResponse.message.toString()))
                 }
             }
         }
@@ -82,9 +87,35 @@ class LoginActivityViewModel(private val repository:Repository=Repository()) :Vi
 //                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
 
                     val content = response.errorBody()!!.charStream().readText()
-                    onError(content)
+                    _liveRegisterResponse.postValue(BaseResponse.Error(content))
                 }
             }
         }
+    }
+
+
+    fun validateEmail(EmailToken:String){
+        _liveValidationResponse.value=BaseResponse.Loading()
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.VerifyEmail(EmailToken)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _liveValidationResponse.postValue(BaseResponse.Success(response.body()))
+
+                }
+                else{
+
+//                    val gson = Gson()
+//                    val type = object : TypeToken<ResponseBody>() {}.type
+//                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
+
+                    val content = response.errorBody()!!.charStream().readText()
+                    _liveValidationResponse.postValue(BaseResponse.Error(content))
+
+                }
+            }
+        }
+
     }
 }

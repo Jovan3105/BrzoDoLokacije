@@ -78,7 +78,7 @@ namespace HotSpotAPI.Controllers
             {
                 try
                 {
-                    object value = await mySQLServis.registrujKorisnika(zahtev);
+                    string EmailToken = await mySQLServis.registrujKorisnika(zahtev);
                     int dodajkod = mySQLServis.dodajKod(zahtev.Username);
                     //string url = configuration.GetSection("Front_Server_Config:host").Value + ":" + configuration.GetSection("Front_Server_Config:port").Value;
                     MailPotvrdeRegistracije mailsend = new MailPotvrdeRegistracije();
@@ -87,7 +87,7 @@ namespace HotSpotAPI.Controllers
                     // mailsend.UrlZaRegistraciju = url;
                     //MailData maildata = new MailData(new List<string> { zahtev.Email }, "Potvrda registracije", mail.GetEmailTemplate("PotvrdaRegistracije", mailsend));
                     MailData maildata = new MailData(new List<string> { zahtev.Email }, "Potvrda registracije");
-                    bool sendResult = await mail.SendAsync(maildata, new CancellationToken(), dodajkod);
+                    bool sendResult = await mail.SendAsync(maildata, new CancellationToken(), EmailToken);
                     if (sendResult)
                     {
                         return Ok("SuccessfulRegistration");
@@ -233,37 +233,52 @@ namespace HotSpotAPI.Controllers
                     );
 
         }
-        //[HttpPost("VerifyEmail/{EmailToken}")]
-        //public async Task<ActionResult<string>> VerifyEmail(string EmailToken)
-        //{
-        //    Debug.WriteLine(code.code);
-        //    if (code == null)
-        //    {
-        //        if (code == null)
-        //            return BadRequest(
-        //                    new messageresponse
-        //                    {
-        //                        message = "Greska pri slanju"
-        //                    }
-        //                );
-        //    }
+        [HttpPost("VerifyEmail/{EmailToken}")]
+        public async Task<ActionResult<string>> VerifyEmail(string EmailToken)
+        {
 
-        //    string res = userService.ConfirmCode(code.username, code.code, out bool ind);
-        //    if (ind)
-        //    {
-        //        return Ok(
-        //                new messageresponse
-        //                {
-        //                    message = res
-        //                }
-        //            );
-        //    }
-        //    return BadRequest(
-        //                new messageresponse
-        //                {
-        //                    message = res
-        //                }
-        //            );
-        //}
+            
+            if (EmailToken.IsNullOrEmpty())
+            {
+                return BadRequest("InvalidToken");
+            }
+
+            JwtSecurityToken token = null;
+            try
+            {
+                token = mySQLServis.ValidateToken(EmailToken);
+            }
+            catch (SecurityTokenExpiredException ex)
+            {
+                string noviToken =(await mySQLServis.newUserToken(EmailToken)).ToString();
+
+                if (noviToken == null)
+                {
+                    return BadRequest("ErrorWhileCreatingNewToken");
+                }
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(configuration.GetSection("AppSettings:Token").Value.ToString());
+
+                string usernameToken = tokenHandler.ReadJwtToken(EmailToken).Claims.First(x => x.Type.Equals("username")).Value;
+                string emailtoken = tokenHandler.ReadJwtToken(EmailToken).Claims.First(x => x.Type.Equals("email")).Value;
+
+                MailPotvrdeRegistracije mailsend = new MailPotvrdeRegistracije();
+                mailsend.Name = usernameToken;
+                mailsend.Email = emailtoken;
+
+                MailData maildata = new MailData(new List<string> { emailtoken }, "Potvrda registracije");
+                bool sendResult = await mail.SendAsync(maildata, new CancellationToken(), noviToken);
+
+                return BadRequest("NewUserTokenCreated"); 
+            }
+            
+            if (token == null)
+                return BadRequest("InvalidToken");
+
+            var username = (token.Claims.First(x => x.Type == "username").Value);
+            
+            string result =(await mySQLServis.validateUser(username)).ToString();
+            return Ok(result);
+        }
     }
 }

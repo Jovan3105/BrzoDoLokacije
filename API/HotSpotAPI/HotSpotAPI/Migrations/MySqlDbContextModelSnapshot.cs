@@ -102,6 +102,24 @@ namespace HotSpotAPI.Migrations
 
                     b.ToTable("NovaLozinka");
                 });
+
+            modelBuilder.Entity("HotSpotAPI.Modeli.TokenRegistracije", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("userID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("TokenRegistracije");
+                });
 #pragma warning restore 612, 618
         }
     }

@@ -13,7 +13,7 @@ namespace HotSpotAPI.Servisi
 {
     public interface ImailService
     {
-        Task<bool> SendAsync(MailData mailData, CancellationToken ct, int code = 0);
+        Task<bool> SendAsync(MailData mailData, CancellationToken ct, string code);
         string GetEmailTemplate<T>(string emailTemplate, T emailTemplateModel);
     }
     public class MailService : ImailService
@@ -44,7 +44,7 @@ namespace HotSpotAPI.Servisi
             return modifiedMailTemplate.Run(emailTemplateModel);
         }
 
-        public async Task<bool> SendAsync(MailData mailData, CancellationToken ct, int code = 0)
+        public async Task<bool> SendAsync(MailData mailData, CancellationToken ct, string code)
         {
             try
             {
@@ -81,12 +81,9 @@ namespace HotSpotAPI.Servisi
                 var body = new BodyBuilder();
                 mail.Subject = mailData.Subject;
                 body.HtmlBody = mailData.Body;
-                if (code != 0)
-                {
-                    mail.Body = new TextPart(TextFormat.Html) { Text = "Vaš kod za verifikaciju je: "+code};
-                }
-                else
-                    mail.Body = new TextPart(TextFormat.Html) { Text = "Vaš link za verifikaciju je:http://localhost:5140/"};
+
+                mail.Body = new TextPart(TextFormat.Html) { Text = "Click on link to verify: <a href='HotSpot.imi/confirmEmail/"+ code + "'>Validate email</a>" };
+                
                 #endregion
                 #region Send Mail
                 using var smtp = new SmtpClient();

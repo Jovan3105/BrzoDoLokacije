@@ -15,6 +15,9 @@ import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
 import imi.projekat.hotspot.databinding.ActivityLoginBinding
 
+
+
+
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private val viewModel by viewModels<LoginActivityViewModel>()
@@ -25,6 +28,8 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityLoginBinding.inflate(layoutInflater)
+        MainActivity.Companion.setContext(application)
+
         val view = binding.root
         setContentView(view)
         val ltrAnimacija=AnimationUtils.loadAnimation(this,R.anim.left_to_right)
@@ -75,7 +80,31 @@ class LoginActivity : AppCompatActivity() {
 //                    startActivity(intent)
                 }
                 is BaseResponse.Error->{
-                    Toast.makeText(this@LoginActivity, it.poruka, Toast.LENGTH_SHORT).show()
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),applicationContext)
+                    Toast.makeText(this@LoginActivity, id, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        viewModel.liveValidationResponse.observe(this){
+            dijalog.isDismiss()
+            when(it){
+                is BaseResponse.Loading->{
+                    dijalog.startLoading()
+                }
+                is BaseResponse.Success->{
+                    val content = it.data!!.charStream().readText()
+                    val id = UpravljanjeResursima.getResourceString(content,applicationContext)
+
+
+                    Toast.makeText(this@LoginActivity,id, Toast.LENGTH_SHORT).show()
+
+//                    val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
+//                    startActivity(intent)
+                }
+                is BaseResponse.Error->{
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),applicationContext)
+                    Toast.makeText(this@LoginActivity, id, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -84,11 +113,6 @@ class LoginActivity : AppCompatActivity() {
 
 
         binding.fragmentContainerView.startAnimation(btpAnimacija)
-
-
-
-
-
 
 
 
@@ -105,7 +129,9 @@ class LoginActivity : AppCompatActivity() {
         viewModel.signUp(obj)
     }
 
-
+    public fun validateEmail(EmailToken:String){
+        viewModel.validateEmail(EmailToken)
+    }
 
 
 

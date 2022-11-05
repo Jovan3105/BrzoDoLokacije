@@ -2,6 +2,7 @@
 using HotSpotAPI.Modeli;
 using HotSpotAPI.ModeliZaZahteve;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
@@ -22,6 +23,10 @@ namespace HotSpotAPI.Servisi
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
         public int dodajKod(string username);
         public string CreateToken(Korisnik korisnik, int trajanjeUMinutima);
+        public JwtSecurityToken? ValidateToken(string token);
+
+        public Task<String> validateUser(string username);
+        public Task<String> newUserToken(string token);
     }
     public class MySQLServis : IMySQLServis
     {
@@ -52,10 +57,18 @@ namespace HotSpotAPI.Servisi
 
 
             _context.Korisnici.Add(korisnik);
+
             await _context.SaveChangesAsync();
 
-            
-            return "Uspesna Registracija";
+            int id = _context.Korisnici.Where(x => x.Username.Equals(korisnik.Username)).FirstOrDefault().ID;
+            _context.TokenRegistracije.Add(new TokenRegistracije()
+            {
+                Token = EmailToken,
+                userID = id,
+            });
+
+            await _context.SaveChangesAsync();
+            return EmailToken;
 
 
 
@@ -134,13 +147,13 @@ namespace HotSpotAPI.Servisi
             return jwt;
         }
 
-        public static string? ValidateToken(string token, IConfiguration konfiguracija)
+        public JwtSecurityToken? ValidateToken(string token)
         {
             if (token == null)
                 return null;
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(konfiguracija.GetSection("AppSettings:Token").Value.ToString());
+            var key = Encoding.ASCII.GetBytes(configuration.GetSection("AppSettings:Token").Value.ToString());
 
 
 
@@ -159,13 +172,17 @@ namespace HotSpotAPI.Servisi
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
 
-                var userName = (jwtToken.Claims.First(x => x.Type == "username").Value);
-
-                return userName.ToString();
+                //var userName = (jwtToken.Claims.First(x => x.Type == "username").Value);
+                return jwtToken;
             }
-            catch
+            catch(ArgumentException ex)
             {
+                //Debug.WriteLine("Token nije validan");
                 return null;
+            }
+            catch(SecurityTokenExpiredException ex)
+            {
+                throw ex;
             }
 
         }
@@ -207,8 +224,10 @@ namespace HotSpotAPI.Servisi
                     return "vec postoji korisink sa ovim email-om";
                 }
                 korisnik.Email = user.Email;
-                MailData maildata = new MailData(new List<string> { user.Email }, "Izmena Emal-a");
-                Task<bool> sendResult = mail.SendAsync(maildata, new CancellationToken());
+                string EmailToken = CreateToken(korisnik, int.Parse(configuration.GetSection("AppSettings:TrajanjeEmailTokenaUMinutima").Value.ToString()));
+                MailData maildata = new MailData(new List<string> { user.Email }, "Izmena Email-a");
+
+                Task<bool> sendResult = mail.SendAsync(maildata, new CancellationToken(), EmailToken);
                 if (sendResult != null)
                 {
                     pom = true;
@@ -238,6 +257,58 @@ namespace HotSpotAPI.Servisi
             ind = true;
             return "Uspesna izmena podataka";
         }
+
+        public async Task<String> validateUser(string username)
+        {
+            Korisnik korisnik = _context.Korisnici.Where(x => x.Username.Equals(username)).FirstOrDefault();
+            if (korisnik == null)
+            {
+                
+                return null;
+            }
+            if (korisnik.EmailPotvrdjen == true)
+            {
+                return "EmailAlreadyVerified";
+            }
+            
+            korisnik.EmailPotvrdjen = true;
+            _context.SaveChanges();
+
+            return "SuccessfulEmailValidation";
+
+        }
+
+        public async Task<String> newUserToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(configuration.GetSection("AppSettings:Token").Value.ToString());
+
+            string username = tokenHandler.ReadJwtToken(token).Claims.First(x=>x.Type.Equals("username")).Value;
+
+            Korisnik korisnik = _context.Korisnici.Where(x => x.Username.Equals(username)).FirstOrDefault();
+            if (korisnik == null)
+            {
+                return null;
+            }
+            string EmailToken = CreateToken(korisnik, int.Parse(configuration.GetSection("AppSettings:TrajanjeEmailTokenaUMinutima").Value.ToString()));
+            
+            TokenRegistracije currentToken=_context.TokenRegistracije.Where(x=>x.userID==korisnik.ID).FirstOrDefault();
+            if (currentToken != null)
+                _context.TokenRegistracije.Remove(currentToken);
+
+
+            _context.TokenRegistracije.Add(new TokenRegistracije()
+            {
+                Token = EmailToken,
+                userID = korisnik.ID,
+            });
+
+             _context.SaveChanges();
+            return EmailToken;
+            
+
+        }
+
 
     }
 
