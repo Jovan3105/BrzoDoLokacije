@@ -20,6 +20,8 @@
     <string name="confirmButton">Confirm</string>
     <string name="CheckEmailAdress">Check your email adress to verify changes</string>
     <string name="NewUserTokenCreated">New user token created</string>
+    <string name="EditProfile">Edit Profile</string>
+    <string name="logOut">Logout</string>
 
 
     //InputErrors
