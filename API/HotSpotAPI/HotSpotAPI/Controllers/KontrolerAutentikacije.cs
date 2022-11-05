@@ -233,5 +233,37 @@ namespace HotSpotAPI.Controllers
                     );
 
         }
+        //[HttpPost("VerifyEmail/{EmailToken}")]
+        //public async Task<ActionResult<string>> VerifyEmail(string EmailToken)
+        //{
+        //    Debug.WriteLine(code.code);
+        //    if (code == null)
+        //    {
+        //        if (code == null)
+        //            return BadRequest(
+        //                    new messageresponse
+        //                    {
+        //                        message = "Greska pri slanju"
+        //                    }
+        //                );
+        //    }
+
+        //    string res = userService.ConfirmCode(code.username, code.code, out bool ind);
+        //    if (ind)
+        //    {
+        //        return Ok(
+        //                new messageresponse
+        //                {
+        //                    message = res
+        //                }
+        //            );
+        //    }
+        //    return BadRequest(
+        //                new messageresponse
+        //                {
+        //                    message = res
+        //                }
+        //            );
+        //}
     }
 }

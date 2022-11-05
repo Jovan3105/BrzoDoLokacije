@@ -34,7 +34,7 @@ class ConfirmEmail : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         var token=args.confirmationToken
         Toast.makeText(requireContext(), token, Toast.LENGTH_SHORT).show()
-        //val dijalog= LoadingDialog(requireActivity())
-
+        val dijalog= LoadingDialog(requireActivity())
+        dijalog.startLoading()
     }
 }
