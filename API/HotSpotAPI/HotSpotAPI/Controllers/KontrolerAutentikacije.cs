@@ -21,7 +21,6 @@ namespace HotSpotAPI.Controllers
     public class KontrolerAutentikacije : Controller
     {
         private readonly IMySQLServis mySQLServis;
-
         private readonly IConfiguration configuration;
         private readonly IUserService userService;
         private readonly ImailService mail;
@@ -137,41 +136,6 @@ namespace HotSpotAPI.Controllers
                         }
                     );
         }
-        [HttpPut("{username}/edituser"), Authorize]
-        public async Task<ActionResult<string>> EditUser(string username, EditUser zahtev)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Ok("korisnik sa usernameom ne postoji");
-            bool pass = mySQLServis.checkPass(username, zahtev.OldPassword);
-            if (pass == false)
-                return BadRequest
-                    (
-                        new messageresponse
-                        {
-                            message = "pogresan password"
-                        }
-                    );
-            string res = mySQLServis.izmeniKorisnika(username, zahtev, out bool ind);
-            if (!ind)
-            {
-                return BadRequest
-                    (
-                        new messageresponse
-                        {
-                            message = res
-                        }
-                    );
-            }
-            return Ok
-                    (
-                        new messageresponse
-                        {
-                            message = res
-                        }
-                    );
-        }
-
         [HttpPost("code")]
         public async Task<ActionResult<string>> CompareCode(vercode code)
         {
