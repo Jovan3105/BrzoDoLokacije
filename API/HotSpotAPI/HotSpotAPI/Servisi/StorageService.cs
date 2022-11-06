@@ -7,6 +7,7 @@ namespace HotSpotAPI.Servisi
         public string addProfilePhoto(int id);
         public string CreatePhoto();
         public string CreatePost();
+        public bool deletePost(int id, int postID, int numOfPhotos);
     }
     public class StorageService : IStorageService
     {
@@ -36,6 +37,17 @@ namespace HotSpotAPI.Servisi
             var imgfolder = "PostsFolder";
             var imgpath = Path.Combine(path, imgfolder);
             return imgpath;
+        }
+        public bool deletePost(int id, int postID, int numOfPhotos)
+        {
+            var basepath = this.CreatePost();
+            basepath = Path.Combine(basepath, "user" + id + "post" + postID);
+            for (int i=1; i<=numOfPhotos; i++)
+            {
+                var path = Path.Combine(basepath+"photo"+i+".jpg");
+                File.Delete(path);
+            }
+            return true;
         }
     }
 }
