@@ -1,5 +1,6 @@
 package imi.projekat.hotspot.UI.Profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.Navigation
 import com.auth0.android.jwt.JWT
@@ -67,7 +69,12 @@ class MyProfileFragment : Fragment() {
         val btpAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.bot_to_top)
 
 
-
+        binding.textView2.setOnClickListener{
+            Toast.makeText(this.requireContext(), "Logout", Toast.LENGTH_SHORT).show()
+            MenadzerSesije.clearData(this.requireContext())
+            val intent = Intent(this.requireContext(), LoginActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 
