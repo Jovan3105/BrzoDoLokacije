@@ -27,6 +27,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+        val intent = Intent(this@MainActivity, HomePageActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(FLAG_ACTIVITY_NO_HISTORY)
+        startActivity(intent)
+        finish()
 
     }
 

@@ -11,6 +11,7 @@ import imi.projekat.hotspot.Dialogs.LoadingDialog
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
 import imi.projekat.hotspot.Ostalo.BaseResponse
+import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
 import imi.projekat.hotspot.databinding.ActivityLoginBinding
@@ -51,6 +52,7 @@ class LoginActivity : AppCompatActivity() {
 
                     val id = UpravljanjeResursima.getResourceString(it.data?.message.toString(),applicationContext)
                     Toast.makeText(this@LoginActivity, id, Toast.LENGTH_SHORT).show()
+                    MenadzerSesije.saveAuthToken(applicationContext,it.data?.token.toString())
                     val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
                     startActivity(intent)
                 }

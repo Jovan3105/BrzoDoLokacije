@@ -44,4 +44,12 @@ class HomePageActivity : AppCompatActivity() {
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         startActivity(intent)
     }
+
+    public fun logout(){
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+        startActivity(intent)
+        finish()
+    }
 }

@@ -46,7 +46,6 @@ class ConfirmEmail : Fragment() {
         textView3=view.findViewById(binding.textView3.id)
         dugmeLogin=view.findViewById(binding.loginButton.id)
         viewModel.liveValidationResponse.observe(viewLifecycleOwner){
-
             if(it is BaseResponse.Error){
                 val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
                 textView3.text=id

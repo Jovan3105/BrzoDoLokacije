@@ -58,7 +58,7 @@ namespace HotSpotAPI.Controllers
                 });
             }
 
-            string token = mySQLServis.CreateToken(korisnik, 3600);
+            string token = mySQLServis.CreateToken(korisnik, int.Parse(configuration.GetSection("AppSettings:TrajanjeTokenaUMinutima").Value.ToString()));
             return Ok(new LoginResponse
             {
                 Message = "SuccessfulLogin",

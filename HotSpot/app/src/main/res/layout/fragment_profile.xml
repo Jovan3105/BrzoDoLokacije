@@ -57,6 +57,7 @@
 
     <Button
         android:id="@+id/editProfileButton"
+        android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -94,13 +95,12 @@
                 android:text="Post" />
         </androidx.cardview.widget.CardView>
 
-    <TextView
+    <Button
         android:id="@+id/logoutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/logOut"
         android:textColor="@color/white"
-        android:clickable="true"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
