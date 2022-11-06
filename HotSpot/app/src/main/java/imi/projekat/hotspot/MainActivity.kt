@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NO_HISTORY
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.databinding.ActivityMainBinding
 
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
             intent.addFlags(FLAG_ACTIVITY_NO_HISTORY)
             startActivity(intent)
             finish()
+            return
         }
         val intent = Intent(this@MainActivity, HomePageActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
