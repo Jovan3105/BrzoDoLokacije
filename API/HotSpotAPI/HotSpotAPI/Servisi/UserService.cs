@@ -16,6 +16,8 @@ namespace HotSpotAPI.Servisi
         public UserInfo getUserInfo(int id);
         public string getPhoto(int id);
         public bool ChangePhoto(int id, IFormFile photo);
+        public bool addNewPost(int id, addPost newPost);
+        public List<getPosts> getAllPosts(int id);
     }
     public class UserService : IUserService
     {
@@ -192,6 +194,65 @@ namespace HotSpotAPI.Servisi
                 stream.Flush();
             }
             return true;
+        }
+        public bool addNewPost(int id, addPost newPost)
+        {
+            var user = context.Korisnici.Find(id);
+            if (user == null)
+                return false;
+
+            Post p = new Post();
+            p.UserID = id;
+            p.Description = newPost.description;
+            p.Location = newPost.location;
+            p.DateTime = DateTime.Now;
+            p.NumOfPhotos = newPost.photos.Count;
+            context.Postovi.Add(p);
+            context.SaveChanges();
+
+            string basepath = storageService.CreatePost();
+            if (!Directory.Exists(basepath))
+                Directory.CreateDirectory(basepath);
+
+            int brojac = 1;
+            foreach(IFormFile slika in newPost.photos)
+            {
+                string path = Path.Combine(basepath, "user" + id + "post"+p.ID+"photo"+brojac+".jpg");
+                using (FileStream stream = System.IO.File.Create(path))
+                {
+                    slika.CopyTo(stream);
+                    stream.Flush();
+                }
+                brojac += 1;
+            }
+            return true;
+        }
+        public List<getPosts> getAllPosts(int id)
+        {
+            List<Post> posts = context.Postovi.Where(x=>x.UserID == id).ToList();
+            List<getPosts> postsList = new List<getPosts>();
+            
+            foreach(Post post in posts)
+            {
+                getPosts p = new getPosts();
+                p.description = post.Description;
+                p.location = post.Location;
+                p.DateTime = post.DateTime;
+                p.photos = new List<string>();
+                p.brojslika = post.NumOfPhotos;
+                string basepath = storageService.CreatePost();
+                basepath = Path.Combine(basepath, "user" + id+"post"+post.ID);
+                for (int i=1;i<=post.NumOfPhotos;i++)
+                {
+                    string path = Path.Combine(basepath + "photo" + i+".jpg");
+                    Byte[] b = System.IO.File.ReadAllBytes(path);
+                    string slika = Convert.ToBase64String(b, 0, b.Length);
+                    p.photos.Add(slika);
+                }
+                postsList.Add(p);
+            }
+
+            return postsList;
         }
     }
 }

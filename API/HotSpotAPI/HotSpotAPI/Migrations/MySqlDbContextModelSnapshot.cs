@@ -103,6 +103,34 @@ namespace HotSpotAPI.Migrations
                     b.ToTable("NovaLozinka");
                 });
 
+            modelBuilder.Entity("HotSpotAPI.Modeli.Post", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("NumOfPhotos")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Postovi");
+                });
+
             modelBuilder.Entity("HotSpotAPI.Modeli.TokenRegistracije", b =>
                 {
                     b.Property<int>("ID")
