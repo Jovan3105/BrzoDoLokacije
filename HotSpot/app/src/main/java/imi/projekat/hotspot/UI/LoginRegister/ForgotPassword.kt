@@ -21,7 +21,6 @@ import imi.projekat.hotspot.ModeliZaZahteve.VerificationCodeDTS
 import imi.projekat.hotspot.Ostalo.APIservis
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.databinding.FragmentForgotPasswordBinding
-import imi.projekat.hotspot.databinding.FragmentProfileBinding
 import kotlinx.android.synthetic.main.forgottenpasswordform1.view.*
 import kotlinx.android.synthetic.main.fragment_forgot_password.*
 import retrofit2.Call

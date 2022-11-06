@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityLoginBinding.inflate(layoutInflater)
-        MainActivity.Companion.setContext(application)
+        SetupActivity.Companion.setContext(application)
 
         val view = binding.root
         setContentView(view)
@@ -53,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
                     val id = UpravljanjeResursima.getResourceString(it.data?.message.toString(),applicationContext)
                     Toast.makeText(this@LoginActivity, id, Toast.LENGTH_SHORT).show()
                     MenadzerSesije.saveAuthToken(applicationContext,it.data?.token.toString())
-                    val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
+                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
                 }
                 is BaseResponse.Error->{
