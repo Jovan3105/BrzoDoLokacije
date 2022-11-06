@@ -65,24 +65,18 @@ namespace HotSpotAPI.Controllers
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
-
-            UserInfo userInfo = userService.getUserInfo(id);
-            return userInfo;
-        }
-
-        [HttpGet("photo")]
-        public async Task<ActionResult<dynamic>> GetProfilePhoto()
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
             string slika = userService.getPhoto(id);
             if (slika == "" || slika == null)
                 slika = Path.Combine("Storage", "profilna.png");
 
             Byte[] b = System.IO.File.ReadAllBytes(slika);
-            return File(b, "image/jpeg");
+            UserInfo userInfo = new UserInfo();
+            userInfo.Username = "aa";
+            userInfo.Email = "Aa";
+            userInfo.ProfilePhoto = Convert.ToBase64String(b, 0, b.Length);
+            return userInfo;
         }
+
         [HttpPost("photo")]
         public async Task<ActionResult<string>> SetProfilePhoto(IFormFile photo)
         {
@@ -93,6 +87,31 @@ namespace HotSpotAPI.Controllers
 
             if (res)
                 return Ok();
+            return BadRequest();
+        }
+        [HttpPost("addpost")]
+        public async Task<ActionResult<string>> AddPost([FromForm]addPost newPost)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.addNewPost(id, newPost);
+            if (res)
+                return Ok();
+            return BadRequest();
+        }
+
+        [HttpGet("getposts")]
+        public async Task<ActionResult<string>> GetPosts()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<getPosts> res = userService.getAllPosts(id);
+            if (res !=null)
+                return Ok(res);
             return BadRequest();
         }
     }

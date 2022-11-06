@@ -6,6 +6,7 @@ namespace HotSpotAPI.Servisi
     {
         public string addProfilePhoto(int id);
         public string CreatePhoto();
+        public string CreatePost();
     }
     public class StorageService : IStorageService
     {
@@ -25,6 +26,14 @@ namespace HotSpotAPI.Servisi
         {
             var path = @"Storage";
             var imgfolder = "ProfileImages";
+            var imgpath = Path.Combine(path, imgfolder);
+            return imgpath;
+        }
+
+        public string CreatePost()
+        {
+            var path = @"Storage";
+            var imgfolder = "PostsFolder";
             var imgpath = Path.Combine(path, imgfolder);
             return imgpath;
         }
