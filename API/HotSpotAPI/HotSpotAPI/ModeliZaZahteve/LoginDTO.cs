@@ -18,6 +18,7 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public string Username { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public dynamic ProfilePhoto { get; set; } = null;
     }
     public class EditUser
     {
@@ -45,5 +46,22 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public string username { get; set; } = string.Empty;
         public string code { get; set; } = string.Empty;
+    }
+
+    public class addPost
+    {
+        public string username { get; set; } = string.Empty;
+        public string description { get; set; } = string.Empty;
+        public string location { get; set; } = string.Empty;
+        public List<IFormFile> photos { get; set; }
+    }
+
+    public class getPosts
+    {
+        public string description { get; set; } = string.Empty;
+        public string location { get; set; } = string.Empty;
+        public DateTime DateTime { get; set; }
+        public List<string> photos { get; set; }
+        public int brojslika { get; set; }
     }
 }
