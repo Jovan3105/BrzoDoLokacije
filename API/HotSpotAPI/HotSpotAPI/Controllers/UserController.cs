@@ -77,13 +77,13 @@ namespace HotSpotAPI.Controllers
             return userInfo;
         }
 
-        [HttpPost("photo")]
-        public async Task<ActionResult<string>> SetProfilePhoto(IFormFile photo)
+        [HttpPost("photo"),AllowAnonymous]
+        public async Task<ActionResult<string>> SetProfilePhoto([FromForm]Photo photo)
         {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-            bool res = userService.ChangePhoto(id, photo);
+            //int id = userService.GetUserId();
+            //if (id == -1)
+               // return Unauthorized();
+            bool res = userService.ChangePhoto(3, photo.slika);
 
             if (res)
                 return Ok();

@@ -2,14 +2,11 @@ package imi.projekat.hotspot.Interfaces
 
 import android.hardware.biometrics.BiometricManager.Strings
 import imi.projekat.hotspot.ModeliZaZahteve.*
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface ApiInterface {
 
@@ -30,4 +27,8 @@ interface ApiInterface {
 
     @POST("KontrolerAutentikacije/VerifyEmail/{EmailToken}")
     suspend fun VerifyEmail(@Path("EmailToken") EmailToken:String):Response<ResponseBody>
+
+    @Multipart
+    @POST("/api/User/photo")
+    suspend fun changeProfilePhoto(@Part slika: MultipartBody.Part):Response<ResponseBody>
 }

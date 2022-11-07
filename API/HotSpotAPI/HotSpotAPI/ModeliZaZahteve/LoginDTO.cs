@@ -64,4 +64,9 @@ namespace HotSpotAPI.ModeliZaZahteve
         public List<string> photos { get; set; }
         public int brojslika { get; set; }
     }
+    
+    public class Photo
+    {
+        public IFormFile slika { get; set; }
+    }
 }

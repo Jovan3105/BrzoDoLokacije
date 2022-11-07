@@ -22,6 +22,8 @@
     <string name="NewUserTokenCreated">New user token created</string>
     <string name="EditProfile">Edit Profile</string>
     <string name="logOut">Logout</string>
+    <string name="EditProfileImage">Change profile photo</string>
+    <string name="ChangeDataProfile">CHANGE</string>
 
 
     //InputErrors

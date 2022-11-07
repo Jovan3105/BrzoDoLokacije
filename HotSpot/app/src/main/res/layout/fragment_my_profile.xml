@@ -78,6 +78,7 @@
         android:layout_marginStart="106dp"
         android:layout_marginTop="28dp"
         android:layout_marginEnd="28dp"
+        android:clickable="true"
         android:src="@drawable/edit_icon"
         app:layout_constraintEnd_toEndOf="@+id/imageView3"
         app:layout_constraintHorizontal_bias="1.0"

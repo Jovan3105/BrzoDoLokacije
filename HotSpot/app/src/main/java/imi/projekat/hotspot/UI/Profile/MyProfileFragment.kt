@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.auth0.android.jwt.JWT
 import com.google.android.material.textfield.TextInputLayout
 import imi.projekat.hotspot.LoginActivity
@@ -65,8 +66,13 @@ class MyProfileFragment : Fragment() {
         val ltrAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.left_to_right)
         val rtlAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.rigth_to_left)
         val btpAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.bot_to_top)
+        binding.button.setOnClickListener {
+            Log.d("brzi","kocka")
+        }
 
-
+        binding.imageView2.setOnClickListener{
+            findNavController().navigate(R.id.action_myProfileFragment_to_editProfileFragment)
+        }
 
     }
 
