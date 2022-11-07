@@ -114,5 +114,41 @@ namespace HotSpotAPI.Controllers
                 return Ok(res);
             return BadRequest();
         }
+
+        [HttpGet("getpost")]
+        public async Task<ActionResult<string>> GetPosts(int postID)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            getPosts res = userService.getPost(id, postID);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpGet("getpostbylocation")]
+        public async Task<ActionResult<string>> GetPostsByLocation(string location)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<getPosts> res = userService.getAllPostsByLocaton(location);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpDelete("deletepost")]
+        public async Task<ActionResult<string>> DeletePost(int postID)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+            bool res = userService.deletePost(id, postID);
+            if (res)
+                return Ok();
+            return BadRequest();
+        }
     }
 }

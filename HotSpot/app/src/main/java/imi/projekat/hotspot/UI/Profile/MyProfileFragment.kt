@@ -1,5 +1,6 @@
 package imi.projekat.hotspot.UI.Profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
@@ -74,6 +76,13 @@ class MyProfileFragment : Fragment() {
             findNavController().navigate(R.id.action_myProfileFragment_to_editProfileFragment)
         }
 
+
+        binding.textView2.setOnClickListener{
+            Toast.makeText(this.requireContext(), "Logout", Toast.LENGTH_SHORT).show()
+            MenadzerSesije.clearData(this.requireContext())
+            val intent = Intent(this.requireContext(), LoginActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 
