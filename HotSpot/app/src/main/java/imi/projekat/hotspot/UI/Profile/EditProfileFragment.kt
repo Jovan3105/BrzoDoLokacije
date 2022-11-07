@@ -176,6 +176,17 @@ class EditProfileFragment : Fragment() {
 
     }
 
+    fun ContentResolver.getFileName(fileUri: Uri): String {
+        var name = ""
+        val returnCursor = this.query(fileUri, null, null, null, null)
+        if (returnCursor != null) {
+            val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            returnCursor.moveToFirst()
+            name = returnCursor.getString(nameIndex)
+            returnCursor.close()
+        }
+        return name
+    }
 
     companion object {
         const val REQUEST_CODE_PICK_IMAGE = 101
