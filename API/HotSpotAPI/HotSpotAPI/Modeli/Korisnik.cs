@@ -10,19 +10,22 @@ namespace HotSpotAPI.Modeli
     {
         public int ID { get; set; }
 
-
+        [Required(ErrorMessage = "Insert your username")]
         [StringLength(maximumLength: 20)]
+        [MinLength(4, ErrorMessage = "Username must contain at least four characters")]
         public string Username { get; set; } = string.Empty;
 
-        [StringLength(maximumLength: 50)]
+        [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "Invalid email")]
+        [StringLength(maximumLength: 50, ErrorMessage = "Email can not contain more than fifty characters")]
         public string Email { get; set; } = string.Empty;
-        public string PasswordHash { get; set; }
+        public byte[] PasswordHash { get; set; }
 
-        
+        public byte[] PasswordSalt { get; set; }
 
         public bool EmailPotvrdjen { get; set; } = false;
         public string EmailToken { get; set; }
         public string ProfileImage { get; set; }
     }
+
 
 }

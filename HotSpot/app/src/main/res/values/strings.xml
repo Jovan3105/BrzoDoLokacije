@@ -7,8 +7,60 @@
     <string name="input_login_Username_text">Username</string>
     <string name="input_login_password_text">Password</string>
     <string name="input_Register_ConfirmPassword_text">Confirm password</string>
-    <string name="forgotPasswordText">Forgot password?</string>
     <string name="button_login_text">Log In</string>
     <string name="button_SignUp_text">Sign Up</string>
     <string name="Loading_dialog_text">Loading...</string>
+    <string name="Forgotten_Password_title">Password recovery</string>
+    <string name="Recover_button">Recover</string>
+    <string name="VericiationCodeTitle">Enter the code</string>
+    <string name="VerificationCode">Verification code</string>
+    <string name="SendVerificationCodeButton">SEND</string>
+    <string name="newpassword">New password</string>
+    <string name="NewPasswordTitle">Enter new password</string>
+    <string name="confirmButton">Confirm</string>
+    <string name="CheckEmailAdress">Check your email adress to verify changes</string>
+    <string name="NewUserTokenCreated">New user token created</string>
+    <string name="EditProfile">Edit Profile</string>
+    <string name="logOut">Logout</string>
+    <string name="EditProfileImage">Change profile photo</string>
+    <string name="ChangeDataProfile">CHANGE</string>
+
+
+    //InputErrors
+    <string name="forgotPasswordText">Forgot password?</string>
+    <string name="InsertYourEmailOrUsername">Insert your email or username</string>
+    <string name="InsertYourPassword">Insert your password</string>
+    <string name="InsertYourUsername">Insert your username</string>
+    <string name="InsertYourEmail">Insert your Email</string>
+    <string name="PasswordsAreNotTheSame">Confirm your password</string>
+    <string name="InsertYourVerificationCode">Insert your verification code</string>
+    <string name="InsertYourNewPassword">Insert your new password</string>
+    <string name="ConfirmPasswordError">New password and confirm password are not the same</string>
+    <string name="UserNameShortLength">Username must contain at least four characters</string>
+    <string name="UserNameLongLength">Username can not contain more than twenty characters</string>
+    <string name="ErrorEmailForm">Invalid email</string>
+    <string name="ShortPasswordLength">Password must contain at least five characters</string>
+    <string name="PasswordLongLegth">Password can not contain more than twenty characters</string>
+    <string name="TokenEmpty">Verificaion token is required</string>
+
+    //errorsFromAPI
+    <string name="ConnectionError">There is a problem with connection, try again later</string>
+    <string name="WrongUsernameOrPasswordError">Wrong username or password</string>
+    <string name="EmailIsAlreadyTaken">Email is already taken</string>
+    <string name="UsernameIsAlreadyTaken">Username is already taken</string>
+    <string name="ErrorWithSendingEmail">Error with sending email</string>
+    <string name="EmailNotVerified">Account not verified, please check you email</string>
+    <string name="InvalidToken">Token is not valid</string>
+    <string name="ExpiredToken">Token has expired</string>
+    <string name="ErrorWhileCreatingNewToken">Error while creating new token</string>
+    <string name="EmailAlreadyVerified">Account is already verified</string>
+
+    //success
+    <string name="SuccessfulLogin">Successful login</string>
+    <string name="SuccessfulRegistration">Successful registration</string>
+    <string name="UnsuccessfulRegistration">Unsuccessful registration</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="SuccessfulEmailValidation">Successful email validation</string>
+
 </resources>

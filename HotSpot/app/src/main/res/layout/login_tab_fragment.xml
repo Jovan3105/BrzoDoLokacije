@@ -23,47 +23,51 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:hintEnabled="true"
+            app:hintTextAppearance="@style/HintText"
+            app:errorTextAppearance="@style/ErrorText"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/Email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_pink"
                 android:drawableStart="@drawable/ic_baseline_person_24"
                 android:drawablePadding="5dp"
                 android:ems="10"
                 android:hint="@string/input_login_Email_text"
-                android:padding="10dp"
-                android:textColor="#000000"
-                android:textColorHint="#000000"
-                android:textSize="20sp" />
+                android:inputType="text"
+                style="@style/InputPolje"
+
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordWrapper"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:endIconMode="password_toggle">
+            app:endIconMode="password_toggle"
+            app:hintEnabled="true"
+            app:hintTextAppearance="@style/HintText"
+            app:errorTextAppearance="@style/ErrorText"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/Password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_pink"
                 android:drawableStart="@drawable/ic_baseline_lock_24"
                 android:drawablePadding="5dp"
                 android:ems="10"
                 android:hint="@string/input_login_password_text"
                 android:inputType="textPassword"
-                android:padding="10dp"
-                android:textColor="#000000"
-                android:textColorHint="#000000"
-                android:textSize="20sp"
-
+                style="@style/InputPolje"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
+            android:id="@+id/ForgotPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="2dp"

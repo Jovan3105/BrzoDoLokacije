@@ -1,7 +1,8 @@
-package imi.projekat.hotspot
+package imi.projekat.hotspot.Dialogs
 
 import android.app.Activity
 import android.app.AlertDialog
+import imi.projekat.hotspot.R
 
 class LoadingDialog(val myActivity:Activity) {
     private lateinit var isdialog:AlertDialog
@@ -16,6 +17,8 @@ class LoadingDialog(val myActivity:Activity) {
     }
 
     fun isDismiss(){
+        if(!this::isdialog.isInitialized)
+            return
         isdialog.dismiss()
     }
 }
