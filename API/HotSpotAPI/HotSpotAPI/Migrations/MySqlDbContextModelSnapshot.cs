@@ -39,6 +39,30 @@ namespace HotSpotAPI.Migrations
                     b.ToTable("Kodovi");
                 });
 
+            modelBuilder.Entity("HotSpotAPI.Modeli.Komentari", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("PostID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Komentari");
+                });
+
             modelBuilder.Entity("HotSpotAPI.Modeli.Korisnik", b =>
                 {
                     b.Property<int>("ID")

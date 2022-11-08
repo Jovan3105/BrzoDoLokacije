@@ -21,6 +21,10 @@ namespace HotSpotAPI.Servisi
         public getPosts getPost(int id, int postID);
         public bool deletePost(int id, int postID);
         public List<getPosts> getAllPostsByLocaton(string location);
+        public bool addComment(int id, comment comm);
+        public List<comments> GetComments(int postid);
+        public bool DeleteComment(int commid, int postid, int userid);
+        public bool EditComment(int commid, int postId, string newtext, int id);
     }
     public class UserService : IUserService
     {
@@ -318,6 +322,63 @@ namespace HotSpotAPI.Servisi
 
             context.Remove(post);
             context.SaveChanges();
+            return true;
+        }
+        public bool addComment(int id, comment comm)
+        {
+            var post = context.Postovi.FirstOrDefault(x => x.ID == comm.postid);
+            if (post == null)
+                return false;
+
+            Komentari kom = new Komentari();
+            kom.PostID = comm.postid;
+            kom.DateTime = DateTime.Now;
+            kom.Text = comm.text;
+            kom.UserID = id;
+            context.Komentari.Add(kom);
+            context.SaveChanges();
+
+            return true;
+        }
+
+        public List<comments> GetComments(int postid)
+        {
+            var komentari = context.Komentari.Where(x=>x.PostID == postid).ToList();
+            if(komentari==null)
+                return null;
+
+            List<comments> koms = new List<comments>();
+            foreach(Komentari c in komentari)
+            {
+                comments kom = new comments();
+                kom.OwnerID = c.UserID;
+                kom.text = c.Text;
+                kom.time = c.DateTime;
+
+                koms.Add(kom);
+            }
+            return koms;
+        }
+        public bool DeleteComment(int commid, int postid, int userid)
+        {
+            var com = context.Komentari.FirstOrDefault(x=>x.ID== commid && x.PostID == postid && x.UserID == userid);
+            if (com == null)
+                return false;
+
+            context.Komentari.Remove(com);
+            context.SaveChanges();
+            return true;
+        }
+        public bool EditComment(int commid, int postId, string newtext, int id)
+        {
+            var com = context.Komentari.FirstOrDefault(x => x.ID == commid && x.PostID == postId && x.UserID == id);
+            if (com == null)
+                return false;
+
+            com.Text = newtext;
+            com.DateTime = DateTime.Now;
+            context.SaveChanges();
+
             return true;
         }
     }

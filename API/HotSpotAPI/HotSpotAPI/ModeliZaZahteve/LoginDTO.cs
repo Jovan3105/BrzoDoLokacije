@@ -69,4 +69,28 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public IFormFile slika { get; set; }
     }
+
+    public class comment
+    {
+        public int postid { get; set; }
+        public string text { get; set; }
+    }
+    public class comments
+    {
+        public int OwnerID { get; set; }
+        public string text { get; set; } = string.Empty;
+        public DateTime time { get; set; }
+    }
+
+    public class deletecom
+    {
+        public int postId { get; set; }
+        public int commid { get; set; }
+    }
+    public class editcom
+    {
+        public int postId { get; set; }
+        public int commid { get; set; }
+        public string newtext { get; set; } = string.Empty;
+    }
 }
