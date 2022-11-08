@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import imi.projekat.hotspot.Dialogs.LoadingDialog
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
+import imi.projekat.hotspot.Ostalo.APIservis
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
@@ -55,6 +56,7 @@ class LoginActivity : AppCompatActivity() {
                     MenadzerSesije.saveAuthToken(applicationContext,it.data?.token.toString())
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
+                    finish()
                 }
                 is BaseResponse.Error->{
                     val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),applicationContext)

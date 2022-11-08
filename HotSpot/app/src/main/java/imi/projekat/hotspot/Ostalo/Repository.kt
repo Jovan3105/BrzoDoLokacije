@@ -9,6 +9,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Header
 
 class Repository(){
     suspend fun login(loginDATA:loginDTS): Response<LoginResponse> {
@@ -23,4 +24,9 @@ class Repository(){
     suspend fun changeProfilePhoto(photo: MultipartBody.Part):Response<ResponseBody>{
         return APIservis.Servis.changeProfilePhoto(photo)
     }
+    suspend fun KreirajPost(post:String,authHeader:String):Response<ResponseBody>{
+        return APIservis.Servis.KreirajPost()
+    }
+
+
 }

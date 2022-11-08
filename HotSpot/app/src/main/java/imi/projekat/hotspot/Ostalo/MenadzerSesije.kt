@@ -11,6 +11,7 @@ object MenadzerSesije {
 
     fun saveAuthToken(context: Context, token: String) {
         saveString(context, USER_TOKEN, token)
+        APIservis.ResetServis()
     }
 
     fun getToken(context: Context): String? {
@@ -35,5 +36,6 @@ object MenadzerSesije {
         val editor = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE).edit()
         editor.clear()
         editor.apply()
+        APIservis.ResetServis()
     }
 }

@@ -3,6 +3,7 @@ using HotSpotAPI.Servisi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace HotSpotAPI.Controllers
 {
@@ -77,7 +78,7 @@ namespace HotSpotAPI.Controllers
             return userInfo;
         }
 
-        [HttpPost("photo"),AllowAnonymous]
+        [HttpPost("photo")]
         public async Task<ActionResult<string>> SetProfilePhoto([FromForm]Photo photo)
         {
             //int id = userService.GetUserId();
@@ -149,6 +150,12 @@ namespace HotSpotAPI.Controllers
             if (res)
                 return Ok();
             return BadRequest();
+        }
+        [HttpPost("KreirajPost")]
+        public async Task<ActionResult<string>> KreirajPost()
+        {
+            Debug.WriteLine("RADI");
+            return Ok("DOBAR ZAHTEV");
         }
     }
 }

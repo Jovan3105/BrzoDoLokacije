@@ -31,4 +31,7 @@ interface ApiInterface {
     @Multipart
     @POST("/api/User/photo")
     suspend fun changeProfilePhoto(@Part slika: MultipartBody.Part):Response<ResponseBody>
+
+    @POST("api/User/KreirajPost")
+    suspend fun KreirajPost():Response<ResponseBody>
 }
