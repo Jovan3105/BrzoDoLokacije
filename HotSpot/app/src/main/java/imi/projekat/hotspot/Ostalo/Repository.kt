@@ -24,7 +24,7 @@ class Repository(){
     suspend fun changeProfilePhoto(photo: MultipartBody.Part):Response<ResponseBody>{
         return APIservis.Servis.changeProfilePhoto(photo)
     }
-    suspend fun KreirajPost(post:String,authHeader:String):Response<ResponseBody>{
+    suspend fun KreirajPost(post:String):Response<ResponseBody>{
         return APIservis.Servis.KreirajPost()
     }
 

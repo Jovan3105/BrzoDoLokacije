@@ -13,6 +13,8 @@ import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.Repository
 import imi.projekat.hotspot.Ostalo.SingleLiveEvent
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 
@@ -21,9 +23,8 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     val liveEditProfileResponse: MutableLiveData<BaseResponse<ResponseBody>>
         get() = _liveEditProfileResponse
 
-    private var _KreirajPostResponse= SingleLiveEvent<BaseResponse<ResponseBody>>()
-    val KreirajPostResponse: SingleLiveEvent<BaseResponse<ResponseBody>>
-        get() = _KreirajPostResponse
+    private var _KreirajPostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val KreirajPostResponse =_KreirajPostResponse.asSharedFlow()
 
 
 
@@ -66,20 +67,21 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
-    fun KreirajPost(post:String,authHeader:String){
-        KreirajPostResponse.value=BaseResponse.Loading()
+    fun KreirajPost(post:String){
+        //KreirajPostResponse.value=BaseResponse.Loading()
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
-            val response=repository.KreirajPost(post,authHeader)
+            val response=repository.KreirajPost(post)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     Log.d("Brzi1",response.toString())
-                    KreirajPostResponse.value=BaseResponse.Success(response.body())
+                    _KreirajPostResponse.emit(BaseResponse.Success(response.body()))
 
                 }
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     Log.d("Brzi2",response.toString())
-                    KreirajPostResponse.postValue(BaseResponse.Error(response.toString()))
+                    _KreirajPostResponse.emit(BaseResponse.Error(response.toString()))
+
                 }
             }
         }
