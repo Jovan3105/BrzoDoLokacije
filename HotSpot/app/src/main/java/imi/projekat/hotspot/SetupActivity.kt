@@ -3,16 +3,26 @@ package imi.projekat.hotspot
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.auth0.android.jwt.JWT
+import imi.projekat.hotspot.Dialogs.LoadingDialog
+import imi.projekat.hotspot.ModeliZaZahteve.refreshTokenDTS
+import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
+import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
+import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
+import imi.projekat.hotspot.ViewModeli.SetupActivityViewModel
 import imi.projekat.hotspot.databinding.ActivitySetupBinding
+import java.util.*
 
 class SetupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySetupBinding
-
+    private val viewModel by viewModels<SetupActivityViewModel>()
+    val dijalog= LoadingDialog(this)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -29,7 +39,34 @@ class SetupActivity : AppCompatActivity() {
             return
         }
         val jwt:JWT= JWT(token)
-        Log.d("SES",jwt.expiresAt.toString())
+        viewModel.liveRefreshTokenResponse.observe(this){
+            dijalog.isDismiss()
+            when(it){
+                is BaseResponse.Loading->{
+                    dijalog.startLoading()
+                }
+                is BaseResponse.Success->{
+                    MenadzerSesije.saveAuthToken(applicationContext,it.data?.token.toString())
+                    val intent = Intent(this@SetupActivity, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+                is BaseResponse.Error->{
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),applicationContext)
+                    Toast.makeText(this@SetupActivity, id, Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@SetupActivity, LoginActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+        }
+
+        if (jwt.expiresAt!!.before(Date())) {
+            Log.d("SES",jwt.expiresAt.toString())
+            var zahtev = refreshTokenDTS(token,"string")
+            viewModel.refreshToken(zahtev)
+        }
+
         val usernameToken=jwt.getClaim("username").asString()
         val emailToken=jwt.getClaim("email").asString()
         val intent = Intent(this@SetupActivity, MainActivity::class.java)

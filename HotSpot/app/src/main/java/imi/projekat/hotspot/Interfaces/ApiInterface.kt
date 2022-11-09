@@ -34,4 +34,7 @@ interface ApiInterface {
 
     @POST("api/User/KreirajPost")
     suspend fun KreirajPost():Response<ResponseBody>
+
+    @POST("")
+    suspend fun refresujToken(@Body dts: refreshTokenDTS):Response<refreshTokenResponse>
 }

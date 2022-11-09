@@ -5,4 +5,4 @@ data class loginDTS(
     val username: String
 )
 
-data class LoginResponse(val message:String?,val token:String?)
+data class LoginResponse(val message:String?,val token:String?,val refreshToken:String?)
