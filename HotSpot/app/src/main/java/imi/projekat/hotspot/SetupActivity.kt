@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import com.auth0.android.jwt.JWT
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.databinding.ActivitySetupBinding
 
@@ -26,6 +28,10 @@ class SetupActivity : AppCompatActivity() {
             finish()
             return
         }
+        val jwt:JWT= JWT(token)
+        Log.d("SES",jwt.expiresAt.toString())
+        val usernameToken=jwt.getClaim("username").asString()
+        val emailToken=jwt.getClaim("email").asString()
         val intent = Intent(this@SetupActivity, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)

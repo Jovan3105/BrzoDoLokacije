@@ -11,6 +11,7 @@ import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.Repository
+import imi.projekat.hotspot.Ostalo.SingleLiveEvent
 import kotlinx.coroutines.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -20,8 +21,8 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     val liveEditProfileResponse: MutableLiveData<BaseResponse<ResponseBody>>
         get() = _liveEditProfileResponse
 
-    private var _KreirajPostResponse=MutableLiveData<BaseResponse<ResponseBody>>()
-    val KreirajPostResponse: MutableLiveData<BaseResponse<ResponseBody>>
+    private var _KreirajPostResponse= SingleLiveEvent<BaseResponse<ResponseBody>>()
+    val KreirajPostResponse: SingleLiveEvent<BaseResponse<ResponseBody>>
         get() = _KreirajPostResponse
 
 
