@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotSpotAPI.Migrations
 {
     [DbContext(typeof(MySqlDbContext))]
-    [Migration("20221108220623_migracija")]
+    [Migration("20221109225838_migracija")]
     partial class migracija
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,10 +79,6 @@ namespace HotSpotAPI.Migrations
                     b.Property<bool>("EmailPotvrdjen")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("EmailToken")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("longblob");
@@ -99,6 +95,10 @@ namespace HotSpotAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
+
+                    b.Property<string>("refreshToken")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("ID");
 

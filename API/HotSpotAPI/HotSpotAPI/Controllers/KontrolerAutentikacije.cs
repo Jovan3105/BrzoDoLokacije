@@ -62,7 +62,9 @@ namespace HotSpotAPI.Controllers
             return Ok(new LoginResponse
             {
                 Message = "SuccessfulLogin",
-                Token = token
+                Token = token,
+                refreshToken=korisnik.refreshToken
+
             });
 
 
@@ -214,7 +216,7 @@ namespace HotSpotAPI.Controllers
             }
             catch (SecurityTokenExpiredException ex)
             {
-                string noviToken =(await mySQLServis.newUserToken(EmailToken)).ToString();
+                string noviToken =(await mySQLServis.newUserEmailToken(EmailToken)).ToString();
 
                 if (noviToken == null)
                 {
@@ -244,5 +246,40 @@ namespace HotSpotAPI.Controllers
             string result =(await mySQLServis.validateUser(username)).ToString();
             return Ok(result);
         }
+
+        [HttpPost("ResetujToken")]
+        public async Task<ActionResult<refreshTokenResponse>> ResetujToken(refreshTokenDTO zahtev)
+        {
+
+            
+            JwtSecurityToken token= null;
+            
+            token = mySQLServis.fromStringToToken(zahtev.token);
+            
+
+            if(token == null)
+                return BadRequest(new refreshTokenResponse
+                {
+                    message = "ErrorWhileCreatingRefreshToken1",
+                    Token = "2",
+                    refreshToken = ""
+                });
+
+            var username = (token.Claims.First(x => x.Type == "username").Value);
+
+            refreshTokenResponse odgovor = mySQLServis.noviRefreshToken(username,zahtev.refreshToken);
+
+
+            if(odgovor == null)
+                return BadRequest(new refreshTokenResponse
+                {
+                    message="ErrorWhileCreatingRefreshToken2",
+                    Token= "",
+                    refreshToken=""
+                });
+
+            return Ok(odgovor);
+        }
+
     }
 }

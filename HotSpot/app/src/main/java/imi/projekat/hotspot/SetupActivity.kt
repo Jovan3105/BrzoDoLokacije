@@ -1,10 +1,12 @@
 package imi.projekat.hotspot
 
+import android.app.Activity
+import android.app.AlarmManager
 import android.app.Application
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -14,10 +16,10 @@ import imi.projekat.hotspot.ModeliZaZahteve.refreshTokenDTS
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
-import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
 import imi.projekat.hotspot.ViewModeli.SetupActivityViewModel
 import imi.projekat.hotspot.databinding.ActivitySetupBinding
 import java.util.*
+
 
 class SetupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySetupBinding
@@ -62,9 +64,12 @@ class SetupActivity : AppCompatActivity() {
         }
 
         if (jwt.expiresAt!!.before(Date())) {
-            Log.d("SES",jwt.expiresAt.toString())
-            var zahtev = refreshTokenDTS(token,"string")
-            viewModel.refreshToken(zahtev)
+            var refToken=MenadzerSesije.getRefreshToken(applicationContext).toString()
+            if(refToken!=null){
+                var zahtev = refreshTokenDTS(token,refToken)
+                viewModel.refreshToken(zahtev)
+            }
+
         }
 
         val usernameToken=jwt.getClaim("username").asString()

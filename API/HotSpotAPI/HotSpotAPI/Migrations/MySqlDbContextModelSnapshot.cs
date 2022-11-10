@@ -77,10 +77,6 @@ namespace HotSpotAPI.Migrations
                     b.Property<bool>("EmailPotvrdjen")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("EmailToken")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("longblob");
@@ -97,6 +93,10 @@ namespace HotSpotAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
+
+                    b.Property<string>("refreshToken")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("ID");
 

@@ -54,6 +54,7 @@ class LoginActivity : AppCompatActivity() {
                     val id = UpravljanjeResursima.getResourceString(it.data?.message.toString(),applicationContext)
                     Toast.makeText(this@LoginActivity, id, Toast.LENGTH_SHORT).show()
                     MenadzerSesije.saveAuthToken(applicationContext,it.data?.token.toString())
+                    MenadzerSesije.saveRefteshToken(applicationContext,it.data?.refreshToken.toString())
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
                     finish()

@@ -25,8 +25,8 @@ class Repository(){
     suspend fun KreirajPost(post:String):Response<ResponseBody>{
         return APIservis.Servis.KreirajPost()
     }
-    suspend fun refresujToken(refreshTokenDATA:refreshTokenDTS):Response<refreshTokenResponse>{
-        return APIservis.Servis.refresujToken(refreshTokenDATA)
+    suspend fun resetujToken(refreshTokenDATA:refreshTokenDTS):Response<refreshTokenResponse>{
+        return RefreshTokenAPICALL.Servis.resetujToken(refreshTokenDATA)
     }
 
 }

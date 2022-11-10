@@ -60,7 +60,7 @@ namespace HotSpotAPI.Migrations
                     PasswordHash = table.Column<byte[]>(type: "longblob", nullable: false),
                     PasswordSalt = table.Column<byte[]>(type: "longblob", nullable: false),
                     EmailPotvrdjen = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    EmailToken = table.Column<string>(type: "longtext", nullable: false)
+                    refreshToken = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ProfileImage = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")

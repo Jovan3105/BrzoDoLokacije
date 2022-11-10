@@ -48,7 +48,7 @@ class SetupActivityViewModel(private val repository:Repository=Repository()) :Vi
         _liveRefreshTokenResponse.value=BaseResponse.Loading()
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
 
-            val response=repository.refresujToken(zahtev)
+            val response=repository.resetujToken(zahtev)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     _liveRefreshTokenResponse.value=BaseResponse.Success(response.body())
