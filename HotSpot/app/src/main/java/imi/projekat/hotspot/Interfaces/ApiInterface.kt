@@ -31,4 +31,10 @@ interface ApiInterface {
     @Multipart
     @POST("/api/User/photo")
     suspend fun changeProfilePhoto(@Part slika: MultipartBody.Part):Response<ResponseBody>
+
+    @POST("api/User/KreirajPost")
+    suspend fun KreirajPost():Response<ResponseBody>
+
+    @POST("KontrolerAutentikacije/ResetujToken")
+    suspend fun resetujToken(@Body dts: refreshTokenDTS):Response<refreshTokenResponse>
 }

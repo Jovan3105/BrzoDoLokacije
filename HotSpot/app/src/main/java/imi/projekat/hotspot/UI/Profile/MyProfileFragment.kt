@@ -19,6 +19,7 @@ import com.google.android.material.textfield.TextInputLayout
 import imi.projekat.hotspot.LoginActivity
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
+import imi.projekat.hotspot.Ostalo.APIservis
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.databinding.FragmentLoginAndRegisterBinding
@@ -82,6 +83,7 @@ class MyProfileFragment : Fragment() {
             MenadzerSesije.clearData(this.requireContext())
             val intent = Intent(this.requireContext(), LoginActivity::class.java)
             startActivity(intent)
+            activity?.finish()
         }
     }
 

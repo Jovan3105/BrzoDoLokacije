@@ -1,8 +1,10 @@
-﻿using HotSpotAPI.ModeliZaZahteve;
+﻿using HotSpotAPI.Modeli;
+using HotSpotAPI.ModeliZaZahteve;
 using HotSpotAPI.Servisi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace HotSpotAPI.Controllers
 {
@@ -77,7 +79,7 @@ namespace HotSpotAPI.Controllers
             return userInfo;
         }
 
-        [HttpPost("photo"),AllowAnonymous]
+        [HttpPost("photo")]
         public async Task<ActionResult<string>> SetProfilePhoto([FromForm]Photo photo)
         {
             //int id = userService.GetUserId();
@@ -149,6 +151,64 @@ namespace HotSpotAPI.Controllers
             if (res)
                 return Ok();
             return BadRequest();
+        }
+        [HttpPost("KreirajPost")]
+        public async Task<ActionResult<string>> KreirajPost()
+        {
+            Debug.WriteLine("RADI");
+            return Ok("DOBAR ZAHTEV");
+        }
+
+        [HttpPost("comment")]
+        public async Task<ActionResult<string>> AddComment(comment comm)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.addComment(id, comm);
+            if(!res)
+                return BadRequest();
+            return Ok();
+        }
+
+        [HttpGet("comments")]
+        public async Task<ActionResult<string>> GetComments(int postid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<comments> res = userService.GetComments(postid);
+            if (res == null)
+                return BadRequest();
+            return Ok(res);
+        }
+
+        [HttpDelete("comment")]
+        public async Task<ActionResult<string>> DeleteComment(deletecom com)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.DeleteComment(com.commid, com.postId, id);
+            if (!res)
+                return BadRequest();
+            return Ok();
+        }
+
+        [HttpPut("comment")]
+        public async Task<ActionResult<string>> EditComment(editcom com)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.EditComment(com.commid, com.postId, com.newtext, id);
+            if (!res)
+                return BadRequest();
+            return Ok();
         }
     }
 }

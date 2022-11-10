@@ -39,6 +39,30 @@ namespace HotSpotAPI.Migrations
                     b.ToTable("Kodovi");
                 });
 
+            modelBuilder.Entity("HotSpotAPI.Modeli.Komentari", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("PostID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Komentari");
+                });
+
             modelBuilder.Entity("HotSpotAPI.Modeli.Korisnik", b =>
                 {
                     b.Property<int>("ID")
@@ -52,10 +76,6 @@ namespace HotSpotAPI.Migrations
 
                     b.Property<bool>("EmailPotvrdjen")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("EmailToken")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
@@ -73,6 +93,10 @@ namespace HotSpotAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
+
+                    b.Property<string>("refreshToken")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("ID");
 
