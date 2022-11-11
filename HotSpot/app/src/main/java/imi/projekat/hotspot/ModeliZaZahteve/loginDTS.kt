@@ -6,3 +6,5 @@ data class loginDTS(
 )
 
 data class LoginResponse(val message:String?,val token:String?,val refreshToken:String?)
+
+data class changeAccDataResponse(val message:String?,val token:String?)

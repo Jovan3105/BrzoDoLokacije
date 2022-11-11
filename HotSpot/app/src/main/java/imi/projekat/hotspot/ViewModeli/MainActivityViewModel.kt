@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import imi.projekat.hotspot.ModeliZaZahteve.LoginResponse
+import imi.projekat.hotspot.ModeliZaZahteve.changeAccDataResponse
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
 import imi.projekat.hotspot.Ostalo.BaseResponse
@@ -17,11 +18,11 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
+import retrofit2.http.Part
 
 class MainActivityViewModel(private val repository:Repository=Repository()) :ViewModel(){
-    private var _liveEditProfileResponse=MutableLiveData<BaseResponse<ResponseBody>>()
-    val liveEditProfileResponse: MutableLiveData<BaseResponse<ResponseBody>>
-        get() = _liveEditProfileResponse
+    private var _liveEditProfileResponse=MutableSharedFlow<BaseResponse<changeAccDataResponse>>()
+    val liveEditProfileResponse=_liveEditProfileResponse.asSharedFlow()
 
     private var _KreirajPostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val KreirajPostResponse =_KreirajPostResponse.asSharedFlow()
@@ -39,7 +40,7 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 
 
     private fun onError(greska: String){
-        _liveEditProfileResponse.postValue(BaseResponse.Error(greska))
+       // _liveEditProfileResponse.emit(BaseResponse.Error(greska))
     }
 
     override fun onCleared() {
@@ -48,24 +49,26 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     }
 
 
-//    fun ChangeProfilePhoto(photo: MultipartBody.Part){
-//        _liveEditProfileResponse.value=BaseResponse.Loading()
-//        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
-//
-//            val response=repository.changeProfilePhoto(photo)
-//            withContext(Dispatchers.Main){
-//                if(response.isSuccessful){
-//                    _liveEditProfileResponse.value=BaseResponse.Success(response.body())
-//
-//                }
-//                else{
-//                    val content = response.errorBody()!!.charStream().readText()
-//                    Log.d("Brzi",response.toString())
-//                    _liveEditProfileResponse.postValue(BaseResponse.Error(response.toString()))
-//                }
-//            }
-//        }
-//    }
+    fun ChangeProfilePhoto(@Part slika: MultipartBody.Part, @Part username:MultipartBody.Part, @Part email:MultipartBody.Part,
+                           @Part oldPassword:MultipartBody.Part,@Part newPassword:MultipartBody.Part){
+        //_liveEditProfileResponse.value=BaseResponse.Loading()
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.changeProfilePhoto(slika,username,email,oldPassword,newPassword)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _liveEditProfileResponse.emit(BaseResponse.Success(response.body()))
+
+                }
+                else{
+                    val gson = Gson()
+                    val type = object : TypeToken<changeAccDataResponse>() {}.type
+                    var errorResponse: changeAccDataResponse = gson.fromJson(response.errorBody()!!.charStream(), type)
+                    _liveEditProfileResponse.emit((BaseResponse.Error(errorResponse.message.toString())))
+                }
+            }
+        }
+    }
 
     fun KreirajPost(post:String){
         //KreirajPostResponse.value=BaseResponse.Loading()

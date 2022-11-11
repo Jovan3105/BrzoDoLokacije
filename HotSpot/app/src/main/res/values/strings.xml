@@ -26,6 +26,8 @@
     <string name="ChangeDataProfile">CHANGE</string>
     <string name="Camera">Camera</string>
     <string name="Gallery">Gallery</string>
+    <string name="oldPassword">Old password</string>
+    <string name="newPassword">New password</string>
 
 
     //InputErrors
@@ -44,6 +46,8 @@
     <string name="ShortPasswordLength">Password must contain at least five characters</string>
     <string name="PasswordLongLegth">Password can not contain more than twenty characters</string>
     <string name="TokenEmpty">Verificaion token is required</string>
+    <string name="OldPasswordEmpty">Insert your old password</string>
+    <string name="confirmnewPasword">Confirm new password</string>
 
     //errorsFromAPI
     <string name="ConnectionError">There is a problem with connection, try again later</string>
@@ -64,5 +68,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="SuccessfulEmailValidation">Successful email validation</string>
+    <string name="successfullChangeAccountData">Successfull account data change</string>
+
 
 </resources>

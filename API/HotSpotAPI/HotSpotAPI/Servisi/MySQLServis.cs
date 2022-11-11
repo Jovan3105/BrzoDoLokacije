@@ -19,7 +19,7 @@ namespace HotSpotAPI.Servisi
         public Korisnik loginKorisnika(LoginDTO zahtev);
 
         public refreshTokenResponse noviRefreshToken(string Username, string refreshToken);
-        public string izmeniKorisnika(int id, EditUser user, out bool ind);
+        public string izmeniKorisnika(int id, EditUser user, out bool ind, out bool indPromeneTokena);
         public bool checkPass(int id, string Password);
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
@@ -278,14 +278,17 @@ namespace HotSpotAPI.Servisi
                 return true;
             return false;
         }
-        public string izmeniKorisnika(int id, EditUser user, out bool ind)
+        public string izmeniKorisnika(int id, EditUser user, out bool ind,out bool indPromeneTokena)
         {
             bool pom = false;
             Korisnik korisnik = _context.Korisnici.Find(id);
+            Boolean indPromeneUsername = false;
+            string EmailToken=null;
             if (korisnik == null)
             {
                 ind = false;
-                return "ne postoji korisnik sa ovim usernameom";
+                indPromeneTokena = false;
+                return "ErrorwhileSavingChanges";
             }
 
             if (user.Username != korisnik.Username)
@@ -294,9 +297,11 @@ namespace HotSpotAPI.Servisi
                 if (k != null)
                 {
                     ind = false;
-                    return "vec postoji korisink sa ovim username-om";
+                    indPromeneTokena = false;
+                    return "UsernameIsAlreadyTaken";
                 }
                 korisnik.Username = user.Username;
+                indPromeneUsername = true;
             }
             if (user.Email != korisnik.Email)
             {
@@ -304,10 +309,11 @@ namespace HotSpotAPI.Servisi
                 if (k != null)
                 {
                     ind = false;
-                    return "vec postoji korisink sa ovim email-om";
+                    indPromeneTokena = false;
+                    return "EmailIsAlreadyTaken";
                 }
                 korisnik.Email = user.Email;
-                string EmailToken = CreateToken(korisnik, int.Parse(configuration.GetSection("AppSettings:TrajanjeEmailTokenaUMinutima").Value.ToString()));
+                EmailToken = CreateToken(korisnik, int.Parse(configuration.GetSection("AppSettings:TrajanjeEmailTokenaUMinutima").Value.ToString()));
                 MailData maildata = new MailData(new List<string> { user.Email }, "Izmena Email-a");
 
                 Task<bool> sendResult = mail.SendAsync(maildata, new CancellationToken(), EmailToken);
@@ -319,7 +325,8 @@ namespace HotSpotAPI.Servisi
                 else
                 {
                     ind = false;
-                    return "greska pri slanju e-mail-a";
+                    indPromeneTokena = false;
+                    return "ErrorwhileSavingChanges";
                 }
             }
 
@@ -332,8 +339,6 @@ namespace HotSpotAPI.Servisi
                     korisnik.PasswordSalt = passwordSalt;
                 }
             }
-            
-
 
             string path = storageService.CreatePhoto();
             if (!Directory.Exists(path))
@@ -343,24 +348,40 @@ namespace HotSpotAPI.Servisi
             if (File.Exists(path))
                 System.IO.File.Delete(path);
 
+            if (user.slika!=null)
+            {
+               
+                korisnik.ProfileImage = path;
 
-            korisnik.ProfileImage = path;
+                using (FileStream stream = System.IO.File.Create(path))
+                {
+                    user.slika.CopyTo(stream);
+                    stream.Flush();
+                }
+            }
+            else
+            {
+                korisnik.ProfileImage = "";
+            }
+            
             _context.SaveChanges();
 
-            using (FileStream stream = System.IO.File.Create(path))
-            {
-                user.slika.CopyTo(stream);
-                stream.Flush();
-            }
-
-           // _context.SaveChanges();
-
+            
             if (pom == true)
             {
                 ind = true;
-                return "Uspesna izmena, proverite vas email";
+                indPromeneTokena = true;
+                return EmailToken;
+            }
+
+            if(indPromeneUsername)
+            {
+                ind = true;
+                indPromeneTokena = true;
+                return CreateToken(korisnik, int.Parse(configuration.GetSection("AppSettings:TrajanjeEmailTokenaUMinutima").Value.ToString()));
             }
             ind = true;
+            indPromeneTokena = false;
             return "Uspesna izmena podataka";
         }
 

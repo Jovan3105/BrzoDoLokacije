@@ -34,11 +34,17 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string OldPassword { get; set; } = string.Empty;
         
         public string? NewPassword { get; set; } = string.Empty;
-        public IFormFile slika { get; set; }
+        public IFormFile? slika { get; set; }
     }
     public class messageresponse
     {
         public string message { get; set; } = string.Empty;
+    }
+
+    public class changeAccDataResponse
+    {
+        public string message { get;set; } = string.Empty;
+        public string token { get; set; } = string.Empty;
     }
 
     public class password

@@ -46,22 +46,47 @@ namespace HotSpotAPI.Controllers
                             message = "pogresan password"
                         }
                     );
-            string res = mySQLServis.izmeniKorisnika(id, zahtev, out bool ind);
+            string res = mySQLServis.izmeniKorisnika(id, zahtev, out bool ind, out bool indPromeneTokena);
             if (!ind)
             {
                 return BadRequest
                     (
-                        new messageresponse
+                        new changeAccDataResponse
                         {
-                            message = res
+                            message= res,
+                            token=""
+
+                        }
+                    );
+            }
+            if(indPromeneTokena && ind)
+            {
+                return Ok
+                    (
+                        new changeAccDataResponse
+                        {
+                            message = "successfullChangeAccountData",
+                            token = res
+                        }
+                    );
+            }
+            if(!indPromeneTokena && ind)
+            {
+                return Ok
+                    (
+                        new changeAccDataResponse
+                        {
+                            message = "successfullChangeAccountData",
+                            token = ""
                         }
                     );
             }
             return Ok
                     (
-                        new messageresponse
+                        new changeAccDataResponse
                         {
-                            message = res
+                            message = "successfullChangeAccountData",
+                            token = ""
                         }
                     );
         }
