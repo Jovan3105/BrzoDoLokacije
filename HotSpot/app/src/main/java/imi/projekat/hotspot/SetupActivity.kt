@@ -63,20 +63,18 @@ class SetupActivity : AppCompatActivity() {
             }
         }
 
-        if (jwt.expiresAt!!.before(Date())) {
-            var refToken=MenadzerSesije.getRefreshToken(applicationContext).toString()
-            if(refToken!=null){
-                var zahtev = refreshTokenDTS(token,refToken)
-                viewModel.refreshToken(zahtev)
-            }
-
-        }
+//        if (jwt.expiresAt!!.before(Date())) {
+//            var refToken=MenadzerSesije.getRefreshToken(applicationContext).toString()
+//            if(refToken!=null){
+//                var zahtev = refreshTokenDTS(token,refToken)
+//                viewModel.refreshToken(zahtev)
+//            }
+//
+//        }
 
         val usernameToken=jwt.getClaim("username").asString()
         val emailToken=jwt.getClaim("email").asString()
         val intent = Intent(this@SetupActivity, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         startActivity(intent)
         finish()
 

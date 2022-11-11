@@ -223,7 +223,7 @@ class EditProfileFragment : Fragment() {
         val requestBody=file.asRequestBody("slika".toMediaTypeOrNull())
         val part=MultipartBody.Part.createFormData("slika",file.name,requestBody)
 
-        viewModel.ChangeProfilePhoto(part)
+//        viewModel.ChangeProfilePhoto(part)
 
     }
 

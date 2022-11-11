@@ -48,24 +48,24 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     }
 
 
-    fun ChangeProfilePhoto(photo: MultipartBody.Part){
-        _liveEditProfileResponse.value=BaseResponse.Loading()
-        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
-
-            val response=repository.changeProfilePhoto(photo)
-            withContext(Dispatchers.Main){
-                if(response.isSuccessful){
-                    _liveEditProfileResponse.value=BaseResponse.Success(response.body())
-
-                }
-                else{
-                    val content = response.errorBody()!!.charStream().readText()
-                    Log.d("Brzi",response.toString())
-                    _liveEditProfileResponse.postValue(BaseResponse.Error(response.toString()))
-                }
-            }
-        }
-    }
+//    fun ChangeProfilePhoto(photo: MultipartBody.Part){
+//        _liveEditProfileResponse.value=BaseResponse.Loading()
+//        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+//
+//            val response=repository.changeProfilePhoto(photo)
+//            withContext(Dispatchers.Main){
+//                if(response.isSuccessful){
+//                    _liveEditProfileResponse.value=BaseResponse.Success(response.body())
+//
+//                }
+//                else{
+//                    val content = response.errorBody()!!.charStream().readText()
+//                    Log.d("Brzi",response.toString())
+//                    _liveEditProfileResponse.postValue(BaseResponse.Error(response.toString()))
+//                }
+//            }
+//        }
+//    }
 
     fun KreirajPost(post:String){
         //KreirajPostResponse.value=BaseResponse.Loading()

@@ -24,6 +24,8 @@
     <string name="logOut">Logout</string>
     <string name="EditProfileImage">Change profile photo</string>
     <string name="ChangeDataProfile">CHANGE</string>
+    <string name="Camera">Camera</string>
+    <string name="Gallery">Gallery</string>
 
 
     //InputErrors

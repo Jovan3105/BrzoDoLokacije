@@ -19,9 +19,9 @@ class Repository(){
     suspend fun VerifyEmail(EmailToken:String):Response<ResponseBody>{
         return APIservis.Servis.VerifyEmail(EmailToken)
     }
-    suspend fun changeProfilePhoto(photo: MultipartBody.Part):Response<ResponseBody>{
-        return APIservis.Servis.changeProfilePhoto(photo)
-    }
+//    suspend fun changeProfilePhoto(photo: MultipartBody.Part):Response<ResponseBody>{
+//        return APIservis.Servis.changeProfilePhoto(photo)
+//    }
     suspend fun KreirajPost(post:String):Response<ResponseBody>{
         return APIservis.Servis.KreirajPost()
     }
