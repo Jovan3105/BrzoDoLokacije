@@ -27,13 +27,17 @@ namespace HotSpotAPI.Controllers
             this.storageService = storageService;
         }
 
-        [HttpPut("{username}/edituser")]
-        public async Task<ActionResult<string>> EditUser(string username, EditUser zahtev)
+        [HttpPost("edituser")]
+        public async Task<ActionResult<string>> EditUser([FromForm]EditUser zahtev)
         {
             int id = userService.GetUserId();
             if (id == -1)
-                return Ok("korisnik sa usernameom ne postoji");
-            bool pass = mySQLServis.checkPass(username, zahtev.OldPassword);
+             return Unauthorized();
+           // bool res = userService.ChangePhoto(3, photo.slika);
+           // int id = userService.GetUserId();
+           // if (id == -1)
+               // return Ok("korisnik sa usernameom ne postoji");
+            bool pass = mySQLServis.checkPass(id, zahtev.OldPassword);
             if (pass == false)
                 return BadRequest
                     (
@@ -42,7 +46,7 @@ namespace HotSpotAPI.Controllers
                             message = "pogresan password"
                         }
                     );
-            string res = mySQLServis.izmeniKorisnika(username, zahtev, out bool ind);
+            string res = mySQLServis.izmeniKorisnika(id, zahtev, out bool ind);
             if (!ind)
             {
                 return BadRequest
@@ -86,6 +90,8 @@ namespace HotSpotAPI.Controllers
             //if (id == -1)
                // return Unauthorized();
             bool res = userService.ChangePhoto(3, photo.slika);
+
+
 
             if (res)
                 return Ok();

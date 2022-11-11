@@ -192,7 +192,7 @@ namespace HotSpotAPI.Servisi
             path = Path.Combine(path, "user" + id + ".jpg");
             if(File.Exists(path))
                 System.IO.File.Delete(path);
-            user.ProfileImage = path;
+
             context.SaveChanges();
 
             using (FileStream stream = System.IO.File.Create(path))
@@ -200,6 +200,7 @@ namespace HotSpotAPI.Servisi
                 photo.CopyTo(stream);
                 stream.Flush();
             }
+
             return true;
         }
         public bool addNewPost(int id, addPost newPost)

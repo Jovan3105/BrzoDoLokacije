@@ -21,8 +21,13 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import com.auth0.android.jwt.JWT
 import com.google.android.material.snackbar.Snackbar
@@ -52,6 +57,23 @@ private const val ARG_PARAM2 = "param2"
  * Use the [EditProfileFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
+class MyLifecycleObserver(private val registry : ActivityResultRegistry)
+    : DefaultLifecycleObserver {
+    lateinit var getContent : ActivityResultLauncher<String>
+
+    override fun onCreate(owner: LifecycleOwner) {
+        getContent = registry.register("key", owner, ActivityResultContracts.GetContent()) { uri ->
+            // Handle the returned Uri
+        }
+    }
+
+    fun selectImage() {
+        getContent.launch("image/*")
+    }
+}
+
+
 class EditProfileFragment : Fragment() {
     private lateinit var binding:FragmentEditProfileBinding
     private lateinit var imageView: ImageView
@@ -66,10 +88,35 @@ class EditProfileFragment : Fragment() {
     private lateinit var username: TextView
     private lateinit var email: TextView
     private lateinit var selectedImageUri: Uri
+    private lateinit var observer : MyLifecycleObserver
+
+    private val contract= registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        // Handle the returned Uri
+        selectedImageUri=uri!!
+        profileImage.setImageURI(uri)
+
+    }
+
+//    val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+//        if (result.resultCode == Activity.RESULT_OK) {
+//            val intent = result.data
+//            // Handle the Intent
+//            selectedImageUri=intent?.data!!
+//            profileImage.setImageURI(selectedImageUri)
+//        }
+//    }
+
     private val viewModel: MainActivityViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        observer = MyLifecycleObserver(requireActivity().activityResultRegistry)
+        lifecycle.addObserver(observer)
+    }
+
+    private fun setup(){
+        val token= MenadzerSesije.getToken(requireContext())
+
 
     }
 
@@ -91,7 +138,7 @@ class EditProfileFragment : Fragment() {
             email=view.findViewById(binding.EditEmail.id)
             username.text=usernameToken
             email.text=emailToken
-            //imageView=view.findViewById(binding.profileImage1.id)
+            imageView=view.findViewById(binding.profileImage1.id)
 
         }
 
@@ -127,6 +174,13 @@ class EditProfileFragment : Fragment() {
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("unistavanje","brzi")
+
+
+    }
+
     //SLIKAAAAAAA
 
 //    private fun openImageChooser() {
@@ -149,10 +203,7 @@ class EditProfileFragment : Fragment() {
 //            }
 //        }
 //    }
-    private val contract=registerForActivityResult(ActivityResultContracts.GetContent()){
-        selectedImageUri=it!!
-        profileImage.setImageURI(it)
-    }
+
 
     private fun upload(){
 //        val filesDir= getActivity()?.getApplicationContext()?.filesDir

@@ -24,14 +24,17 @@ namespace HotSpotAPI.ModeliZaZahteve
     }
     public class EditUser
     {
-        [Required(ErrorMessage = "Nije unet username")]
+        
         [StringLength(maximumLength: 20, ErrorMessage = "Maksimalna duzina username-a je 20")]
         public string Username { get; set; } = string.Empty;
+        
         [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "Nije uneta validna Email adresa")]
         public string Email { get; set; } = string.Empty;
-        public string OldPassword { get; set; } = string.Empty;
         [Required(ErrorMessage = "Nije uneta sifra")]
-        public string NewPassword { get; set; } = string.Empty;
+        public string OldPassword { get; set; } = string.Empty;
+        
+        public string? NewPassword { get; set; } = string.Empty;
+        public IFormFile slika { get; set; }
     }
     public class messageresponse
     {
@@ -69,6 +72,8 @@ namespace HotSpotAPI.ModeliZaZahteve
     
     public class Photo
     {
+        public string username { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
         public IFormFile slika { get; set; }
     }
 

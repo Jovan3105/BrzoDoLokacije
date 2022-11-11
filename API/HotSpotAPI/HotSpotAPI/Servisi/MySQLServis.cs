@@ -19,8 +19,8 @@ namespace HotSpotAPI.Servisi
         public Korisnik loginKorisnika(LoginDTO zahtev);
 
         public refreshTokenResponse noviRefreshToken(string Username, string refreshToken);
-        public string izmeniKorisnika(string username, EditUser user, out bool ind);
-        public bool checkPass(string Username, string Password);
+        public string izmeniKorisnika(int id, EditUser user, out bool ind);
+        public bool checkPass(int id, string Password);
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
         public int dodajKod(string username);
@@ -37,12 +37,14 @@ namespace HotSpotAPI.Servisi
         private MySqlDbContext _context;
         private IConfiguration configuration;
         private ImailService mail;
+        private readonly IStorageService storageService;
 
-        public MySQLServis(IConfiguration configuration, MySqlDbContext context, ImailService mail)
+        public MySQLServis(IConfiguration configuration, MySqlDbContext context, ImailService mail, IStorageService storageService)
         {
             _context = context;
             this.configuration = configuration;
             this.mail = mail;
+            this.storageService = storageService;
         }
 
         public async Task<String> registrujKorisnika(RegistracijaDTO zahtev)
@@ -267,19 +269,19 @@ namespace HotSpotAPI.Servisi
         }
 
 
-        public bool checkPass(string Username, string Password)
+        public bool checkPass(int id, string Password)
         {
-            Korisnik korisnik = _context.Korisnici.Where(x => x.Username == Username).FirstOrDefault();
+            Korisnik korisnik = _context.Korisnici.Find(id);
             if (korisnik == null)
                 return false;
             if (VerifyPasswordHash(Password, korisnik.PasswordHash, korisnik.PasswordSalt))
                 return true;
             return false;
         }
-        public string izmeniKorisnika(string username, EditUser user, out bool ind)
+        public string izmeniKorisnika(int id, EditUser user, out bool ind)
         {
             bool pom = false;
-            Korisnik korisnik = _context.Korisnici.Where(x=>x.Username == username).FirstOrDefault();
+            Korisnik korisnik = _context.Korisnici.Find(id);
             if (korisnik == null)
             {
                 ind = false;
@@ -321,14 +323,37 @@ namespace HotSpotAPI.Servisi
                 }
             }
 
-            CreatePasswordHash(user.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
-            if (passwordHash != null && passwordHash != korisnik.PasswordHash)
+            if(!user.NewPassword.IsNullOrEmpty())
             {
-                korisnik.PasswordHash = passwordHash;
-                korisnik.PasswordSalt = passwordSalt;
+                CreatePasswordHash(user.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
+                if (passwordHash != null && passwordHash != korisnik.PasswordHash)
+                {
+                    korisnik.PasswordHash = passwordHash;
+                    korisnik.PasswordSalt = passwordSalt;
+                }
+            }
+            
+
+
+            string path = storageService.CreatePhoto();
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            path = Path.Combine(path, "user" + id + ".jpg");
+            if (File.Exists(path))
+                System.IO.File.Delete(path);
+
+
+            korisnik.ProfileImage = path;
+            _context.SaveChanges();
+
+            using (FileStream stream = System.IO.File.Create(path))
+            {
+                user.slika.CopyTo(stream);
+                stream.Flush();
             }
 
-            _context.SaveChanges();
+           // _context.SaveChanges();
 
             if (pom == true)
             {
