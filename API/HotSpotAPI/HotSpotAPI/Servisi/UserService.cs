@@ -13,7 +13,6 @@ namespace HotSpotAPI.Servisi
         public string ConfirmCode(string username, string code, out bool ind);
         public bool checkCode(vercode ver);
         public void verifyUser(string username);
-        public UserInfo getUserInfo(int id);
         public string getPhoto(int id);
         public bool ChangePhoto(int id, IFormFile photo);
         public bool addNewPost(int id, addPost newPost);
@@ -25,6 +24,11 @@ namespace HotSpotAPI.Servisi
         public List<comments> GetComments(int postid);
         public bool DeleteComment(int commid, int postid, int userid);
         public bool EditComment(int commid, int postId, string newtext, int id);
+        public userinfo getUserInfo(int id);
+        public bool addLike(int id, int postid);
+        public bool dislike(int id, int postid);
+        public List<likes> getLikes(int id);
+        public List<comments> GetReplies(int postId, int commid);
     }
     public class UserService : IUserService
     {
@@ -158,18 +162,6 @@ namespace HotSpotAPI.Servisi
                 user.EmailPotvrdjen = true;
                 context.SaveChanges();
             }
-        }
-        public UserInfo getUserInfo(int id)
-        {
-            var kor = context.Korisnici.Find(id);
-            if (kor == null)
-                return null;
-
-            UserInfo ui = new UserInfo();
-            ui.Username = kor.Username;
-            ui.Email = kor.Email;
-
-            return ui;
         }
         public string getPhoto(int id)
         {
@@ -336,6 +328,7 @@ namespace HotSpotAPI.Servisi
             kom.DateTime = DateTime.Now;
             kom.Text = comm.text;
             kom.UserID = id;
+            kom.ParentID = comm.parentid;
             context.Komentari.Add(kom);
             context.SaveChanges();
 
@@ -344,7 +337,7 @@ namespace HotSpotAPI.Servisi
 
         public List<comments> GetComments(int postid)
         {
-            var komentari = context.Komentari.Where(x=>x.PostID == postid).ToList();
+            var komentari = context.Komentari.Where(x=>x.PostID == postid && x.ParentID==0).ToList();
             if(komentari==null)
                 return null;
 
@@ -353,6 +346,51 @@ namespace HotSpotAPI.Servisi
             {
                 comments kom = new comments();
                 kom.OwnerID = c.UserID;
+                var user = context.Korisnici.FirstOrDefault(x => x.ID == c.UserID);
+                if (user == null)
+                    return null;
+                string photopath = user.ProfileImage;
+                if (photopath == "" || photopath == null)
+                    kom.userPhoto = "";
+                else
+                {
+                    byte[] b = System.IO.File.ReadAllBytes(photopath);
+                    string slika = Convert.ToBase64String(b, 0, b.Length);
+                    kom.userPhoto = slika;
+                }
+                kom.username = user.Username;
+                kom.text = c.Text;
+                kom.time = c.DateTime;
+
+                koms.Add(kom);
+            }
+            return koms;
+        }
+        public List<comments> GetReplies(int postId, int commid)
+        {
+            var komentari = context.Komentari.Where(x => x.PostID == postId && x.ParentID==commid).ToList();
+            if (komentari == null)
+                return null;
+
+            List<comments> koms = new List<comments>();
+            foreach (Komentari c in komentari)
+            {
+                comments kom = new comments();
+                kom.OwnerID = c.UserID;
+                var user = context.Korisnici.FirstOrDefault(x => x.ID == c.UserID);
+                if (user == null)
+                    return null;
+                string photopath = user.ProfileImage;
+                if (photopath == "" || photopath == null)
+                    kom.userPhoto = "";
+                else
+                {
+                    byte[] b = System.IO.File.ReadAllBytes(photopath);
+                    string slika = Convert.ToBase64String(b, 0, b.Length);
+                    kom.userPhoto = slika;
+                }
+
+                kom.username = user.Username;
                 kom.text = c.Text;
                 kom.time = c.DateTime;
 
@@ -381,6 +419,71 @@ namespace HotSpotAPI.Servisi
             context.SaveChanges();
 
             return true;
+        }
+        public userinfo getUserInfo(int id)
+        {
+            var user = context.Korisnici.Find(id);
+            if (user == null)
+                return null;
+            userinfo u = new userinfo();
+            u.username = user.Username;
+            
+            string slika = getPhoto(id);
+            if (slika == "" || slika == null)
+                //slika = Path.Combine("Storage", "profilna.png");*/
+                slika = "";
+
+            Byte[] b = System.IO.File.ReadAllBytes(slika);
+            u.photo = Convert.ToBase64String(b, 0, b.Length);
+            return u;
+        }
+
+        public bool addLike(int id, int postid)
+        {
+            var post = context.Postovi.FirstOrDefault(x => x.UserID != id && x.ID==postid);
+            if (post == null)
+                return false;
+            post.NumOfLikes++;
+
+            Like l = new Like();
+            l.PostID = postid;
+            l.UserID = id;
+            context.Likes.Add(l);
+            context.SaveChanges();
+
+            return true;
+        }
+        public bool dislike(int id, int postid)
+        {
+            var like = context.Likes.FirstOrDefault(x => x.UserID == id && x.PostID == postid);
+            if (like == null)
+                return false;
+
+            context.Likes.Remove(like);
+            context.SaveChanges();
+
+            var post = context.Postovi.FirstOrDefault(x => x.UserID != id && x.ID == postid);
+            if (post == null)
+                return false;
+            post.NumOfLikes--;
+            context.SaveChanges();
+            return true;
+        }
+        public List<likes> getLikes(int id)
+        {
+            List <likes> lista = new List<likes>();
+            var likes = context.Likes.Where(x => x.UserID == id).ToList();
+            if (likes == null)
+                return null;
+
+            foreach(Like like in likes)
+            {
+                likes l = new likes();
+                l.postid = like.PostID;
+                lista.Add(l);
+            }
+
+            return lista;
         }
     }
 }

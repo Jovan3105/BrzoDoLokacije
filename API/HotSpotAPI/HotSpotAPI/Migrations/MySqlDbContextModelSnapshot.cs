@@ -48,6 +48,9 @@ namespace HotSpotAPI.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("ParentID")
+                        .HasColumnType("int");
+
                     b.Property<int>("PostID")
                         .HasColumnType("int");
 
@@ -109,6 +112,23 @@ namespace HotSpotAPI.Migrations
                     b.ToTable("Korisnici");
                 });
 
+            modelBuilder.Entity("HotSpotAPI.Modeli.Like", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Likes");
+                });
+
             modelBuilder.Entity("HotSpotAPI.Modeli.Novalozinka", b =>
                 {
                     b.Property<int>("ID")
@@ -143,6 +163,9 @@ namespace HotSpotAPI.Migrations
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("NumOfLikes")
+                        .HasColumnType("int");
 
                     b.Property<int>("NumOfPhotos")
                         .HasColumnType("int");
