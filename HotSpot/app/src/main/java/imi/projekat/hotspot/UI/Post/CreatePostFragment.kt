@@ -47,14 +47,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-class CreatePostFragment : Fragment() {
+class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var binding:FragmentCreatePostBinding
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var viewPager2: ViewPager2
     private lateinit var handler: Handler
     private lateinit var imageList:ArrayList<Bitmap>
     private lateinit var adapter:ImageAdapter
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,9 +95,8 @@ class CreatePostFragment : Fragment() {
 
         imageList= ArrayList()
         val myimage = (ResourcesCompat.getDrawable(this.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
-
         imageList.add(myimage)
-        initImageCarousel()
+        initImageCarousel(0)
         setupTransformer()
 
         viewPager2.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
@@ -149,12 +147,12 @@ class CreatePostFragment : Fragment() {
     }
 
     val getActionCamera=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        if(it.data==null)
-            return@registerForActivityResult
         val bitmap=it?.data?.extras?.get("data") as Bitmap
         imageList.add(bitmap)
-        initImageCarousel()
+        praznaLista=false
+        initImageCarousel(0)
         setupTransformer()
+
     }
 
     private fun camera(){
@@ -211,14 +209,16 @@ class CreatePostFragment : Fragment() {
                 }
 
             }
-            initImageCarousel()
+            praznaLista=false
+            initImageCarousel(0)
             setupTransformer()
+
             return@registerForActivityResult
         }
 
 
         val slika= it.data!!.data
-
+        if (slika!=null)
         if(resolver!=null){
             if (Build.VERSION.SDK_INT >= 28) {
                 val source= ImageDecoder.createSource(resolver, slika!!)
@@ -228,11 +228,11 @@ class CreatePostFragment : Fragment() {
                 bitmapaSlike=MediaStore.Images.Media.getBitmap(resolver,slika)
                 imageList.add(bitmapaSlike)
             }
-            //slikaView.setImageBitmap(bitmap)
-        }
-        initImageCarousel()
-        setupTransformer()
+            praznaLista=false
+            initImageCarousel(0)
+            setupTransformer()
 
+        }
     }
 
 
@@ -276,10 +276,11 @@ class CreatePostFragment : Fragment() {
 
 
 
-    private fun initImageCarousel(){
+    private fun initImageCarousel(position:Int){
+
         viewPager2= requireView().findViewById(binding.viewPager2.id)
         handler= Handler(Looper.myLooper()!!)
-        adapter= ImageAdapter(imageList,viewPager2)
+        adapter= ImageAdapter(imageList,viewPager2,praznaLista,this)
         viewPager2.adapter = adapter
         viewPager2.offscreenPageLimit = 3
         viewPager2.clipToPadding = false
@@ -299,5 +300,35 @@ class CreatePostFragment : Fragment() {
 
         viewPager2.setPageTransformer(transformer)
     }
+
+
+    override fun addImage() {
+        Log.d("BRZI","Je dobar programer")
+    }
+
+    override fun removeImage(id: Int) {
+        var pom=id
+        imageList.removeAt(pom)
+        if(imageList.size==0){
+            praznaLista=true
+            val myimage = (ResourcesCompat.getDrawable(viewPager2.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
+            imageList.add(myimage)
+        }
+        if(pom>imageList.size-1){
+            pom -= 1
+        }
+        initImageCarousel(pom)
+        setupTransformer()
+
+    }
+
+    override var praznaLista: Boolean = true
+        get() = field
+        set(value) {
+            if(field==true && value==false){
+                imageList.removeAt(0)
+            }
+            field=value
+        }
 
 }
