@@ -28,6 +28,7 @@ namespace HotSpotAPI.Servisi
         public bool addLike(int id, int postid);
         public bool dislike(int id, int postid);
         public List<likes> getLikes(int id);
+        public List<comments> GetReplies(int postId, int commid);
     }
     public class UserService : IUserService
     {
@@ -336,7 +337,7 @@ namespace HotSpotAPI.Servisi
 
         public List<comments> GetComments(int postid)
         {
-            var komentari = context.Komentari.Where(x=>x.PostID == postid).ToList();
+            var komentari = context.Komentari.Where(x=>x.PostID == postid && x.ParentID==0).ToList();
             if(komentari==null)
                 return null;
 
@@ -345,6 +346,51 @@ namespace HotSpotAPI.Servisi
             {
                 comments kom = new comments();
                 kom.OwnerID = c.UserID;
+                var user = context.Korisnici.FirstOrDefault(x => x.ID == c.UserID);
+                if (user == null)
+                    return null;
+                string photopath = user.ProfileImage;
+                if (photopath == "" || photopath == null)
+                    kom.userPhoto = "";
+                else
+                {
+                    byte[] b = System.IO.File.ReadAllBytes(photopath);
+                    string slika = Convert.ToBase64String(b, 0, b.Length);
+                    kom.userPhoto = slika;
+                }
+                kom.username = user.Username;
+                kom.text = c.Text;
+                kom.time = c.DateTime;
+
+                koms.Add(kom);
+            }
+            return koms;
+        }
+        public List<comments> GetReplies(int postId, int commid)
+        {
+            var komentari = context.Komentari.Where(x => x.PostID == postId && x.ParentID==commid).ToList();
+            if (komentari == null)
+                return null;
+
+            List<comments> koms = new List<comments>();
+            foreach (Komentari c in komentari)
+            {
+                comments kom = new comments();
+                kom.OwnerID = c.UserID;
+                var user = context.Korisnici.FirstOrDefault(x => x.ID == c.UserID);
+                if (user == null)
+                    return null;
+                string photopath = user.ProfileImage;
+                if (photopath == "" || photopath == null)
+                    kom.userPhoto = "";
+                else
+                {
+                    byte[] b = System.IO.File.ReadAllBytes(photopath);
+                    string slika = Convert.ToBase64String(b, 0, b.Length);
+                    kom.userPhoto = slika;
+                }
+
+                kom.username = user.Username;
                 kom.text = c.Text;
                 kom.time = c.DateTime;
 

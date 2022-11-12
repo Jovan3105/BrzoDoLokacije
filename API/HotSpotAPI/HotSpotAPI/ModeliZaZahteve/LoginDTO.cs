@@ -85,10 +85,12 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public int OwnerID { get; set; }
         public string text { get; set; } = string.Empty;
+        public dynamic userPhoto { get; set; }
+        public string username { set; get; } = string.Empty;
         public DateTime time { get; set; }
     }
 
-    public class deletecom
+    public class com
     {
         public int postId { get; set; }
         public int commid { get; set; }
