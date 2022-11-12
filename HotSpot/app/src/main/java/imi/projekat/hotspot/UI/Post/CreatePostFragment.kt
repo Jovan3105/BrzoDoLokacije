@@ -4,10 +4,15 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.VectorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -15,11 +20,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.MarginPageTransformer
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -28,24 +39,21 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
-import imi.projekat.hotspot.LoginActivity
-import imi.projekat.hotspot.MainActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
-import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.R
-import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentCreatePostBinding
-import imi.projekat.hotspot.databinding.FragmentLoginAndRegisterBinding
-import kotlinx.android.synthetic.main.fragment_create_post.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 class CreatePostFragment : Fragment() {
     private lateinit var binding:FragmentCreatePostBinding
-    private val CAMERA_REQUEST_CODE = 1
     private val viewModel: MainActivityViewModel by activityViewModels()
-    private lateinit var slikaView:ImageView
+    private lateinit var viewPager2: ViewPager2
+    private lateinit var handler: Handler
+    private lateinit var imageList:ArrayList<Bitmap>
+    private lateinit var adapter:ImageAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +71,6 @@ class CreatePostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding= FragmentCreatePostBinding.bind(view)
-        slikaView=view.findViewById(binding.imageView5.id)
 
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.KreirajPostResponse.collectLatest{
@@ -86,6 +93,34 @@ class CreatePostFragment : Fragment() {
         binding.button3.setOnClickListener{
             cameraCheckPermission()
         }
+
+        imageList= ArrayList()
+        val myimage = (ResourcesCompat.getDrawable(this.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
+
+        imageList.add(myimage)
+        initImageCarousel()
+        setupTransformer()
+
+        viewPager2.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                handler.removeCallbacks(runnable)
+                handler.postDelayed(runnable,5000)
+            }
+        })
+    }
+    private val runnable= Runnable {
+        viewPager2.currentItem=viewPager2.currentItem+1
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(runnable)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
     }
 
 
@@ -114,8 +149,12 @@ class CreatePostFragment : Fragment() {
     }
 
     val getActionCamera=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        if(it.data==null)
+            return@registerForActivityResult
         val bitmap=it?.data?.extras?.get("data") as Bitmap
-        slikaView.setImageBitmap(bitmap)
+        imageList.add(bitmap)
+        initImageCarousel()
+        setupTransformer()
     }
 
     private fun camera(){
@@ -153,28 +192,46 @@ class CreatePostFragment : Fragment() {
     //Galerija
     val getActionGallery=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         //ako je vraceno vise slika
+        val resolver = requireActivity().contentResolver
+        var bitmapaSlike:Bitmap
+
         if(it.data==null)
             return@registerForActivityResult
         if(it?.data?.clipData!=null){
-            Log.d("Vise slika", it?.data?.clipData!!.itemCount.toString())
+            if (Build.VERSION.SDK_INT >= 28) {
+                for (i in 0 until  it.data?.clipData!!.itemCount){
+                    val source= ImageDecoder.createSource(resolver, it.data!!.clipData?.getItemAt(i)?.uri!!)
+                    bitmapaSlike=ImageDecoder.decodeBitmap(source)
+                    imageList.add(bitmapaSlike)
+                }
+            } else {
+                for (i in 0..it.data?.clipData!!.itemCount){
+                    bitmapaSlike=MediaStore.Images.Media.getBitmap(resolver,it.data!!.clipData?.getItemAt(i)?.uri!!)
+                    imageList.add(bitmapaSlike)
+                }
+
+            }
+            initImageCarousel()
+            setupTransformer()
             return@registerForActivityResult
         }
 
-        var bitmapaSlike:Bitmap
+
         val slika= it.data!!.data
-        var resolver = requireActivity().contentResolver
+
         if(resolver!=null){
             if (Build.VERSION.SDK_INT >= 28) {
                 val source= ImageDecoder.createSource(resolver, slika!!)
                 bitmapaSlike=ImageDecoder.decodeBitmap(source)
-                slikaView.setImageBitmap(bitmapaSlike)
+                imageList.add(bitmapaSlike)
             } else {
                 bitmapaSlike=MediaStore.Images.Media.getBitmap(resolver,slika)
-                slikaView.setImageBitmap(bitmapaSlike)
+                imageList.add(bitmapaSlike)
             }
-            Log.d("Jedna slika","Jedna slika")
             //slikaView.setImageBitmap(bitmap)
         }
+        initImageCarousel()
+        setupTransformer()
 
     }
 
@@ -216,4 +273,31 @@ class CreatePostFragment : Fragment() {
             Log.d("GRESKA",e.toString())
         }
     }
+
+
+
+    private fun initImageCarousel(){
+        viewPager2= requireView().findViewById(binding.viewPager2.id)
+        handler= Handler(Looper.myLooper()!!)
+        adapter= ImageAdapter(imageList,viewPager2)
+        viewPager2.adapter = adapter
+        viewPager2.offscreenPageLimit = 3
+        viewPager2.clipToPadding = false
+        viewPager2.clipChildren = false
+        viewPager2.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+
+
+    }
+
+    private fun setupTransformer(){
+        val transformer = CompositePageTransformer()
+        transformer.addTransformer(MarginPageTransformer(40))
+        transformer.addTransformer { page, position ->
+            val r = 1 - abs(position)
+            page.scaleY = 0.85f + r * 0.14f
+        }
+
+        viewPager2.setPageTransformer(transformer)
+    }
+
 }
