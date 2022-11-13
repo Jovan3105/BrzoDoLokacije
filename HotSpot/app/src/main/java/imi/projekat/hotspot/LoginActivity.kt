@@ -13,6 +13,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.auth0.android.jwt.JWT
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import imi.projekat.hotspot.Dialogs.LoadingDialog
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
@@ -85,9 +87,10 @@ class LoginActivity : AppCompatActivity() {
 //                    val errorResponse: ResponseBody = gson.fromJson(it.data!!.charStream(), type)
 
                     Toast.makeText(this@LoginActivity,id, Toast.LENGTH_SHORT).show()
-
-//                    val intent = Intent(this@LoginActivity, HomePageActivity::class.java)
-//                    startActivity(intent)
+                    val navHostFragment=supportFragmentManager.findFragmentById(R.id.fragmentContainerViewLoginAndRegister) as NavHostFragment
+                    var navKontroler=navHostFragment.navController
+                    navKontroler.navigate(R.id.forgotPassword)
+                    navKontroler.navigate(R.id.loginAndRegister)
                 }
                 is BaseResponse.Error->{
                     val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),applicationContext)
@@ -122,7 +125,7 @@ class LoginActivity : AppCompatActivity() {
 
 
 
-        binding.fragmentContainerView.startAnimation(btpAnimacija)
+        binding.fragmentContainerViewLoginAndRegister.startAnimation(btpAnimacija)
 
 
 
