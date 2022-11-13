@@ -31,4 +31,8 @@ class Repository(){
         return RefreshTokenAPICALL.Servis.resetujToken(refreshTokenDATA)
     }
 
+    suspend fun getProfilePhoto():Response<ResponseBody>{
+        return APIservis.Servis.getPhoto()
+    }
+
 }

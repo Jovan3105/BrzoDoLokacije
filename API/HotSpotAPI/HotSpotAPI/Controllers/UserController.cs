@@ -41,9 +41,12 @@ namespace HotSpotAPI.Controllers
             if (pass == false)
                 return BadRequest
                     (
-                        new messageresponse
+                        new changeAccDataResponse
                         {
-                            message = "pogresan password"
+                            message = "wrongPassword",
+                            token="",
+                            Id=id
+
                         }
                     );
             string res = mySQLServis.izmeniKorisnika(id, zahtev, out bool ind, out bool indPromeneTokena);
@@ -54,7 +57,8 @@ namespace HotSpotAPI.Controllers
                         new changeAccDataResponse
                         {
                             message= res,
-                            token=""
+                            token="",
+                            Id=id
 
                         }
                     );
@@ -66,7 +70,8 @@ namespace HotSpotAPI.Controllers
                         new changeAccDataResponse
                         {
                             message = "successfullChangeAccountData",
-                            token = res
+                            token = res,
+                            Id = id
                         }
                     );
             }
@@ -77,7 +82,8 @@ namespace HotSpotAPI.Controllers
                         new changeAccDataResponse
                         {
                             message = "successfullChangeAccountData",
-                            token = ""
+                            token = "",
+                            Id = id
                         }
                     );
             }
@@ -86,26 +92,24 @@ namespace HotSpotAPI.Controllers
                         new changeAccDataResponse
                         {
                             message = "successfullChangeAccountData",
-                            token = ""
+                            token = "",
+                            Id = id
                         }
                     );
         }
-        [HttpGet]
-        public async Task<ActionResult<UserInfo>> GetUserinfo()
+        [HttpGet("GetPhoto")]
+        public async Task<ActionResult<string>> GetUserinfo()
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
             string slika = userService.getPhoto(id);
             if (slika == "" || slika == null)
-                slika = Path.Combine("Storage", "profilna.png");
-
+            {
+                return null;
+            }
             Byte[] b = System.IO.File.ReadAllBytes(slika);
-            UserInfo userInfo = new UserInfo();
-            userInfo.Username = "aa";
-            userInfo.Email = "Aa";
-            userInfo.ProfilePhoto = Convert.ToBase64String(b, 0, b.Length);
-            return userInfo;
+            return Convert.ToBase64String(b, 0, b.Length);
         }
 
         [HttpPost("photo")]

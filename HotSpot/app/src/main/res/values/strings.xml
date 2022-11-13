@@ -60,6 +60,7 @@
     <string name="ExpiredToken">Token has expired</string>
     <string name="ErrorWhileCreatingNewToken">Error while creating new token</string>
     <string name="EmailAlreadyVerified">Account is already verified</string>
+    <string name="wrongPassword">Wrong password</string>
 
     //success
     <string name="SuccessfulLogin">Successful login</string>

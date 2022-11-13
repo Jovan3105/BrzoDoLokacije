@@ -1,52 +1,47 @@
 package imi.projekat.hotspot.UI.Profile
 
-import android.app.Activity
-import android.app.Activity.RESULT_OK
-import android.content.ActivityNotFoundException
 import android.content.ContentResolver
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.util.Base64
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.auth0.android.jwt.JWT
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import imi.projekat.hotspot.Ostalo.*
 import imi.projekat.hotspot.R
-import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentEditProfileBinding
-import imi.projekat.hotspot.databinding.FragmentMyProfileBinding
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.internal.applyConnectionSpec
-import okhttp3.internal.cacheGet
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -93,12 +88,26 @@ class EditProfileFragment : Fragment() {
     private lateinit var email: TextView
     private var selectedImageUri: Uri?=null
     private lateinit var observer : MyLifecycleObserver
-
-    private val contract= registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    private var photoBitmap:Bitmap?=null
+    private var bitmapaSlike:Bitmap?=null
+    private val contract= registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         // Handle the returned Uri
-        selectedImageUri=uri!!
-        profileImage.setImageURI(uri)
+        selectedImageUri=it.data!!.data
+        //val bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri)
+        imageView.setImageURI(selectedImageUri)
+        val slika= it.data!!.data
+        val resolver = requireActivity().contentResolver
+        if(resolver!=null){
+            if (Build.VERSION.SDK_INT >= 28) {
+                val source= ImageDecoder.createSource(resolver, slika!!)
+                bitmapaSlike= ImageDecoder.decodeBitmap(source)
 
+            } else {
+                bitmapaSlike=MediaStore.Images.Media.getBitmap(resolver,slika)
+
+            }
+            //slikaView.setImageBitmap(bitmap)
+        }
     }
 
 //    val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -128,21 +137,41 @@ class EditProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        viewModel.getPhoto()
         binding=FragmentEditProfileBinding.inflate(inflater)
         val view=inflater.inflate(R.layout.fragment_edit_profile,container,false)
+        imageView=view.findViewById(binding.profileImage1.id)
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.liveProfilePhotoResponse.collectLatest{
+                if(it is BaseResponse.Error){
+
+                }
+                if(it is BaseResponse.Success){
+                    Log.d("SES","SESESSE")
+                    if(it.data!=null)
+                    {
+                        val content = it.data!!.charStream().readText()
+                        Log.d("slika",content)
+                        val imageBytes = Base64.decode(content, Base64.DEFAULT)
+                        val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        imageView.setImageBitmap(decodedImage)
+
+                    }
+
+
+                }
+            }
+        }
         val token= MenadzerSesije.getToken(requireContext())
         if(token != null)
         {
             jwt= JWT(token)
             val usernameToken=jwt.getClaim("username").asString()
             val emailToken=jwt.getClaim("email").asString()
-            profileImage=view.findViewById(binding.profileImage1.id)
             username=view.findViewById(binding.EditUsername.id)
             email=view.findViewById(binding.EditEmail.id)
             username.text=usernameToken
             email.text=emailToken
-            imageView=view.findViewById(binding.profileImage1.id)
 
         }
 
@@ -158,7 +187,7 @@ class EditProfileFragment : Fragment() {
         binding= FragmentEditProfileBinding.bind(view)
 
         binding.EditProfileImage.setOnClickListener{
-            contract.launch("image/*")
+            galerija()
         }
 
         viewLifecycleOwner.lifecycleScope.launch{
@@ -214,26 +243,19 @@ class EditProfileFragment : Fragment() {
 
     //SLIKAAAAAAA
 
-//    private fun openImageChooser() {
-//        Intent(Intent.ACTION_PICK).also {
-//            it.type = "image/*"
-//            val mimeTypes = arrayOf("image/jpeg", "image/png")
-//            it.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-//            startActivityForResult(it, REQUEST_CODE_PICK_IMAGE)
-//        }
-//    }
-//
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        if (resultCode == Activity.RESULT_OK) {
-//            when (requestCode) {
-//                REQUEST_CODE_PICK_IMAGE -> {
-//                    selectedImageUri = data?.data
-//                    profileImage1.setImageURI(selectedImageUri)
-//                }
-//            }
-//        }
-//    }
+    private fun galerija() {
+        val intent = Intent()
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        intent.action=Intent.ACTION_GET_CONTENT
+        try {
+            contract.launch(intent)
+        }
+        catch (e:Exception) {
+            Log.d("GRESKA",e.toString())
+        }
+    }
+
 
 
     private fun upload(){
@@ -314,14 +336,6 @@ class EditProfileFragment : Fragment() {
         val email=MultipartBody.Part.createFormData("Email",pomEmail)
         val oldpassword=MultipartBody.Part.createFormData("OldPassword",pomOldPassword)
         val newpassword=MultipartBody.Part.createFormData("NewPassword",pomNewPasswrod)//MOGUC BAG
-//        val parcelFileDescriptor=getActivity()?.contentResolver?.openFileDescriptor(selectedImageUri!!,"r",null)?:return
-//        val inputStream=FileInputStream(parcelFileDescriptor.fileDescriptor)
-//        val file=File(getActivity()?.cacheDir,getActivity()?.contentResolver?.getFileName(selectedImageUri!!))
-//        val outputStream=FileOutputStream(file)
-//        inputStream.copyTo(outputStream)
-//        val requestBody=file.asRequestBody("slika".toMediaTypeOrNull())
-//        val part=MultipartBody.Part.createFormData("slika",file.name,requestBody)
-//        viewModel.ChangeProfilePhoto(part,username,email,oldpassword,newpassword)
 
         if(selectedImageUri!=null)
         {
@@ -362,17 +376,8 @@ class EditProfileFragment : Fragment() {
         const val REQUEST_CODE_PICK_IMAGE = 101
     }
 
-//    private fun uploadImage(){
-//        if (selectedImageUri == null) {
-//            binding.EditProfileImage.snackbar("Select an Image First")
-//            return
-//        }
-//
-//        val ParcelFileDescriptor=.openFileDescriptor(selectedImageUri!!, "r", null) ?: return
-//
-//        val file = File(cacheDir, contentResolver.getFileName(selectedImageUri!!))
-//
-//    }
+
+
 
 
 

@@ -12,15 +12,12 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public string Message { get; set; } = string.Empty;
         public string Token { get; set; } = string.Empty;
-
         public string? refreshToken { get; set; } = string.Empty;
     }
 
     public class UserInfo
     {
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public dynamic ProfilePhoto { get; set; } = null;
+        public dynamic? ProfilePhoto { get; set; } = null;
     }
     public class EditUser
     {
@@ -45,6 +42,7 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public string message { get;set; } = string.Empty;
         public string token { get; set; } = string.Empty;
+        public int Id { get; set; } = 0;
     }
 
     public class password

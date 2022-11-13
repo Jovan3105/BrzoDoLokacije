@@ -63,13 +63,26 @@ namespace HotSpotAPI.Controllers
             }
 
             string token = mySQLServis.CreateToken(korisnik, int.Parse(configuration.GetSection("AppSettings:TrajanjeTokenaUMinutima").Value.ToString()));
+            string slika = korisnik.ProfileImage;
+            if (slika == "" || slika == null)
+            {
+                return Ok(new LoginResponse
+                {
+                    Message = "SuccessfulLogin",
+                    Token = token,
+                    refreshToken = korisnik.refreshToken
+
+                }) ;
+            }
+
+            Byte[] b = System.IO.File.ReadAllBytes(slika);
+            Debug.WriteLine(Convert.ToBase64String(b, 0, b.Length));
             return Ok(new LoginResponse
             {
                 Message = "SuccessfulLogin",
                 Token = token,
-                refreshToken=korisnik.refreshToken
-
-            });
+                refreshToken = korisnik.refreshToken,
+            }) ;
 
 
         }

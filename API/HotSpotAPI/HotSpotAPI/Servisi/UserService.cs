@@ -166,8 +166,7 @@ namespace HotSpotAPI.Servisi
                 return null;
 
             UserInfo ui = new UserInfo();
-            ui.Username = kor.Username;
-            ui.Email = kor.Email;
+        
 
             return ui;
         }

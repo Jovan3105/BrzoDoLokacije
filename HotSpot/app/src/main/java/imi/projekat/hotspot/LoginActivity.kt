@@ -1,27 +1,32 @@
 package imi.projekat.hotspot
 
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
+import android.util.Log
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.auth0.android.jwt.JWT
 import imi.projekat.hotspot.Dialogs.LoadingDialog
 import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
-import imi.projekat.hotspot.Ostalo.APIservis
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
 import imi.projekat.hotspot.databinding.ActivityLoginBinding
-
-
+import java.io.FileOutputStream
 
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var jwt: JWT
     private val viewModel by viewModels<LoginActivityViewModel>()
     val dijalog= LoadingDialog(this)
 
@@ -125,6 +130,24 @@ class LoginActivity : AppCompatActivity() {
 
 
     }
+
+
+
+    //    fun loadImageBitmap(context: Context, imageName: String?): Bitmap? {
+//        var bitmap: Bitmap? = null
+//        val fiStream: FileInputStream
+//        try {
+//            fiStream = context.openFileInput(imageName)
+//            bitmap = BitmapFactory.decodeStream(fiStream)
+//            fiStream.close()
+//        } catch (e: Exception) {
+//            Log.d("saveImage", "Exception 3, Something went wrong!")
+//            e.printStackTrace()
+//        }
+//        return bitmap
+//    }
+
+
 
     public fun getMyData(obj:loginDTS) {
         viewModel.login(obj)
