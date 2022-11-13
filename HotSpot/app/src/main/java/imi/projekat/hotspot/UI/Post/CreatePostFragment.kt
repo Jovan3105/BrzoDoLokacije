@@ -1,6 +1,7 @@
 package imi.projekat.hotspot.UI.Post
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
@@ -20,6 +21,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
@@ -55,6 +58,8 @@ class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var imageList:ArrayList<Bitmap>
     private lateinit var adapter:ImageAdapter
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -82,8 +87,6 @@ class CreatePostFragment : Fragment(),addImageInterface {
                 }
             }
         }
-
-
 
         binding.button2.setOnClickListener{
             otvoriGaleriju()
@@ -287,7 +290,21 @@ class CreatePostFragment : Fragment(),addImageInterface {
         viewPager2.clipChildren = false
         viewPager2.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
 
+        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int) {
+                if (position == 0) {
 
+                }
+                else if (position == 1) {
+
+                }
+                else if (position == 2){
+
+                }
+
+                super.onPageSelected(position)
+            }
+        })
     }
 
     private fun setupTransformer(){
@@ -303,7 +320,25 @@ class CreatePostFragment : Fragment(),addImageInterface {
 
 
     override fun addImage() {
-        Log.d("BRZI","Je dobar programer")
+        val dialog=Dialog(requireContext())
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_camera_or_gallery)
+
+        dialog.findViewById<ImageView>(R.id.btnCloseDialog).setOnClickListener{
+            Log.d("Gasenje dialoga","Gasenje dialoga")
+            dialog.dismiss()
+        }
+        dialog.findViewById<Button>(R.id.galleryButton).setOnClickListener{
+            Log.d("galleryButton","galleryButton")
+            dialog.dismiss()
+        }
+        dialog.findViewById<Button>(R.id.cameraButton).setOnClickListener{
+            Log.d("cameraButton","cameraButton")
+            dialog.dismiss()
+        }
+        dialog.show()
+        dialog.window!!.setLayout(1000,600)
+
     }
 
     override fun removeImage(id: Int) {
