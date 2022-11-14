@@ -12,6 +12,8 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+
     </style>
 
     <style name="Zaobljeni_uglovi">
@@ -40,7 +42,7 @@
         <item name="android:textSize">21sp</item>
     </style>
 
-    <style name="MyDialog">
+    <style name="MyDialog" parent="Theme.AppCompat.DayNight.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">false</item>
@@ -50,10 +52,12 @@
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
         <item name="android:gravity">center</item>
+
     </style>
 
-    <style name="WrapEverythingDialog">
+    <style name="WrapEverythingDialog" parent="MyDialog">
         <item name="windowMinWidthMajor">0dp</item>
         <item name="windowMinWidthMinor">0dp</item>
+        <item name="android:gravity">center</item>
     </style>
 </resources>

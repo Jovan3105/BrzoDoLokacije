@@ -48,6 +48,7 @@ import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentCreatePostBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import me.relex.circleindicator.CircleIndicator3
 import kotlin.math.abs
 
 class CreatePostFragment : Fragment(),addImageInterface {
@@ -57,7 +58,7 @@ class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var handler: Handler
     private lateinit var imageList:ArrayList<Bitmap>
     private lateinit var adapter:ImageAdapter
-
+    private lateinit var circleIndicator:CircleIndicator3
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,12 +90,10 @@ class CreatePostFragment : Fragment(),addImageInterface {
         }
 
         binding.button2.setOnClickListener{
-            otvoriGaleriju()
+            addImage()
         }
 
-        binding.button3.setOnClickListener{
-            cameraCheckPermission()
-        }
+        circleIndicator=view.findViewById<CircleIndicator3>(R.id.circleIndikator)
 
         imageList= ArrayList()
         val myimage = (ResourcesCompat.getDrawable(this.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
@@ -109,6 +108,8 @@ class CreatePostFragment : Fragment(),addImageInterface {
                 handler.postDelayed(runnable,5000)
             }
         })
+        circleIndicator.setViewPager(viewPager2)
+
     }
     private val runnable= Runnable {
         viewPager2.currentItem=viewPager2.currentItem+1
@@ -316,11 +317,12 @@ class CreatePostFragment : Fragment(),addImageInterface {
         }
 
         viewPager2.setPageTransformer(transformer)
+        circleIndicator.setViewPager(viewPager2)
     }
 
 
     override fun addImage() {
-        val dialog=Dialog(requireContext())
+        val dialog=Dialog(requireContext(),R.style.MyDialog)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_camera_or_gallery)
 
@@ -329,15 +331,14 @@ class CreatePostFragment : Fragment(),addImageInterface {
             dialog.dismiss()
         }
         dialog.findViewById<Button>(R.id.galleryButton).setOnClickListener{
-            Log.d("galleryButton","galleryButton")
             dialog.dismiss()
+            otvoriGaleriju()
         }
         dialog.findViewById<Button>(R.id.cameraButton).setOnClickListener{
-            Log.d("cameraButton","cameraButton")
             dialog.dismiss()
+            cameraCheckPermission()
         }
         dialog.show()
-        dialog.window!!.setLayout(1000,600)
 
     }
 

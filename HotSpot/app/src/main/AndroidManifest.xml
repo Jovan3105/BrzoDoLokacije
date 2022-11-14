@@ -45,6 +45,8 @@ xmlns:tools="http://schemas.android.com/tools">
     <activity
         android:name="imi.projekat.hotspot.MainActivity"
         android:exported="false"
+        android:windowSoftInputMode="adjustPan"
+        android:theme="@style/Theme.HotSpot"
         >
         <meta-data
             android:name="android.app.lib_name"

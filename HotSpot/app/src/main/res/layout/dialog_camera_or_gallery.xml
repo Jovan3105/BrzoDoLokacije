@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="20dp"
     app:cardElevation="3dp"
-    android:background="@drawable/edit_text_pink"
+    android:background="@drawable/edit_text_white"
+
+    android:layout_gravity="center"
     >
 
     <LinearLayout
@@ -54,8 +56,8 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:text="@string/Gallery"
-                android:layout_marginRight="5dp"
-
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 />
             <Button
                 android:id="@+id/cameraButton"
@@ -67,7 +69,8 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:text="@string/Camera"
-                android:layout_marginLeft="5dp"/>
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"/>
         </LinearLayout>
     </LinearLayout>
 
