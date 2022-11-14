@@ -97,6 +97,18 @@ namespace HotSpotAPI.Controllers
                         }
                     );
         }
+        [HttpDelete]
+        public async Task<ActionResult<string>> DeleteAccount()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.deleteAccount(id);
+            if (res)
+                return Ok();
+            return BadRequest();
+        }
         [HttpGet("GetPhoto")]
         public async Task<ActionResult<string>> GetUserinfo()
         {

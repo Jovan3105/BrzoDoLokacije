@@ -59,7 +59,6 @@ namespace HotSpotAPI.ModeliZaZahteve
 
     public class addPost
     {
-        public string username { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
         public string location { get; set; } = string.Empty;
         public List<IFormFile> photos { get; set; }

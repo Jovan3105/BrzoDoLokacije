@@ -1,4 +1,5 @@
 ﻿using HotSpotAPI.Data;
+using HotSpotAPI.Modeli;
 
 namespace HotSpotAPI.Servisi
 {
@@ -8,6 +9,7 @@ namespace HotSpotAPI.Servisi
         public string CreatePhoto();
         public string CreatePost();
         public bool deletePost(int id, int postID, int numOfPhotos);
+        public bool deleteAcc(int id, bool znak);
     }
     public class StorageService : IStorageService
     {
@@ -46,6 +48,28 @@ namespace HotSpotAPI.Servisi
             {
                 var path = Path.Combine(basepath+"photo"+i+".jpg");
                 File.Delete(path);
+            }
+            return true;
+        }
+
+        public bool deleteAcc(int id, bool znak)
+        {
+            string basepath = CreatePhoto();
+            if (znak)
+            {
+                string imgpath = Path.Combine(basepath, "user" + id+".jpg");
+                File.Delete(imgpath);
+            }
+
+            List<Post> posts = context.Postovi.Where(x => x.UserID == id).ToList();
+            basepath = CreatePost();
+            foreach (Post p in posts)
+            {
+                for(int i=1; i<=p.NumOfPhotos;i++)
+                {
+                    string path = Path.Combine(basepath, "user" + id + "post" + p.ID +"photo"+i+".jpg");
+                    File.Delete(path);
+                }
             }
             return true;
         }

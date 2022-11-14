@@ -291,7 +291,7 @@ namespace HotSpotAPI.Servisi
                 return "ErrorwhileSavingChanges";
             }
 
-            if (user.Username != korisnik.Username)
+            if (user.Username != korisnik.Username && user.Username!=null && user.Username!="")
             {
                 Korisnik k = _context.Korisnici.FirstOrDefault(x => x.Username == user.Username && x.ID != korisnik.ID);
                 if (k != null)
@@ -303,7 +303,7 @@ namespace HotSpotAPI.Servisi
                 korisnik.Username = user.Username;
                 indPromeneUsername = true;
             }
-            if (user.Email != korisnik.Email)
+            if (user.Email != korisnik.Email && user.Email!=null && user.Email!="")
             {
                 Korisnik k = _context.Korisnici.FirstOrDefault(x => x.Email == user.Email && x.ID != korisnik.ID);
                 if (k != null)

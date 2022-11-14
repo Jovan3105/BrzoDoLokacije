@@ -32,13 +32,6 @@ namespace HotSpotAPI.Controllers
             this.mail = mail;
         }
 
-
-        [HttpGet("download")]
-        public async Task<ActionResult> Download()
-        {
-            return File(System.IO.File.ReadAllBytes("app.apk"), "application/octet-stream", Path.GetFileName("app.apk"));
-        }
-
         [HttpPost("Login")]
         public async Task<ActionResult<LoginResponse>> Login(LoginDTO zahtev)
         {

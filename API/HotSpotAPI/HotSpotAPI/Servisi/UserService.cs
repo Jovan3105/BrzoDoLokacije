@@ -29,6 +29,7 @@ namespace HotSpotAPI.Servisi
         public bool dislike(int id, int postid);
         public List<likes> getLikes(int id);
         public List<comments> GetReplies(int postId, int commid);
+        public bool deleteAccount(int id);
     }
     public class UserService : IUserService
     {
@@ -163,17 +164,7 @@ namespace HotSpotAPI.Servisi
                 context.SaveChanges();
             }
         }
-        public UserInfo getUserInfo(int id)
-        {
-            var kor = context.Korisnici.Find(id);
-            if (kor == null)
-                return null;
-
-            UserInfo ui = new UserInfo();
         
-
-            return ui;
-        }
         public string getPhoto(int id)
         {
             var kor = context.Korisnici.Find(id);
@@ -204,6 +195,31 @@ namespace HotSpotAPI.Servisi
                 stream.Flush();
             }
 
+            return true;
+        }
+        public bool deleteAccount(int id)
+        {
+            var user = context.Korisnici.Find(id);
+            if (user == null)
+                return false;
+
+            bool znak = false;
+            if (user.ProfileImage != null && user.ProfileImage != "")
+                znak = true;
+
+            context.Korisnici.Remove(user);
+            context.SaveChanges();
+
+            bool res = storageService.deleteAcc(id, znak);
+            if (!res)
+                return false;
+
+            List<Post> posts = context.Postovi.Where(x=>x.UserID == id).ToList();
+            foreach(Post p in posts)
+            {
+                context.Remove(p);
+                context.SaveChanges();
+            }
             return true;
         }
         public bool addNewPost(int id, addPost newPost)
@@ -441,11 +457,14 @@ namespace HotSpotAPI.Servisi
             
             string slika = getPhoto(id);
             if (slika == "" || slika == null)
-                //slika = Path.Combine("Storage", "profilna.png");*/
-                slika = "";
-
-            Byte[] b = System.IO.File.ReadAllBytes(slika);
-            u.photo = Convert.ToBase64String(b, 0, b.Length);
+            {
+                u.photo = "";
+            }
+            else
+            {
+                Byte[] b = System.IO.File.ReadAllBytes(slika);
+                u.photo = Convert.ToBase64String(b, 0, b.Length);
+            }
             return u;
         }
 
