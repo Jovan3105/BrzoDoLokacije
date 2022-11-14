@@ -74,8 +74,69 @@
                 android:drawableStart="@drawable/ic_baseline_person_24"
                 android:drawablePadding="5dp"
                 android:ems="10"
-                android:hint="@string/input_login_Email_text"
+                android:hint="@string/input_Register_Email_text"
                 android:inputType="text"
+                style="@style/InputPolje"
+
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:endIconMode="password_toggle"
+            android:id="@+id/passwordWrapper"
+            app:hintTextAppearance="@style/HintText">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/OldPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_baseline_lock_24"
+                android:ems="10"
+                android:hint="@string/oldPassword"
+                android:inputType="textPassword"
+                style="@style/InputPolje"
+
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:endIconMode="password_toggle"
+            android:id="@+id/passwordWrapper1"
+            app:hintTextAppearance="@style/HintText">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/NewPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_baseline_lock_24"
+                android:ems="10"
+                android:hint="@string/newPassword"
+                android:inputType="textPassword"
+                style="@style/InputPolje"
+
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:endIconMode="password_toggle"
+            app:hintTextAppearance="@style/HintText"
+            android:id="@+id/passwordWrapper2"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ConfirmnewPassword1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_baseline_lock_24"
+                android:ems="10"
+                android:hint="@string/confirmnewPasword"
+                android:inputType="textPassword"
                 style="@style/InputPolje"
 
                 />

@@ -8,6 +8,7 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
+import retrofit2.http.Part
 
 class Repository(){
     suspend fun login(loginDATA:loginDTS): Response<LoginResponse> {
@@ -19,14 +20,19 @@ class Repository(){
     suspend fun VerifyEmail(EmailToken:String):Response<ResponseBody>{
         return APIservis.Servis.VerifyEmail(EmailToken)
     }
-    suspend fun changeProfilePhoto(photo: MultipartBody.Part):Response<ResponseBody>{
-        return APIservis.Servis.changeProfilePhoto(photo)
+    suspend fun changeProfilePhoto(@Part slika: MultipartBody.Part, @Part username:MultipartBody.Part, @Part email:MultipartBody.Part,
+                                   @Part oldPassword:MultipartBody.Part,@Part newPassword:MultipartBody.Part):Response<changeAccDataResponse>{
+        return APIservis.Servis.changeProfilePhoto(slika,username,email,oldPassword,newPassword)
     }
     suspend fun KreirajPost(post:String):Response<ResponseBody>{
         return APIservis.Servis.KreirajPost()
     }
     suspend fun resetujToken(refreshTokenDATA:refreshTokenDTS):Response<refreshTokenResponse>{
         return RefreshTokenAPICALL.Servis.resetujToken(refreshTokenDATA)
+    }
+
+    suspend fun getProfilePhoto():Response<ResponseBody>{
+        return APIservis.Servis.getPhoto()
     }
 
 }

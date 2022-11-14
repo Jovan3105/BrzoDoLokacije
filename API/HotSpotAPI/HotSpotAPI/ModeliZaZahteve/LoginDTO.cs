@@ -12,30 +12,37 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public string Message { get; set; } = string.Empty;
         public string Token { get; set; } = string.Empty;
-
         public string? refreshToken { get; set; } = string.Empty;
     }
 
-    public class UserInfo
+    public class getProfilePhoto
     {
-        public string Username { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public dynamic ProfilePhoto { get; set; } = null;
+        public dynamic? ProfilePhoto { get; set; } = null;
     }
     public class EditUser
     {
-        [Required(ErrorMessage = "Nije unet username")]
+        
         [StringLength(maximumLength: 20, ErrorMessage = "Maksimalna duzina username-a je 20")]
         public string Username { get; set; } = string.Empty;
+        
         [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "Nije uneta validna Email adresa")]
         public string Email { get; set; } = string.Empty;
-        public string OldPassword { get; set; } = string.Empty;
         [Required(ErrorMessage = "Nije uneta sifra")]
-        public string NewPassword { get; set; } = string.Empty;
+        public string OldPassword { get; set; } = string.Empty;
+        
+        public string? NewPassword { get; set; } = string.Empty;
+        public IFormFile? slika { get; set; }
     }
     public class messageresponse
     {
         public string message { get; set; } = string.Empty;
+    }
+
+    public class changeAccDataResponse
+    {
+        public string message { get;set; } = string.Empty;
+        public string token { get; set; } = string.Empty;
+        public int Id { get; set; } = 0;
     }
 
     public class password
@@ -52,7 +59,6 @@ namespace HotSpotAPI.ModeliZaZahteve
 
     public class addPost
     {
-        public string username { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
         public string location { get; set; } = string.Empty;
         public List<IFormFile> photos { get; set; }
@@ -69,11 +75,14 @@ namespace HotSpotAPI.ModeliZaZahteve
     
     public class Photo
     {
+        public string username { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
         public IFormFile slika { get; set; }
     }
 
     public class comment
     {
+        public int parentid { get; set; }
         public int postid { get; set; }
         public string text { get; set; }
     }
@@ -81,10 +90,12 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public int OwnerID { get; set; }
         public string text { get; set; } = string.Empty;
+        public dynamic userPhoto { get; set; }
+        public string username { set; get; } = string.Empty;
         public DateTime time { get; set; }
     }
 
-    public class deletecom
+    public class com
     {
         public int postId { get; set; }
         public int commid { get; set; }
@@ -94,5 +105,14 @@ namespace HotSpotAPI.ModeliZaZahteve
         public int postId { get; set; }
         public int commid { get; set; }
         public string newtext { get; set; } = string.Empty;
+    }
+    public class userinfo
+    {
+        public string username { get; set; } = string.Empty;
+        public string photo { get; set; } = string.Empty;
+    }
+    public class likes
+    {
+        public int postid { get; set; }
     }
 }

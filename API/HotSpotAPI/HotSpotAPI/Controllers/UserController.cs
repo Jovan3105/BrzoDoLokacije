@@ -27,72 +27,104 @@ namespace HotSpotAPI.Controllers
             this.storageService = storageService;
         }
 
-        [HttpPut("{username}/edituser")]
-        public async Task<ActionResult<string>> EditUser(string username, EditUser zahtev)
+        [HttpPost("edituser")]
+        public async Task<ActionResult<string>> EditUser([FromForm] EditUser zahtev)
         {
             int id = userService.GetUserId();
             if (id == -1)
-                return Ok("korisnik sa usernameom ne postoji");
-            bool pass = mySQLServis.checkPass(username, zahtev.OldPassword);
+                return Unauthorized();
+            // bool res = userService.ChangePhoto(3, photo.slika);
+            // int id = userService.GetUserId();
+            // if (id == -1)
+            // return Ok("korisnik sa usernameom ne postoji");
+            bool pass = mySQLServis.checkPass(id, zahtev.OldPassword);
             if (pass == false)
                 return BadRequest
                     (
-                        new messageresponse
+                        new changeAccDataResponse
                         {
-                            message = "pogresan password"
+                            message = "wrongPassword",
+                            token="",
+                            Id=id
+
                         }
                     );
-            string res = mySQLServis.izmeniKorisnika(username, zahtev, out bool ind);
+            string res = mySQLServis.izmeniKorisnika(id, zahtev, out bool ind, out bool indPromeneTokena);
             if (!ind)
             {
                 return BadRequest
                     (
-                        new messageresponse
+                        new changeAccDataResponse
                         {
-                            message = res
+                            message= res,
+                            token="",
+                            Id=id
+
+                        }
+                    );
+            }
+            if(indPromeneTokena && ind)
+            {
+                return Ok
+                    (
+                        new changeAccDataResponse
+                        {
+                            message = "successfullChangeAccountData",
+                            token = res,
+                            Id = id
+                        }
+                    );
+            }
+            if(!indPromeneTokena && ind)
+            {
+                return Ok
+                    (
+                        new changeAccDataResponse
+                        {
+                            message = "successfullChangeAccountData",
+                            token = "",
+                            Id = id
                         }
                     );
             }
             return Ok
                     (
-                        new messageresponse
+                        new changeAccDataResponse
                         {
-                            message = res
+                            message = "successfullChangeAccountData",
+                            token = "",
+                            Id = id
                         }
                     );
         }
-        [HttpGet]
-        public async Task<ActionResult<UserInfo>> GetUserinfo()
+        [HttpDelete]
+        public async Task<ActionResult<string>> DeleteAccount()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.deleteAccount(id);
+            if (res)
+                return Ok();
+            return BadRequest();
+        }
+        [HttpGet("GetPhoto")]
+        public async Task<ActionResult<string>> GetUserinfo()
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
             string slika = userService.getPhoto(id);
             if (slika == "" || slika == null)
-                slika = Path.Combine("Storage", "profilna.png");
-
+            {
+                return null;
+            }
             Byte[] b = System.IO.File.ReadAllBytes(slika);
-            UserInfo userInfo = new UserInfo();
-            userInfo.Username = "aa";
-            userInfo.Email = "Aa";
-            userInfo.ProfilePhoto = Convert.ToBase64String(b, 0, b.Length);
-            return userInfo;
-        }
-
-        [HttpPost("photo")]
-        public async Task<ActionResult<string>> SetProfilePhoto([FromForm]Photo photo)
-        {
-            //int id = userService.GetUserId();
-            //if (id == -1)
-               // return Unauthorized();
-            bool res = userService.ChangePhoto(3, photo.slika);
-
-            if (res)
-                return Ok();
-            return BadRequest();
+            return Convert.ToBase64String(b, 0, b.Length);
         }
         [HttpPost("addpost")]
-        public async Task<ActionResult<string>> AddPost([FromForm]addPost newPost)
+        public async Task<ActionResult<string>> AddPost([FromForm] addPost newPost)
         {
             int id = userService.GetUserId();
             if (id == -1)
@@ -112,24 +144,36 @@ namespace HotSpotAPI.Controllers
                 return Unauthorized();
 
             List<getPosts> res = userService.getAllPosts(id);
-            if (res !=null)
+            if (res != null)
                 return Ok(res);
             return BadRequest();
         }
-
-        [HttpGet("getpost")]
-        public async Task<ActionResult<string>> GetPosts(int postID)
+        //KADA KORISNIK HOCE DA VIDI PROFIL DRUGOG KORISNIKA
+        [HttpGet("getpostsbyid/{userid}")]
+        public async Task<ActionResult<string>> GetPostsById(int userid)
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            getPosts res = userService.getPost(id, postID);
+            List<getPosts> res = userService.getAllPosts(userid);
             if (res != null)
                 return Ok(res);
             return BadRequest();
         }
-        [HttpGet("getpostbylocation")]
+        [HttpGet("getpost/{postid}")]
+        public async Task<ActionResult<string>> GetPosts(int postid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            getPosts res = userService.getPost(id, postid);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpGet("getpostbylocation/{location}")]
         public async Task<ActionResult<string>> GetPostsByLocation(string location)
         {
             int id = userService.GetUserId();
@@ -167,12 +211,12 @@ namespace HotSpotAPI.Controllers
                 return Unauthorized();
 
             bool res = userService.addComment(id, comm);
-            if(!res)
+            if (!res)
                 return BadRequest();
             return Ok();
         }
 
-        [HttpGet("comments")]
+        [HttpGet("comments/{postid}")]
         public async Task<ActionResult<string>> GetComments(int postid)
         {
             int id = userService.GetUserId();
@@ -185,8 +229,20 @@ namespace HotSpotAPI.Controllers
             return Ok(res);
         }
 
+        [HttpGet("comments/{postid}/replies/{commid}")]
+        public async Task<ActionResult<string>> GetComments(int postid, int commid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<comments> res = userService.GetReplies(postid, commid);
+            if (res == null)
+                return BadRequest();
+            return Ok(res);
+        }
         [HttpDelete("comment")]
-        public async Task<ActionResult<string>> DeleteComment(deletecom com)
+        public async Task<ActionResult<string>> DeleteComment(com com)
         {
             int id = userService.GetUserId();
             if (id == -1)
@@ -209,6 +265,56 @@ namespace HotSpotAPI.Controllers
             if (!res)
                 return BadRequest();
             return Ok();
+        }
+        [HttpGet("getUserByID/{idusera}")]
+        public async Task<ActionResult<string>> getUserInfo(int idusera)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            userinfo u = userService.getUserInfo(idusera);
+            if (u != null)
+                return Ok(u);
+            return BadRequest(null);
+        }
+
+        [HttpPost("like")]
+        public async Task<ActionResult<string>> LikePost(int postid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.addLike(id, postid);
+            if (!res)
+                return BadRequest();
+            return Ok();
+        }
+
+        [HttpPost("dislike")]
+        public async Task<ActionResult<string>> DislikePost(int postid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.dislike(id, postid);
+            if (!res)
+                return BadRequest();
+            return Ok();
+        }
+        [HttpGet("likes")]
+        public async Task<ActionResult<List<likes>>> getLikesByUser()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<likes> likes = userService.getLikes(id);
+            if (likes==null)
+                return BadRequest();
+            return Ok(likes);
         }
     }
 }

@@ -29,12 +29,17 @@ interface ApiInterface {
     suspend fun VerifyEmail(@Path("EmailToken") EmailToken:String):Response<ResponseBody>
 
     @Multipart
-    @POST("/api/User/photo")
-    suspend fun changeProfilePhoto(@Part slika: MultipartBody.Part):Response<ResponseBody>
+    @POST("/api/User/edituser")
+    suspend fun changeProfilePhoto(@Part slika: MultipartBody.Part,@Part username:MultipartBody.Part,@Part email:MultipartBody.Part,
+    @Part oldPassword:MultipartBody.Part,@Part newPassword:MultipartBody.Part
+    ):Response<changeAccDataResponse>
 
     @POST("api/User/KreirajPost")
     suspend fun KreirajPost():Response<ResponseBody>
 
     @POST("KontrolerAutentikacije/ResetujToken")
     suspend fun resetujToken(@Body dts: refreshTokenDTS):Response<refreshTokenResponse>
+
+    @GET("/api/User/GetPhoto")
+    suspend fun getPhoto():Response<ResponseBody>
 }

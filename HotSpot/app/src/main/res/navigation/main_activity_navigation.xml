@@ -48,5 +48,9 @@
         android:id="@+id/editProfileFragment"
         android:name="imi.projekat.hotspot.UI.Profile.EditProfileFragment"
         android:label="fragment_edit_profile"
-        tools:layout="@layout/fragment_edit_profile" />
+        tools:layout="@layout/fragment_edit_profile" >
+        <action
+            android:id="@+id/action_editProfileFragment_to_myProfileFragment"
+            app:destination="@id/myProfileFragment" />
+    </fragment>
 </navigation>

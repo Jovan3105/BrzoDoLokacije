@@ -1,10 +1,15 @@
 package imi.projekat.hotspot.Ostalo
 
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.core.content.ContextCompat.startActivity
 import imi.projekat.hotspot.Interfaces.ApiInterface
 import imi.projekat.hotspot.KonfigAplikacije
+import imi.projekat.hotspot.MainActivity
 import imi.projekat.hotspot.ModeliZaZahteve.refreshTokenDTS
 import imi.projekat.hotspot.ModeliZaZahteve.refreshTokenResponse
 import imi.projekat.hotspot.SetupActivity
@@ -171,7 +176,8 @@ class AccessTokenAuthenticator(
                     }
                     else{
                         MenadzerSesije.clearData(SetupActivity.Companion.getContext())
-                        MenadzerSesije.logOut=true
+                        //MenadzerSesije.logOut=true
+
                     }
                 }
 
@@ -195,6 +201,15 @@ class AccessTokenAuthenticator(
     private fun onError(greska: String){
         Log.d("GRESKAuAutentikatoru",greska)
     }
+
+    private fun restartApplication(){
+//        val intent = Intent(this@AccessTokenAuthenticator, SetupActivity::class.java)
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+//        startActivity(intent)
+    }
+
+
 
 
 }
