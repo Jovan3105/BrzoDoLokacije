@@ -30,6 +30,8 @@ namespace HotSpotAPI.Servisi
         public List<likes> getLikes(int id);
         public List<comments> GetReplies(int postId, int commid);
         public bool deleteAccount(int id);
+        public bool addCommLike(int id, int postid, int commid);
+        public bool dislikeComm(int id, int postid, int commid);
     }
     public class UserService : IUserService
     {
@@ -220,6 +222,19 @@ namespace HotSpotAPI.Servisi
                 context.Remove(p);
                 context.SaveChanges();
             }
+
+            List<Like> lajkovi = context.Likes.Where(x => x.UserID == id).ToList();
+            
+            foreach(Like l in lajkovi)
+            {
+                Post p = context.Postovi.FirstOrDefault(x => x.ID == l.PostID);
+                if(p!=null)
+                    p.NumOfLikes--;
+                context.SaveChanges();
+
+                context.Likes.Remove(l);
+                context.SaveChanges();
+            }
             return true;
         }
         public bool addNewPost(int id, addPost newPost)
@@ -340,6 +355,19 @@ namespace HotSpotAPI.Servisi
             if (!res)
                 return false;
 
+            List<Komentari> coms = context.Komentari.Where(x=>x.PostID == postID).ToList();
+            foreach (Komentari k in coms)
+            {
+                context.Komentari.Remove(k);
+                context.SaveChanges();
+            }
+
+            List<Like> lajkovi = context.Likes.Where(x=>x.PostID == postID).ToList();
+            foreach(Like like in lajkovi)
+            {
+                context.Remove(like);
+                context.SaveChanges();
+            }
             context.Remove(post);
             context.SaveChanges();
             return true;
@@ -388,7 +416,7 @@ namespace HotSpotAPI.Servisi
                 kom.username = user.Username;
                 kom.text = c.Text;
                 kom.time = c.DateTime;
-
+                kom.NumOfLikes = c.NumOFLikes;
                 koms.Add(kom);
             }
             return koms;
@@ -514,6 +542,39 @@ namespace HotSpotAPI.Servisi
             }
 
             return lista;
+        }
+        public bool addCommLike(int id, int postid, int commid)
+        {
+            var komentar = context.Komentari.FirstOrDefault(x => x.UserID != id && x.ID == commid && x.PostID==postid);
+            if (komentar == null)
+                return false;
+            komentar.NumOFLikes++;
+
+            LikeKomentara l = new LikeKomentara();
+            l.PostID = postid;
+            l.UserID = id;
+            l.CommentID = commid;
+            context.LikeKomentara.Add(l);
+            context.SaveChanges();
+
+            return true;
+        }
+
+        public bool dislikeComm(int id, int postid, int commid)
+        {
+            var like = context.LikeKomentara.FirstOrDefault(x => x.UserID == id && x.PostID == postid && x.CommentID == commid);
+            if (like == null)
+                return false;
+
+            context.LikeKomentara.Remove(like);
+            context.SaveChanges();
+
+            var kom = context.Komentari.FirstOrDefault(x => x.ID == commid && x.ID == postid);
+            if (kom == null)
+                return false;
+            kom.NumOFLikes--;
+            context.SaveChanges();
+            return true;
         }
     }
 }

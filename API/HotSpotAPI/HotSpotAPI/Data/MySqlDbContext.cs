@@ -13,6 +13,7 @@ namespace HotSpotAPI.Data
         public DbSet<Post> Postovi { get; set; }
         public DbSet<Komentari> Komentari { get; set; }
         public DbSet<Like> Likes { get; set; }
+        public DbSet<LikeKomentara> LikeKomentara { get; set; }
     }
 
 }

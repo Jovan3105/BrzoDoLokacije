@@ -93,6 +93,7 @@ namespace HotSpotAPI.ModeliZaZahteve
         public dynamic userPhoto { get; set; }
         public string username { set; get; } = string.Empty;
         public DateTime time { get; set; }
+        public int NumOfLikes { get; set; }
     }
 
     public class com
@@ -114,5 +115,11 @@ namespace HotSpotAPI.ModeliZaZahteve
     public class likes
     {
         public int postid { get; set; }
+    }
+
+    public class comlikes
+    {
+        public int postid { get; set; }
+        public int commid { get; set; }
     }
 }

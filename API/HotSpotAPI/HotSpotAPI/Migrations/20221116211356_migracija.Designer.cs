@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotSpotAPI.Migrations
 {
     [DbContext(typeof(MySqlDbContext))]
-    [Migration("20221111205642_migracija")]
+    [Migration("20221116211356_migracija")]
     partial class migracija
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,6 +49,9 @@ namespace HotSpotAPI.Migrations
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NumOFLikes")
+                        .HasColumnType("int");
 
                     b.Property<int>("ParentID")
                         .HasColumnType("int");
@@ -129,6 +132,26 @@ namespace HotSpotAPI.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Likes");
+                });
+
+            modelBuilder.Entity("HotSpotAPI.Modeli.LikeKomentara", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CommentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("LikeKomentara");
                 });
 
             modelBuilder.Entity("HotSpotAPI.Modeli.Novalozinka", b =>

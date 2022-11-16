@@ -135,7 +135,15 @@ namespace HotSpotAPI.Controllers
                 return Ok();
             return BadRequest();
         }
+        /*[HttpDelete("deletepost/{postid}")]
+        public async Task<ActionResult<string>> DeletePost(int postid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
 
+            userService.deletePost();
+        }*/
         [HttpGet("getposts")]
         public async Task<ActionResult<string>> GetPosts()
         {
@@ -280,26 +288,26 @@ namespace HotSpotAPI.Controllers
         }
 
         [HttpPost("like")]
-        public async Task<ActionResult<string>> LikePost(int postid)
+        public async Task<ActionResult<string>> LikePost(likes postid)
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            bool res = userService.addLike(id, postid);
+            bool res = userService.addLike(id, postid.postid);
             if (!res)
                 return BadRequest();
             return Ok();
         }
 
         [HttpPost("dislike")]
-        public async Task<ActionResult<string>> DislikePost(int postid)
+        public async Task<ActionResult<string>> DislikePost(likes postid)
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            bool res = userService.dislike(id, postid);
+            bool res = userService.dislike(id, postid.postid);
             if (!res)
                 return BadRequest();
             return Ok();
@@ -315,6 +323,30 @@ namespace HotSpotAPI.Controllers
             if (likes==null)
                 return BadRequest();
             return Ok(likes);
+        }
+        [HttpPost("likecomment")]
+        public async Task<ActionResult<string>> LikeComm(comlikes like)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.addCommLike(id, like.postid, like.commid);
+            if (!res)
+                return BadRequest();
+            return Ok();
+        }
+        [HttpPost("dislikecomment")]
+        public async Task<ActionResult<string>> DislikeComm(comlikes postid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.dislikeComm(id, postid.postid, postid.commid);
+            if (!res)
+                return BadRequest();
+            return Ok();
         }
     }
 }
