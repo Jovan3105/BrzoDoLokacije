@@ -89,7 +89,6 @@ class CreatePostFragment : Fragment(),addImageInterface {
                     Toast.makeText(context, it.poruka, Toast.LENGTH_SHORT).show()
                 }
                 if(it is BaseResponse.Success){
-                    Log.d("SES","SESESSE")
                     Toast.makeText(context, it.data.toString(), Toast.LENGTH_SHORT).show()
                 }
             }

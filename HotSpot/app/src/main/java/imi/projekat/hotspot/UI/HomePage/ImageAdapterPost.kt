@@ -1,4 +1,4 @@
-package imi.projekat.hotspot.UI.Post
+package imi.projekat.hotspot.UI.HomePage
 
 import android.graphics.Bitmap
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import imi.projekat.hotspot.R
 
-class ImageAdapter(private val imageList:ArrayList<Bitmap>, private val viewPager2: ViewPager2,private var praznaLista:Boolean,private val addImageInterface: addImageInterface)
+class ImageAdapter(private val imageList:ArrayList<Bitmap>, private val viewPager2: ViewPager2,private var praznaLista:Boolean,private val addImageInterface: ImageInterfacePost)
     :RecyclerView.Adapter<ImageAdapter.ImageViewHolder>()
 {
     class ImageViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
