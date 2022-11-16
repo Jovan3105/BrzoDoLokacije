@@ -3,6 +3,7 @@ package imi.projekat.hotspot.UI.Post
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -29,6 +30,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -49,6 +52,9 @@ import imi.projekat.hotspot.databinding.FragmentCreatePostBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.views.MapView
 import kotlin.math.abs
 
 class CreatePostFragment : Fragment(),addImageInterface {
@@ -92,6 +98,12 @@ class CreatePostFragment : Fragment(),addImageInterface {
         binding.button2.setOnClickListener{
             addImage()
         }
+        binding.button3.setOnClickListener {
+
+        }
+        binding.button4.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_createPostFragment_to_mapaFragment)
+        }
 
         circleIndicator=view.findViewById<CircleIndicator3>(R.id.circleIndikator)
 
@@ -118,11 +130,6 @@ class CreatePostFragment : Fragment(),addImageInterface {
     override fun onPause() {
         super.onPause()
         handler.removeCallbacks(runnable)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
     }
 
 
@@ -225,7 +232,7 @@ class CreatePostFragment : Fragment(),addImageInterface {
         if (slika!=null)
         if(resolver!=null){
             if (Build.VERSION.SDK_INT >= 28) {
-                val source= ImageDecoder.createSource(resolver, slika!!)
+                val source= ImageDecoder.createSource(resolver, slika)
                 bitmapaSlike=ImageDecoder.decodeBitmap(source)
                 imageList.add(bitmapaSlike)
             } else {
@@ -359,7 +366,6 @@ class CreatePostFragment : Fragment(),addImageInterface {
     }
 
     override var praznaLista: Boolean = true
-        get() = field
         set(value) {
             if(field==true && value==false){
                 imageList.removeAt(0)

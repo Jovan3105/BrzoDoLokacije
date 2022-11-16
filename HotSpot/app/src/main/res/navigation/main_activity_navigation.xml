@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_createPostFragment_to_myProfileFragment"
             app:destination="@id/myProfileFragment" />
+        <action
+            android:id="@+id/action_createPostFragment_to_mapaFragment"
+            app:destination="@id/mapaFragment" />
     </fragment>
     <fragment
         android:id="@+id/myProfileFragment"
@@ -53,4 +56,9 @@
             android:id="@+id/action_editProfileFragment_to_myProfileFragment"
             app:destination="@id/myProfileFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/mapaFragment"
+        android:name="imi.projekat.hotspot.UI.Post.MapaFragment"
+        android:label="fragment_mapa"
+        tools:layout="@layout/fragment_mapa" />
 </navigation>

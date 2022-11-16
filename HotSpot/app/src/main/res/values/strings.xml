@@ -29,6 +29,7 @@
     <string name="oldPassword">Old password</string>
     <string name="newPassword">New password</string>
     <string name="addImage">Add image</string>
+    <string name="addLocation">Add location</string>
 
     //InputErrors
     <string name="forgotPasswordText">Forgot password?</string>
