@@ -13,7 +13,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/white">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,7 +47,7 @@
             android:layout_marginBottom="20dp"
             >
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/galleryButton"
                 android:background="@drawable/dugme_pozadina"
                 android:padding="7dp"
@@ -59,7 +60,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
                 />
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/cameraButton"
                 android:background="@drawable/dugme_pozadina"
                 android:padding="7dp"

@@ -30,6 +30,11 @@
     <string name="newPassword">New password</string>
     <string name="addImage">Add image</string>
     <string name="addLocation">Add location</string>
+    <string name="Comments">Comments</string>
+    <string-array name="CommentDropdownSort">
+        <item>Sort by date</item>
+        <item>Sort by likes</item>
+    </string-array>
 
     //InputErrors
     <string name="forgotPasswordText">Forgot password?</string>

@@ -9,9 +9,10 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.Post.addImageInterface
 
-class ImageAdapter(private val imageList:ArrayList<Bitmap>, private val viewPager2: ViewPager2,private var praznaLista:Boolean,private val addImageInterface: ImageInterfacePost)
-    :RecyclerView.Adapter<ImageAdapter.ImageViewHolder>()
+class ImageAdapterHomePage(private val imageList:ArrayList<Bitmap>, private val viewPager2: ViewPager2)
+    :RecyclerView.Adapter<ImageAdapterHomePage.ImageViewHolder>()
 {
     class ImageViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val imageView:ImageView=itemView.findViewById(R.id.imageView)
@@ -26,16 +27,6 @@ class ImageAdapter(private val imageList:ArrayList<Bitmap>, private val viewPage
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        holder.dugme.setOnClickListener{
-            addImageInterface.removeImage(position)
-        }
-        if(praznaLista) {
-            holder.imageView.setOnClickListener {
-
-                addImageInterface.addImage()
-
-            }
-        }
 
         holder.imageView.setImageBitmap(imageList[position])
     }
