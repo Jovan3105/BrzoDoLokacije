@@ -17,7 +17,9 @@ namespace HotSpotAPI.Servisi
         public bool ChangePhoto(int id, IFormFile photo);
         public userinfo getUserInfo(int id);
         public bool deleteAccount(int id);
-
+        public bool followUser(int userid, int followid);
+        public List<follower> getfollowUser(int id);
+        public bool unfollowUser(int userid, int followid);
     }
     public class UserService : IUserService
     {
@@ -205,7 +207,7 @@ namespace HotSpotAPI.Servisi
             List<Post> posts = context.Postovi.Where(x=>x.UserID == id).ToList();
             foreach(Post p in posts)
             {
-                context.Remove(p);
+                context.Postovi.Remove(p);
                 context.SaveChanges();
             }
 
@@ -219,6 +221,13 @@ namespace HotSpotAPI.Servisi
                 context.SaveChanges();
 
                 context.Likes.Remove(l);
+                context.SaveChanges();
+            }
+
+            List<Followers> followers = context.Followers.Where(x=>x.ID == id || x.followID==id).ToList();
+            foreach(Followers f in followers)
+            {
+                context.Followers.Remove(f);
                 context.SaveChanges();
             }
             return true;
@@ -243,6 +252,57 @@ namespace HotSpotAPI.Servisi
             }
             return u;
         }
-        
+        public string getUsernameById(int id)
+        {
+            Korisnik name = context.Korisnici.Find(id);
+            if (name != null)
+                return name.Username;
+            return "";
+        }
+        public bool followUser(int userid, int followid)
+        {
+            var fol = context.Followers.FirstOrDefault(x => x.ID == userid && x.followID == followid);
+            if (fol != null)
+                return false;
+
+            Followers f = new Followers();
+            f.ID = userid;
+            f.followID = followid;
+
+            context.Followers.Add(f);
+            context.SaveChanges();
+
+            return true;
+        }
+        public bool unfollowUser(int userid, int followid)
+        {
+            var fol = context.Followers.FirstOrDefault(x => x.ID == userid && x.followID == followid);
+            if (fol == null)
+                return false;
+
+            context.Followers.Remove(fol);
+            context.SaveChanges();
+            return true;
+        }
+        public List<follower> getfollowUser(int id)
+        {
+            var fol = context.Followers.Where(x => x.ID == id).ToList();
+            if (fol == null)
+                return null;
+
+            List<follower> fols = new List<follower>();
+            foreach(Followers f in fol)
+            {
+                follower f1 = new follower();
+                f1.username = getUsernameById(f.followID);
+                if (f1.username == "" || f1.username == null)
+                    return null;
+                f1.ID = f.followID;
+                fols.Add(f1);
+            }
+            return fols;
+            
+        }
+
     }
 }

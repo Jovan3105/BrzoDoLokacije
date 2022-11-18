@@ -122,4 +122,11 @@ namespace HotSpotAPI.ModeliZaZahteve
         public int postid { get; set; }
         public int commid { get; set; }
     }
+
+    public class follower
+    {
+        public int ID { get; set; }
+        public string username { get; set; }
+    }
+
 }

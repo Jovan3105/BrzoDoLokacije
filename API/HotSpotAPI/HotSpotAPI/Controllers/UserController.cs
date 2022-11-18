@@ -123,6 +123,43 @@ namespace HotSpotAPI.Controllers
             Byte[] b = System.IO.File.ReadAllBytes(slika);
             return Convert.ToBase64String(b, 0, b.Length);
         }
-        
+
+        [HttpPost("follow/{userid}")]
+        public async Task<ActionResult<string>> FollowUser(int userid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.followUser(id, userid);
+            if (!res)
+                return BadRequest();
+            return Ok();
+        }
+        [HttpPost("follow/{userid}")]
+        public async Task<ActionResult<string>> UnfollowUser(int userid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.unfollowUser(id, userid);
+            if (!res)
+                return BadRequest();
+            return Ok();
+        }
+
+        [HttpGet("follow")]
+        public async Task<ActionResult<string>> GetFollowers()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<follower> f = userService.getfollowUser(id);
+            if (f != null)
+                return Ok(f);
+            return BadRequest();
+        }
     }
 }
