@@ -196,6 +196,10 @@ namespace HotSpotAPI.Migrations
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
+                    b.Property<string>("shortDescription")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("ID");
 
                     b.ToTable("Postovi");

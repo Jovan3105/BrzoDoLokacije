@@ -24,11 +24,15 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _liveProfilePhotoResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val liveProfilePhotoResponse=_liveProfilePhotoResponse.asSharedFlow()
 
-    private var _KreirajPostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
-    val KreirajPostResponse =_KreirajPostResponse.asSharedFlow()
-
     private var _DodajPostResposne= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val DodajPostResposne=_DodajPostResposne.asSharedFlow()
+
+    private var _GetPostWithIdResponse=MutableLiveData<BaseResponse<getpostResponse>>()
+    val GetPostWithIdResponse: MutableLiveData<BaseResponse<getpostResponse>>
+        get() = _GetPostWithIdResponse
+
+    private var _GreskaHendler= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val GreskaHendler=_GreskaHendler.asSharedFlow()
 
 
 
@@ -37,13 +41,17 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     val exceptionHandler=CoroutineExceptionHandler{_,throwable->onError(
         "ConnectionError"
     )
-        Log.d("Exception",throwable.localizedMessage.toString())
+        Log.d("ExceptionInMainView",throwable.localizedMessage.toString())
     }
 
 
 
     private fun onError(greska: String){
-       // _liveEditProfileResponse.emit(BaseResponse.Error(greska))
+        runBlocking{
+            launch {
+                _GreskaHendler.emit(BaseResponse.Error(greska))
+            }
+        }
     }
 
     override fun onCleared() {
@@ -73,29 +81,10 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
-    fun KreirajPost(post:String){
-        //KreirajPostResponse.value=BaseResponse.Loading()
+    fun addPost(@Part photos:ArrayList<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part,@Part shortDescription:MultipartBody.Part){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
-            val response=repository.KreirajPost(post)
-            withContext(Dispatchers.Main){
-                if(response.isSuccessful){
-                    Log.d("Brzi1",response.toString())
-                    _KreirajPostResponse.emit(BaseResponse.Success(response.body()))
-
-                }
-                else{
-                    val content = response.errorBody()!!.charStream().readText()
-                    Log.d("Brzi2",response.toString())
-                    _KreirajPostResponse.emit(BaseResponse.Error(response.toString()))
-
-                }
-            }
-        }
-    }
-
-    fun addPost(@Part photos:ArrayList<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part){
-        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
-            val response=repository.addPost(photos,description,location)
+            _DodajPostResposne.emit(BaseResponse.Loading())
+            val response=repository.addPost(photos,description,location,shortDescription)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     Log.d("Brzi1",response.toString())
@@ -104,8 +93,7 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 }
                 else{
                     val content = response.errorBody()!!.charStream().readText()
-                    Log.d("Brzi2",response.toString())
-                    _DodajPostResposne.emit(BaseResponse.Error(response.toString()))
+                    _DodajPostResposne.emit(BaseResponse.Error(content))
 
                 }
             }
@@ -135,6 +123,22 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     }
 
 
+    fun getPostWithID(postid:Int){
+        _GetPostWithIdResponse.value=BaseResponse.Loading()
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.getPostWithId(postid)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _GetPostWithIdResponse.value=BaseResponse.Success(response.body())
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _GetPostWithIdResponse.postValue(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
 
 
 }

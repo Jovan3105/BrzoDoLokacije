@@ -50,6 +50,7 @@ namespace HotSpotAPI.Servisi
             p.Location = newPost.location;
             p.DateTime = DateTime.Now;
             p.NumOfPhotos = newPost.photos.Count;
+            p.shortDescription = newPost.shortDescription;
             context.Postovi.Add(p);
             context.SaveChanges();
 
@@ -83,6 +84,7 @@ namespace HotSpotAPI.Servisi
                 p.DateTime = post.DateTime;
                 p.photos = new List<string>();
                 p.brojslika = post.NumOfPhotos;
+                p.shortDescription = post.shortDescription;
                 string basepath = storageService.CreatePost();
                 basepath = Path.Combine(basepath, "user" + id + "post" + post.ID);
                 for (int i = 1; i <= post.NumOfPhotos; i++)
@@ -110,6 +112,7 @@ namespace HotSpotAPI.Servisi
                 p.DateTime = post.DateTime;
                 p.photos = new List<string>();
                 p.brojslika = post.NumOfPhotos;
+                p.shortDescription = post.shortDescription;
                 string basepath = storageService.CreatePost();
                 basepath = Path.Combine(basepath, "user" + post.UserID + "post" + post.ID);
                 for (int i = 1; i <= post.NumOfPhotos; i++)
@@ -135,6 +138,7 @@ namespace HotSpotAPI.Servisi
             p.DateTime = post.DateTime;
             p.photos = new List<string>();
             p.brojslika = post.NumOfPhotos;
+            p.shortDescription = post.shortDescription;
             string basepath = storageService.CreatePost();
             basepath = Path.Combine(basepath, "user" + id + "post" + post.ID);
             for (int i = 1; i <= post.NumOfPhotos; i++)

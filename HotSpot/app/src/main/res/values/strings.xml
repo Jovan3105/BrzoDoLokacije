@@ -31,6 +31,13 @@
     <string name="addImage">Add image</string>
     <string name="addLocation">Add location</string>
     <string name="Comments">Comments</string>
+    <string name="CreatePost">Publish</string>
+    <string name="LongPostDescription">Long post description</string>
+    <string name="ShortPostDescription">Short post description</string>
+    <string name="SuccesCreatingPost">Successfully created post</string>
+    <string name="FailedCreatingPost">Failed creating post</string>
+
+
     <string-array name="CommentDropdownSort">
         <item>Date</item>
         <item>Likes</item>

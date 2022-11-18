@@ -62,6 +62,7 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string description { get; set; } = string.Empty;
         public string location { get; set; } = string.Empty;
         public List<IFormFile> photos { get; set; }
+        public string shortDescription { get; set; } = string.Empty;
     }
 
     public class getPosts
@@ -71,6 +72,8 @@ namespace HotSpotAPI.ModeliZaZahteve
         public DateTime DateTime { get; set; }
         public List<string> photos { get; set; }
         public int brojslika { get; set; }
+
+        public string shortDescription { get; set; }
     }
     
     public class Photo

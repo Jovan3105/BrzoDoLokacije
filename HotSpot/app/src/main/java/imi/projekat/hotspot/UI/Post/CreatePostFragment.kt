@@ -44,6 +44,8 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
 import imi.projekat.hotspot.BuildConfig
 import imi.projekat.hotspot.Ostalo.BaseResponse
+import imi.projekat.hotspot.Ostalo.MenadzerSesije
+import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentCreatePostBinding
@@ -89,25 +91,19 @@ class CreatePostFragment : Fragment(),addImageInterface {
         super.onViewCreated(view, savedInstanceState)
         binding= FragmentCreatePostBinding.bind(view)
 
-        viewLifecycleOwner.lifecycleScope.launch{
-            viewModel.KreirajPostResponse.collectLatest{
-                if(it is BaseResponse.Error){
-                    Toast.makeText(context, it.poruka, Toast.LENGTH_SHORT).show()
-                }
-                if(it is BaseResponse.Success){
-                    Toast.makeText(context, it.data.toString(), Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+
 
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.DodajPostResposne.collectLatest{
                 if(it is BaseResponse.Error){
-                    Toast.makeText(requireContext(), "Bad request", Toast.LENGTH_SHORT).show()
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
+                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
                 }
                 if(it is BaseResponse.Success){
-                    Log.d("SES","SESESSE")
-                    Toast.makeText(requireContext(), "Ok request", Toast.LENGTH_SHORT).show()
+                    val content = it.data!!.charStream().readText()
+                    Log.d(content,content)
+                    val id = UpravljanjeResursima.getResourceString(content,requireContext())
+                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
                     findNavController().navigate(R.id.action_createPostFragment_to_homePageFragment)
                 }
             }
@@ -144,6 +140,10 @@ class CreatePostFragment : Fragment(),addImageInterface {
             }
         })
         circleIndicator.setViewPager(viewPager2)
+
+
+
+
 
     }
     private val runnable= Runnable {
@@ -429,7 +429,12 @@ class CreatePostFragment : Fragment(),addImageInterface {
     private fun sendPost(){
         val location=MultipartBody.Part.createFormData("location","Proba")
         val description=MultipartBody.Part.createFormData("description",binding.opisPosta.text.toString())
+        val shortDescription=MultipartBody.Part.createFormData("shortDescription",binding.kratakOpisPosta.text.toString())
         if(binding.opisPosta.text.toString().isNullOrEmpty()){
+            Toast.makeText(requireContext(), "Insert your description", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if(binding.kratakOpisPosta.text.toString().isNullOrEmpty()){
             Toast.makeText(requireContext(), "Insert your description", Toast.LENGTH_SHORT).show()
             return
         }
@@ -439,8 +444,10 @@ class CreatePostFragment : Fragment(),addImageInterface {
             partovi.clear()
         }
         for (i in 0 until  imageListUri.size){
+            Log.d("URI",imageListUri[i].toString())
             if(imageListUri[i]!=null)
             {
+
                 val parcelFileDescriptor=getActivity()?.contentResolver?.openFileDescriptor(imageListUri[i]!!,"r",null)?:return
                 val inputStream=FileInputStream(parcelFileDescriptor.fileDescriptor)
                 val file=File(getActivity()?.cacheDir,getActivity()?.contentResolver?.getFileName(imageListUri[i]!!))
@@ -459,7 +466,7 @@ class CreatePostFragment : Fragment(),addImageInterface {
             Toast.makeText(requireContext(), "Insert your image", Toast.LENGTH_SHORT).show()
             return
         }
-        viewModel.addPost(partovi,description,location)
+        viewModel.addPost(partovi,description,location,shortDescription)
 
     }
 

@@ -9,5 +9,6 @@
         public string Location { get; set; }
         public int NumOfLikes { get; set; } = 0;
         public int NumOfPhotos { get; set; }
+        public string shortDescription { get; set; }
     }
 }

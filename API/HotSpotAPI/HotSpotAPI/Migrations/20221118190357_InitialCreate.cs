@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HotSpotAPI.Migrations
 {
-    public partial class migracija : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -133,7 +133,9 @@ namespace HotSpotAPI.Migrations
                     Location = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NumOfLikes = table.Column<int>(type: "int", nullable: false),
-                    NumOfPhotos = table.Column<int>(type: "int", nullable: false)
+                    NumOfPhotos = table.Column<int>(type: "int", nullable: false),
+                    shortDescription = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {

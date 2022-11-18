@@ -1,24 +1,39 @@
 package imi.projekat.hotspot.UI.HomePage
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Base64
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import imi.projekat.hotspot.LoginActivity
+import imi.projekat.hotspot.MainActivity
+import imi.projekat.hotspot.Ostalo.BaseResponse
+import imi.projekat.hotspot.Ostalo.MenadzerSesije
+import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
+import imi.projekat.hotspot.databinding.FragmentConfirmEmailBinding
 import imi.projekat.hotspot.databinding.FragmentSinglePostBinding
 import kotlinx.android.synthetic.main.fragment_single_post.view.*
 import me.relex.circleindicator.CircleIndicator3
@@ -33,12 +48,14 @@ class SinglePostFragment : Fragment() {
     private lateinit var imageList:ArrayList<Bitmap>
     private lateinit var adapter:ImageAdapterHomePage
     private lateinit var circleIndicator: CircleIndicator3
+    private lateinit var opisTekstView: TextView
+    private lateinit var kratakOpisView: TextView
 
     override fun onResume() {
         super.onResume()
+        Log.d("RESUME","RESUME")
         val CommentDropdownSort=resources.getStringArray(R.array.CommentDropdownSort)
         val arrayAdapter=ArrayAdapter(requireContext(),R.layout.dropdown_item,CommentDropdownSort)
-
         binding.commentsSelector.setAdapter(arrayAdapter)
         binding.commentsSelector.setText(CommentDropdownSort[0],false)
 
@@ -53,16 +70,40 @@ class SinglePostFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        return inflater.inflate(R.layout.fragment_single_post, container, false)
+        binding= FragmentSinglePostBinding.inflate(inflater,container,false)
+        opisTekstView=binding.root.findViewById(binding.DuziOpis.id)
+        kratakOpisView=binding.root.findViewById(binding.KratakOpis.id)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding= FragmentSinglePostBinding.bind(view)
 
+        viewModel.GetPostWithIdResponse.observe(viewLifecycleOwner){
+            when(it){
+                is BaseResponse.Loading->{
+                }
+                is BaseResponse.Success->{
+                    var array=it.data?.photos
+                    if(array==null)
+                        return@observe
 
+                    imageList.clear()
+                    for (i in 0 until  array.size){
+                        var byte=Base64.decode(array.get(i),Base64.DEFAULT)
+                        var bitmapa=BitmapFactory.decodeByteArray(byte,0,byte.size)
+                        imageList.add(bitmapa)
+                    }
+                    initImageCarousel(0)
+                    setupTransformer()
 
+                    opisTekstView.text=it.data?.description
+                    kratakOpisView.text=it.data?.shortDescription
+                }
+                is BaseResponse.Error->{
+                }
+            }
+        }
 
         circleIndicator=view.findViewById<CircleIndicator3>(R.id.circleIndikator)
         imageList= ArrayList()
@@ -70,6 +111,7 @@ class SinglePostFragment : Fragment() {
         imageList.add(myimage)
         initImageCarousel(0)
         setupTransformer()
+
 
 
 
@@ -81,6 +123,9 @@ class SinglePostFragment : Fragment() {
             }
         })
         circleIndicator.setViewPager(viewPager2)
+
+
+        viewModel.getPostWithID(1)
 
     }
 
@@ -95,7 +140,7 @@ class SinglePostFragment : Fragment() {
 
     private fun initImageCarousel(position:Int){
 
-        viewPager2= requireView().findViewById(binding.viewPager2.id)
+        viewPager2=requireView().findViewById(binding.viewPager2.id)
         handler= Handler(Looper.myLooper()!!)
         adapter= ImageAdapterHomePage(imageList,viewPager2)
         viewPager2.adapter = adapter
@@ -119,6 +164,8 @@ class SinglePostFragment : Fragment() {
                 super.onPageSelected(position)
             }
         })
+
+
     }
 
     private fun setupTransformer(){

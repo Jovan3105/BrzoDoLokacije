@@ -183,7 +183,7 @@ class AccessTokenAuthenticator(
 
                 return runBlocking{
                     handleJob!!.join()
-                    Log.d("pom", pom!!.header("Authorization").toString())
+                    //Log.d("pom", pom!!.header("Authorization").toString())
                     APIservis.ResetServis()
                     RefreshTokenAPICALL.ResetServis()
                     Log.d("APIservis","Resetovani servisi")

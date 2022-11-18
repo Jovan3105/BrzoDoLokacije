@@ -36,8 +36,8 @@ namespace HotSpotAPI.Controllers
 
             bool res = postService.addNewPost(id, newPost);
             if (res)
-                return Ok();
-            return BadRequest();
+                return Ok("SuccesCreatingPost");
+            return BadRequest("FailedCreatingPost");
         }
         /*[HttpDelete("deletepost/{postid}")]
         public async Task<ActionResult<string>> DeletePost(int postid)
@@ -83,7 +83,7 @@ namespace HotSpotAPI.Controllers
             getPosts res = postService.getPost(id, postid);
             if (res != null)
                 return Ok(res);
-            return BadRequest();
+            return BadRequest("NoPostWithThatId");
         }
         [HttpGet("getpostbylocation/{location}")]
         public async Task<ActionResult<string>> GetPostsByLocation(string location)

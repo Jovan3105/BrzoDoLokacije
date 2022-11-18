@@ -35,8 +35,11 @@ class Repository(){
         return APIservis.Servis.getPhoto()
     }
 
-    suspend fun addPost(@Part photos:List<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part):Response<ResponseBody>{
-        return APIservis.Servis.addPost(photos,description,location)
+    suspend fun addPost(@Part photos:List<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part,@Part shortDescription:MultipartBody.Part):Response<ResponseBody>{
+        return APIservis.Servis.addPost(photos,description,location,shortDescription)
     }
 
+    suspend fun getPostWithId(postid:Int):Response<getpostResponse>{
+        return APIservis.Servis.getPostWithId(postid)
+    }
 }
