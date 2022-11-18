@@ -42,4 +42,9 @@ interface ApiInterface {
 
     @GET("/api/User/GetPhoto")
     suspend fun getPhoto():Response<ResponseBody>
+
+    @Multipart
+    @POST("/api/User/addpost")
+    suspend fun addPost(@Part photos:List<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part):Response<ResponseBody>
+
 }

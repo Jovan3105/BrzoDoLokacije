@@ -27,6 +27,9 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _KreirajPostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val KreirajPostResponse =_KreirajPostResponse.asSharedFlow()
 
+    private var _DodajPostResposne= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val DodajPostResposne=_DodajPostResposne.asSharedFlow()
+
 
 
     var handleJob: Job?=null
@@ -84,6 +87,25 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                     val content = response.errorBody()!!.charStream().readText()
                     Log.d("Brzi2",response.toString())
                     _KreirajPostResponse.emit(BaseResponse.Error(response.toString()))
+
+                }
+            }
+        }
+    }
+
+    fun addPost(@Part photos:ArrayList<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.addPost(photos,description,location)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    Log.d("Brzi1",response.toString())
+                    _DodajPostResposne.emit(BaseResponse.Success(response.body()))
+
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    Log.d("Brzi2",response.toString())
+                    _DodajPostResposne.emit(BaseResponse.Error(response.toString()))
 
                 }
             }

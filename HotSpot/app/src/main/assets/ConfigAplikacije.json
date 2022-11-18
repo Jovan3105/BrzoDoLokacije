@@ -1,5 +1,5 @@
 {
   "AppSettings": {
-    "baseURL": "http://147.91.204.115:10100/"
+    "baseURL": "http://10.0.2.2:5140/"
   }
 }

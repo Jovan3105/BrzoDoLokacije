@@ -3,22 +3,18 @@ package imi.projekat.hotspot.UI.Post
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ActivityNotFoundException
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.VectorDrawable
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,17 +22,18 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
-import androidx.preference.PreferenceManager
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -45,6 +42,7 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
+import imi.projekat.hotspot.BuildConfig
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
@@ -52,10 +50,16 @@ import imi.projekat.hotspot.databinding.FragmentCreatePostBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
-import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.views.MapView
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 import kotlin.math.abs
+
 
 class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var binding:FragmentCreatePostBinding
@@ -63,6 +67,8 @@ class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var viewPager2: ViewPager2
     private lateinit var handler: Handler
     private lateinit var imageList:ArrayList<Bitmap>
+    private lateinit var imageListUri:ArrayList<Uri?>
+    private lateinit var partovi:ArrayList<MultipartBody.Part>
     private lateinit var adapter:ImageAdapter
     private lateinit var circleIndicator:CircleIndicator3
 
@@ -94,19 +100,37 @@ class CreatePostFragment : Fragment(),addImageInterface {
             }
         }
 
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.DodajPostResposne.collectLatest{
+                if(it is BaseResponse.Error){
+                    Toast.makeText(requireContext(), "Bad request", Toast.LENGTH_SHORT).show()
+                }
+                if(it is BaseResponse.Success){
+                    Log.d("SES","SESESSE")
+                    Toast.makeText(requireContext(), "Ok request", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_createPostFragment_to_homePageFragment)
+                }
+            }
+        }
+
         binding.button2.setOnClickListener{
             addImage()
-        }
-        binding.button3.setOnClickListener {
-
         }
         binding.button4.setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.action_createPostFragment_to_mapaFragment)
         }
 
+        binding.button3.setOnClickListener{
+            sendPost()
+            //sendPost2()
+            //ConvertCameraBitmapToUri(imageBitmapListFromCamera,requireContext())
+        }
+
         circleIndicator=view.findViewById<CircleIndicator3>(R.id.circleIndikator)
 
         imageList= ArrayList()
+        imageListUri= ArrayList()
+        partovi= ArrayList()
         val myimage = (ResourcesCompat.getDrawable(this.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
         imageList.add(myimage)
         initImageCarousel(0)
@@ -159,6 +183,8 @@ class CreatePostFragment : Fragment(),addImageInterface {
     val getActionCamera=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         val bitmap=it?.data?.extras?.get("data") as Bitmap
         imageList.add(bitmap)
+        convertCameraBitmapToUri(bitmap,requireContext())
+        //Log.d("Uri sa kamere",uri.toString())
         praznaLista=false
         initImageCarousel(0)
         setupTransformer()
@@ -210,11 +236,13 @@ class CreatePostFragment : Fragment(),addImageInterface {
                 for (i in 0 until  it.data?.clipData!!.itemCount){
                     val source= ImageDecoder.createSource(resolver, it.data!!.clipData?.getItemAt(i)?.uri!!)
                     bitmapaSlike=ImageDecoder.decodeBitmap(source)
+                   imageListUri.add(it.data!!.data)
                     imageList.add(bitmapaSlike)
                 }
             } else {
                 for (i in 0..it.data?.clipData!!.itemCount){
                     bitmapaSlike=MediaStore.Images.Media.getBitmap(resolver,it.data!!.clipData?.getItemAt(i)?.uri!!)
+                   imageListUri.add(it.data!!.data)
                     imageList.add(bitmapaSlike)
                 }
 
@@ -233,9 +261,11 @@ class CreatePostFragment : Fragment(),addImageInterface {
             if (Build.VERSION.SDK_INT >= 28) {
                 val source= ImageDecoder.createSource(resolver, slika)
                 bitmapaSlike=ImageDecoder.decodeBitmap(source)
+                imageListUri.add(it.data!!.data)
                 imageList.add(bitmapaSlike)
             } else {
                 bitmapaSlike=MediaStore.Images.Media.getBitmap(resolver,slika)
+               imageListUri.add(it.data!!.data)
                 imageList.add(bitmapaSlike)
             }
             praznaLista=false
@@ -351,6 +381,7 @@ class CreatePostFragment : Fragment(),addImageInterface {
     override fun removeImage(id: Int) {
         var pom=id
         imageList.removeAt(pom)
+       imageListUri.removeAt(pom)
         if(imageList.size==0){
             praznaLista=true
             val myimage = (ResourcesCompat.getDrawable(viewPager2.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
@@ -368,8 +399,80 @@ class CreatePostFragment : Fragment(),addImageInterface {
         set(value) {
             if(field==true && value==false){
                 imageList.removeAt(0)
+                //imageListUri.removeAt(0)
             }
             field=value
         }
+    private var uri:Uri?=null
+
+    private fun convertCameraBitmapToUri(image:Bitmap,context:Context){
+        val imagesFolder:File=File(context.cacheDir,"images")
+
+        try {
+                imagesFolder.mkdirs()
+                val file:File=File(imagesFolder,"captured_image.jpg")
+                val stream:FileOutputStream=FileOutputStream(file)
+                image.compress(Bitmap.CompressFormat.JPEG,100,stream)
+                stream.flush()
+                stream.close()
+                imageListUri.add(FileProvider.getUriForFile(context.applicationContext,
+                    BuildConfig.APPLICATION_ID+".provider",file))
+
+        }catch (e:FileNotFoundException){
+            e.printStackTrace()
+        }catch(e:IOException){
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun sendPost(){
+        val location=MultipartBody.Part.createFormData("location","Proba")
+        val description=MultipartBody.Part.createFormData("description",binding.opisPosta.text.toString())
+        if(binding.opisPosta.text.toString().isNullOrEmpty()){
+            Toast.makeText(requireContext(), "Insert your description", Toast.LENGTH_SHORT).show()
+            return
+        }
+        Log.d("duzina niza sa uriima:",imageListUri.size.toString())
+        if(partovi.size!=0)
+        {
+            partovi.clear()
+        }
+        for (i in 0 until  imageListUri.size){
+            if(imageListUri[i]!=null)
+            {
+                val parcelFileDescriptor=getActivity()?.contentResolver?.openFileDescriptor(imageListUri[i]!!,"r",null)?:return
+                val inputStream=FileInputStream(parcelFileDescriptor.fileDescriptor)
+                val file=File(getActivity()?.cacheDir,getActivity()?.contentResolver?.getFileName(imageListUri[i]!!))
+                val outputStream=FileOutputStream(file)
+                inputStream.copyTo(outputStream)
+                val requestBody=file.asRequestBody("photos".toMediaTypeOrNull())
+                partovi.add(MultipartBody.Part.createFormData("photos",file.name,requestBody))
+                Log.d("moji uri:",imageListUri[i].toString())
+
+
+            }
+
+        }
+        if(partovi.size==0)
+        {
+            Toast.makeText(requireContext(), "Insert your image", Toast.LENGTH_SHORT).show()
+            return
+        }
+        viewModel.addPost(partovi,description,location)
+
+    }
+
+    fun ContentResolver.getFileName(fileUri: Uri): String {
+        var name = ""
+        val returnCursor = this.query(fileUri, null, null, null, null)
+        if (returnCursor != null) {
+            val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            returnCursor.moveToFirst()
+            name = returnCursor.getString(nameIndex)
+            returnCursor.close()
+        }
+        return name
+    }
 
 }

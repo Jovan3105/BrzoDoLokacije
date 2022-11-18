@@ -35,4 +35,8 @@ class Repository(){
         return APIservis.Servis.getPhoto()
     }
 
+    suspend fun addPost(@Part photos:List<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part):Response<ResponseBody>{
+        return APIservis.Servis.addPost(photos,description,location)
+    }
+
 }
