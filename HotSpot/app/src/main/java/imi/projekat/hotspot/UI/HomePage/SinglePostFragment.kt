@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
@@ -18,19 +19,31 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
-import imi.projekat.hotspot.databinding.FragmentCreatePostBinding
+import imi.projekat.hotspot.databinding.FragmentSinglePostBinding
+import kotlinx.android.synthetic.main.fragment_single_post.view.*
 import me.relex.circleindicator.CircleIndicator3
 import kotlin.math.abs
 
 
 class SinglePostFragment : Fragment() {
-    private lateinit var binding:FragmentCreatePostBinding
+    private lateinit var binding:FragmentSinglePostBinding
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var viewPager2: ViewPager2
     private lateinit var handler: Handler
     private lateinit var imageList:ArrayList<Bitmap>
     private lateinit var adapter:ImageAdapterHomePage
     private lateinit var circleIndicator: CircleIndicator3
+
+    override fun onResume() {
+        super.onResume()
+        val CommentDropdownSort=resources.getStringArray(R.array.CommentDropdownSort)
+        val arrayAdapter=ArrayAdapter(requireContext(),R.layout.dropdown_item,CommentDropdownSort)
+
+        binding.commentsSelector.setAdapter(arrayAdapter)
+        binding.commentsSelector.setText(CommentDropdownSort[0],false)
+
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,17 +59,19 @@ class SinglePostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding= FragmentCreatePostBinding.bind(view)
+        binding= FragmentSinglePostBinding.bind(view)
 
 
 
+
+        circleIndicator=view.findViewById<CircleIndicator3>(R.id.circleIndikator)
         imageList= ArrayList()
         val myimage = (ResourcesCompat.getDrawable(this.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
         imageList.add(myimage)
         initImageCarousel(0)
         setupTransformer()
 
-        circleIndicator=view.findViewById<CircleIndicator3>(R.id.circleIndikator)
+
 
         viewPager2.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {

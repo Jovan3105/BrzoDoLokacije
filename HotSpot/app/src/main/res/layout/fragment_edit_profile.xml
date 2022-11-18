@@ -45,7 +45,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:hintTextAppearance="@style/HintText">
+            style="@style/Custom_textinputlayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/EditUsername"
@@ -63,8 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:hintEnabled="true"
-            app:hintTextAppearance="@style/HintText"
-            app:errorTextAppearance="@style/ErrorText"
+            style="@style/Custom_textinputlayout"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -86,7 +85,7 @@
             android:layout_height="match_parent"
             app:endIconMode="password_toggle"
             android:id="@+id/passwordWrapper"
-            app:hintTextAppearance="@style/HintText">
+            style="@style/Custom_textinputlayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/OldPassword"
@@ -106,7 +105,7 @@
             android:layout_height="match_parent"
             app:endIconMode="password_toggle"
             android:id="@+id/passwordWrapper1"
-            app:hintTextAppearance="@style/HintText">
+            style="@style/Custom_textinputlayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/NewPassword"
@@ -125,7 +124,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:endIconMode="password_toggle"
-            app:hintTextAppearance="@style/HintText"
+            style="@style/Custom_textinputlayout"
             android:id="@+id/passwordWrapper2"
             >
 
@@ -142,7 +141,7 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/changeDugme"
             android:layout_width="209dp"
             android:layout_height="wrap_content"

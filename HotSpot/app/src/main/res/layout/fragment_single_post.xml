@@ -138,21 +138,19 @@
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInputLayout"
-                        style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
+                        style="@style/dropdownMeni"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:boxBackgroundColor="@color/pink1"
-
+                        android:hint="@string/sort_by"
                         >
 
                         <AutoCompleteTextView
                             android:id="@+id/commentsSelector"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:inputType="none"
-                            tools:ignore="TouchTargetSizeCheck">
+                            android:layout_height="50dp"
+                            android:inputType="none">
 
                         </AutoCompleteTextView>
                     </com.google.android.material.textfield.TextInputLayout>

@@ -27,18 +27,25 @@
         <item name="cornerFamilyBottomRight">rounded</item>
     </style>
 
-    <style name="HintText" parent="TextAppearance.Design.Hint">
-        <item name="android:textColor">@color/pink2</item>
-    </style>
-    <style name="ErrorText">
-        <item name="android:textColor">@color/pink2</item>
+
+    <style name="Custom_textinputlayout" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- The color of the label when it is collapsed and the text field is active -->
+        <item name="hintTextColor">@color/pink2</item>
+        <item name="boxStrokeColor">@drawable/text_input_box_stroke</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxCornerRadiusBottomEnd">20dp</item>
+        <item name="boxCornerRadiusBottomStart">20dp</item>
+        <item name="boxCornerRadiusTopEnd">20dp</item>
+        <item name="boxCornerRadiusTopStart">20dp</item>
+        <!-- The color of the label in all other text field states (such as resting and disabled) -->
+<!--        <item name="android:textColorHint">@color/black</item>-->
     </style>
 
     <style name="InputPolje">
 <!--        obavezno je dodati input type-->
         <item name="android:maxLines">1</item>
         <item name="android:scrollHorizontally">true</item>
-        <item name="android:background">@drawable/edit_text_pink</item>
+
         <item name="android:drawablePadding">5dp</item>
         <item name="android:padding">10dp</item>
         <item name="android:textColor">#000000</item>
@@ -65,5 +72,12 @@
         <item name="windowMinWidthMajor">0dp</item>
         <item name="windowMinWidthMinor">0dp</item>
         <item name="android:gravity">center</item>
+    </style>
+
+    <style name="dropdownMeni" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/pink2</item>
+        <item name="hintTextColor">@color/pink2</item>
+        <item name="endIconTint">@color/pink2</item>
+        <item name="android:padding">5dp</item>
     </style>
 </resources>

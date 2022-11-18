@@ -32,8 +32,8 @@
     <string name="addLocation">Add location</string>
     <string name="Comments">Comments</string>
     <string-array name="CommentDropdownSort">
-        <item>Sort by date</item>
-        <item>Sort by likes</item>
+        <item>Date</item>
+        <item>Likes</item>
     </string-array>
 
     //InputErrors
@@ -76,6 +76,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="SuccessfulEmailValidation">Successful email validation</string>
     <string name="successfullChangeAccountData">Successfull account data change</string>
+    <string name="sort_by">Sort by</string>
 
 
 </resources>
