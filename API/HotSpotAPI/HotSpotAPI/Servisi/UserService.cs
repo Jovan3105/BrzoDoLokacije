@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using HotSpotAPI.Modeli;
 using HotSpotAPI.ModeliZaZahteve;
+using System.Diagnostics;
 
 namespace HotSpotAPI.Servisi
 {
@@ -259,6 +260,20 @@ namespace HotSpotAPI.Servisi
                 return name.Username;
             return "";
         }
+        public string getUserPhoto(int id)
+        {
+            Korisnik user = context.Korisnici.Find(id);
+            if(user!=null)
+            {
+                if(user.ProfileImage != null || user.ProfileImage!="")
+                {
+                    Byte[] b = System.IO.File.ReadAllBytes(user.ProfileImage);
+                    return Convert.ToBase64String(b, 0, b.Length);
+                }
+                return "1";
+            }
+            return "0";
+        }
         public bool followUser(int userid, int followid)
         {
             var fol = context.Followers.FirstOrDefault(x => x.userID == userid && x.followID == followid);
@@ -287,16 +302,25 @@ namespace HotSpotAPI.Servisi
         public List<follower> getfollowUser(int id)
         {
             var fol = context.Followers.Where(x => x.userID == id).ToList();
+            Debug.WriteLine(fol);
             if (fol == null)
                 return null;
 
             List<follower> fols = new List<follower>();
+            string pom;
             foreach(Followers f in fol)
             {
                 follower f1 = new follower();
                 f1.username = getUsernameById(f.followID);
                 if (f1.username == "" || f1.username == null)
                     return null;
+                pom = getUserPhoto(f.followID);
+                if (pom.Equals("0"))
+                    return null;
+                if(pom.Equals("1"))
+                    f1.userPhoto = "";
+                if (!pom.Equals("1"))
+                    f1.userPhoto = pom;
                 f1.ID = f.followID;
                 fols.Add(f1);
             }

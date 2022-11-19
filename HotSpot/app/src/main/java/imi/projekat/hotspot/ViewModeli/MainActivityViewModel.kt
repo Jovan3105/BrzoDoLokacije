@@ -1,15 +1,12 @@
 package imi.projekat.hotspot.ViewModeli
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import imi.projekat.hotspot.ModeliZaZahteve.*
 import imi.projekat.hotspot.Ostalo.BaseResponse
-import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.Repository
-import imi.projekat.hotspot.Ostalo.SingleLiveEvent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -29,6 +26,9 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 
     private var _DodajPostResposne= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val DodajPostResposne=_DodajPostResposne.asSharedFlow()
+
+    private var _liveAllFollowingByUser= MutableSharedFlow<BaseResponse<getuser>>()
+    val liveAllFollowingByUser=_liveAllFollowingByUser.asSharedFlow()
 
 
 
@@ -127,8 +127,30 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 //                    val type = object : TypeToken<ResponseBody>() {}.type
 //                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
 
-                    val content = response.errorBody()!!.charStream().readText()
-                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
+//                    val content = response.errorBody()!!.charStream().readText()
+//                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
+                }
+            }
+        }
+    }
+
+    fun GetAllFollowingByUser(){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.getAllFollowingByUSer()
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _liveAllFollowingByUser.emit(BaseResponse.Success(response.body()))
+
+                }
+                else{
+
+//                    val gson = Gson()
+//                    val type = object : TypeToken<ResponseBody>() {}.type
+//                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
+
+//                    val content = response.errorBody()!!.charStream().readText()
+//                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
                 }
             }
         }

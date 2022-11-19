@@ -31,7 +31,8 @@ class HomePageFragment : Fragment() {
 
 
         binding.button6.setOnClickListener {
-            findNavController().navigate(R.id.action_homePageFragment_to_singlePostFragment)
+            //findNavController().navigate(R.id.action_homePageFragment_to_singlePostFragment)
+            findNavController().navigate(R.id.action_homePageFragment_to_homePageMap)
         }
     }
 }

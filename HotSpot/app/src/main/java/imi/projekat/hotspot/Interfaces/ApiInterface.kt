@@ -1,6 +1,5 @@
 package imi.projekat.hotspot.Interfaces
 
-import android.hardware.biometrics.BiometricManager.Strings
 import imi.projekat.hotspot.ModeliZaZahteve.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -46,5 +45,8 @@ interface ApiInterface {
     @Multipart
     @POST("/api/User/addpost")
     suspend fun addPost(@Part photos:List<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part):Response<ResponseBody>
+
+    @GET("/api/User/GetAllFollowingByUser")
+    suspend fun getAllFollowingByUSer():Response<getuser>
 
 }

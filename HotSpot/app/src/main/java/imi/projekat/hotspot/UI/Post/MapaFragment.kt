@@ -2,9 +2,8 @@ package imi.projekat.hotspot.UI.Post
 
 import android.Manifest
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.pm.PackageManager
-import android.os.Build
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -26,6 +26,7 @@ import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import java.util.*
 
 
 class MapaFragment : Fragment() {
@@ -102,11 +103,23 @@ class MapaFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        Configuration.getInstance().save(requireContext(), prefs);
         map.onResume()
     }
     override fun onPause() {
         super.onPause()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        Configuration.getInstance().save(requireContext(), prefs);
         map.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        Configuration.getInstance().save(requireContext(), prefs);
+        map.onDetach()
+
     }
 }
 class MapEventsReceiverImpl : MapEventsReceiver {

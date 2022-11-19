@@ -110,28 +110,38 @@ namespace HotSpotAPI.Controllers
             return BadRequest();
         }
         [HttpGet("GetPhoto")]
-        public async Task<ActionResult<getuser>> GetUserinfo()
+        public async Task<ActionResult<String>> GetUserinfo()
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
-            getuser g = new getuser();
             string slika = userService.getPhoto(id);
             if (slika != "" && slika != null)
             {
+                string pom;
                 Byte[] b = System.IO.File.ReadAllBytes(slika);
-                g.photo = Convert.ToBase64String(b, 0, b.Length);
+                pom = Convert.ToBase64String(b, 0, b.Length);
+                return Ok(pom);
             }
-            else
-            {
-                g.photo = "";
-            }
+            return BadRequest();
+            
+        }
+
+        [HttpGet("GetAllFollowingByUser")]
+        public async Task<ActionResult<getuser>> GetAllFollowingByUser()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            getuser g = new getuser();
             List<follower> f = userService.getfollowUser(id);
             if (f == null)
                 return BadRequest();
 
             g.followers = f;
             return g;
+
         }
 
         [HttpPost("follow/{userid}")]
