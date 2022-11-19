@@ -66,12 +66,12 @@ namespace HotSpotAPI.Controllers
         {
             int id = userService.GetUserId();
             if (id == -1)
-                return Unauthorized();
+                return Unauthorized("Unauthorized");
 
             List<getPosts> res = postService.getAllPosts(userid);
             if (res != null)
                 return Ok(res);
-            return BadRequest();
+            return BadRequest("ErrorWhileGettingPostsForSelectedUser");
         }
         [HttpGet("getpost/{postid}")]
         public async Task<ActionResult<string>> GetPosts(int postid)

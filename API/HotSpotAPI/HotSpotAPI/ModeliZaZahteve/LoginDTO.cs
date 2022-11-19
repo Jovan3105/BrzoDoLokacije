@@ -67,6 +67,9 @@ namespace HotSpotAPI.ModeliZaZahteve
 
     public class getPosts
     {
+        public int ownerID { get; set; }
+        public string username { get; set; } = string.Empty;
+        public string profilephoto { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
         public string location { get; set; } = string.Empty;
         public DateTime DateTime { get; set; }

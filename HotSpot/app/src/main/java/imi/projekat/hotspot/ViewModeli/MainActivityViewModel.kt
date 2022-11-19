@@ -27,12 +27,15 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _DodajPostResposne= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val DodajPostResposne=_DodajPostResposne.asSharedFlow()
 
-    private var _GetPostWithIdResponse=MutableLiveData<BaseResponse<getpostResponse>>()
-    val GetPostWithIdResponse: MutableLiveData<BaseResponse<getpostResponse>>
+    private var _GetPostWithIdResponse=MutableLiveData<BaseResponse<singlePost>>()
+    val GetPostWithIdResponse: MutableLiveData<BaseResponse<singlePost>>
         get() = _GetPostWithIdResponse
 
     private var _PostCommentResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val PostCommentResponse=_PostCommentResponse.asSharedFlow()
+
+    private var _GetPostsWithUserId= MutableSharedFlow<BaseResponse<List<singlePost>>>()
+    val GetPostsWithUserId=_GetPostsWithUserId.asSharedFlow()
 
     private var _GreskaHendler= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val GreskaHendler=_GreskaHendler.asSharedFlow()
@@ -173,6 +176,23 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     _GetCommentsResponseHandler.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun getPostsByUserId(userid: Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.getPostsByUserId(userid)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _GetPostsWithUserId.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    Log.d("GRES",response.toString())
+                    _GetPostsWithUserId.emit(BaseResponse.Error(content))
                 }
             }
         }
