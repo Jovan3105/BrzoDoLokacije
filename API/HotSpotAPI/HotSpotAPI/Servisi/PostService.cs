@@ -74,11 +74,23 @@ namespace HotSpotAPI.Servisi
         public List<getPosts> getAllPosts(int id)
         {
             List<Post> posts = context.Postovi.Where(x => x.UserID == id).ToList();
+            var kor = context.Korisnici.Find(id);
             List<getPosts> postsList = new List<getPosts>();
 
             foreach (Post post in posts)
             {
                 getPosts p = new getPosts();
+                p.username = kor.Username;
+                p.ownerID = kor.ID;
+                string basepath1 = storageService.CreatePhoto();
+                if (kor.ProfileImage == "" || kor.ProfileImage == null)
+                    p.profilephoto = "";
+                else
+                {
+                    string path = Path.Combine(basepath1, "user" + id+".jpg");
+                    Byte[] b = System.IO.File.ReadAllBytes(path);
+                    p.profilephoto = Convert.ToBase64String(b, 0, b.Length);
+                }
                 p.description = post.Description;
                 p.location = post.Location;
                 p.DateTime = post.DateTime;
