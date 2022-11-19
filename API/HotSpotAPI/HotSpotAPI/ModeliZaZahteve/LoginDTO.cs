@@ -75,7 +75,7 @@ namespace HotSpotAPI.ModeliZaZahteve
         public DateTime DateTime { get; set; }
         public List<string> photos { get; set; }
         public int brojslika { get; set; }
-
+        public int brojlajkova { get; set; }
         public string shortDescription { get; set; }
     }
     
