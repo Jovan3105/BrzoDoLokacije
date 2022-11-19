@@ -37,6 +37,9 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _GreskaHendler= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val GreskaHendler=_GreskaHendler.asSharedFlow()
 
+    private var _GetCommentsResponseHandler= MutableSharedFlow<BaseResponse<List<singleComment>>>()
+    val GetCommentsResponseHandler=_GetCommentsResponseHandler.asSharedFlow()
+
 
 
     var handleJob: Job?=null
@@ -155,6 +158,21 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     _PostCommentResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+    fun getCommentsById(postid: Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.getCommentsWithID(postid)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _GetCommentsResponseHandler.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _GetCommentsResponseHandler.emit(BaseResponse.Error(content))
                 }
             }
         }

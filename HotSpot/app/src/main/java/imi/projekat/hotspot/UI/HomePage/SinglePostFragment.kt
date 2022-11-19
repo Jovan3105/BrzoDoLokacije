@@ -1,5 +1,6 @@
 package imi.projekat.hotspot.UI.HomePage
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -19,22 +20,29 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import imi.projekat.hotspot.ModeliZaZahteve.commentDTS
+import imi.projekat.hotspot.ModeliZaZahteve.singleComment
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentSinglePostBinding
+import kotlinx.android.synthetic.main.dialog_insert_comment.*
+import kotlinx.android.synthetic.main.dialog_insert_comment.view.*
 import kotlinx.android.synthetic.main.fragment_single_post.*
 import kotlinx.android.synthetic.main.fragment_single_post.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
+import org.w3c.dom.Comment
 import kotlin.math.abs
+import kotlin.math.log
 
 
 class SinglePostFragment : Fragment() {
@@ -49,6 +57,10 @@ class SinglePostFragment : Fragment() {
     private lateinit var kratakOpisView: TextView
     private var idPosta:Int=-1
     private var currentSort=0
+    private lateinit var layoutManager: RecyclerView.LayoutManager
+    private lateinit var recyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>
+    private lateinit var nizKomentara: List<singleComment>
+    private lateinit var comment:String
 
     override fun onResume() {
         super.onResume()
@@ -133,6 +145,20 @@ class SinglePostFragment : Fragment() {
                 }
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.GetCommentsResponseHandler.collectLatest{
+                if(it is BaseResponse.Error){
+                    Log.d("test",it.toString())
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
+                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                }
+                if(it is BaseResponse.Success){
+                    Log.d("USPSENO DODAT KOMENTAR","USPSENO DODAT KOMENTAR")
+                    nizKomentara= it.data!!
+                    showComments(nizKomentara)
+                }
+            }
+        }
 
         viewPager2.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {
@@ -150,6 +176,7 @@ class SinglePostFragment : Fragment() {
         binding.InsertCommentButton.setOnClickListener{
             addComment()
         }
+        viewModel.getCommentsById(idPosta)
     }
 
     private val runnable= Runnable {
@@ -215,12 +242,18 @@ class SinglePostFragment : Fragment() {
             dialog.dismiss()
         }
         dialog.findViewById<Button>(R.id.addCommentButton).setOnClickListener{
-            var comment=dialog.findViewById<EditText>(R.id.CommentTextBox).text.toString()
+            comment=dialog.findViewById<EditText>(R.id.CommentTextBox).text.toString()
             viewModel.PostComment(commentDTS(0,idPosta,comment))
             dialog.dismiss()
         }
 
         dialog.show()
 
+    }
+    private fun showComments(nizKomentara: List<singleComment>){
+        layoutManager = LinearLayoutManager(requireContext())
+        recycler_view_comments.layoutManager = layoutManager
+        recyclerAdapter = RecyclerAdapter(nizKomentara)
+        recycler_view_comments.adapter = recyclerAdapter
     }
 }

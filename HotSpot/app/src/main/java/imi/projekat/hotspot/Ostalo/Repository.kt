@@ -46,4 +46,7 @@ class Repository(){
     suspend fun comment(comment:commentDTS): Response<ResponseBody> {
         return APIservis.Servis.loginCall(comment)
     }
+    suspend fun getCommentsWithID(postid:Int): Response<List<singleComment>> {
+        return APIservis.Servis.getCommentsWithID(postid)
+    }
 }

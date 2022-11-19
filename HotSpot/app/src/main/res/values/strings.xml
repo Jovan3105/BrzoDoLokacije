@@ -36,6 +36,8 @@
     <string name="ShortPostDescription">Short post description</string>
     <string name="SuccesCreatingPost">Successfully created post</string>
     <string name="FailedCreatingPost">Failed creating post</string>
+    <string name="InsertYourComment">Insert your comment</string>
+    <string name="ViewComments">View comments</string>
 
 
 

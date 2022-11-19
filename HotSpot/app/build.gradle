@@ -103,4 +103,7 @@ dependencies {
     implementation "androidx.compose.material3:material3-window-size-class:1.0.1"
     implementation "com.google.accompanist:accompanist-webview:0.27.0"
 
+    //Recycler View
+    //implementation 'androidx.recyclerview:recyclerview:1.2.1'
+
 }
