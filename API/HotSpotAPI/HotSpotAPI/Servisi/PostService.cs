@@ -7,6 +7,7 @@ namespace HotSpotAPI.Servisi
     public interface IPostService
     {
         public bool addNewPost(int id, addPost newPost);
+        public List<getPosts> getAllPosts();
         public List<getPosts> getAllPosts(int id);
         public getPosts getPost(int id, int postID);
         public bool deletePost(int id, int postID);
@@ -96,9 +97,53 @@ namespace HotSpotAPI.Servisi
                 p.DateTime = post.DateTime;
                 p.photos = new List<string>();
                 p.brojslika = post.NumOfPhotos;
+                p.brojlajkova = post.NumOfLikes;
                 p.shortDescription = post.shortDescription;
                 string basepath = storageService.CreatePost();
                 basepath = Path.Combine(basepath, "user" + id + "post" + post.ID);
+                for (int i = 1; i <= post.NumOfPhotos; i++)
+                {
+                    string path = Path.Combine(basepath + "photo" + i + ".jpg");
+                    Byte[] b = System.IO.File.ReadAllBytes(path);
+                    string slika = Convert.ToBase64String(b, 0, b.Length);
+                    p.photos.Add(slika);
+                }
+                postsList.Add(p);
+            }
+
+            return postsList;
+        }
+        public List<getPosts> getAllPosts()
+        {
+            List<Post> posts = context.Postovi.Where(x => x.UserID>0).ToList();
+            List<getPosts> postsList = new List<getPosts>();
+
+            foreach (Post post in posts)
+            {
+                var kor = context.Korisnici.Find(post.UserID);
+                if (kor == null)
+                    return null;
+                getPosts p = new getPosts();
+                p.username = kor.Username;
+                p.ownerID = kor.ID;
+                string basepath1 = storageService.CreatePhoto();
+                if (kor.ProfileImage == "" || kor.ProfileImage == null)
+                    p.profilephoto = "";
+                else
+                {
+                    string path = Path.Combine(basepath1, "user" + kor.ID + ".jpg");
+                    Byte[] b = System.IO.File.ReadAllBytes(path);
+                    p.profilephoto = Convert.ToBase64String(b, 0, b.Length);
+                }
+                p.description = post.Description;
+                p.location = post.Location;
+                p.DateTime = post.DateTime;
+                p.photos = new List<string>();
+                p.brojslika = post.NumOfPhotos;
+                p.shortDescription = post.shortDescription;
+                p.brojlajkova = post.NumOfLikes;
+                string basepath = storageService.CreatePost();
+                basepath = Path.Combine(basepath, "user" + kor.ID + "post" + post.ID);
                 for (int i = 1; i <= post.NumOfPhotos; i++)
                 {
                     string path = Path.Combine(basepath + "photo" + i + ".jpg");

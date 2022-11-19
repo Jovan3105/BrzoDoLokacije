@@ -39,15 +39,8 @@ namespace HotSpotAPI.Controllers
                 return Ok("SuccesCreatingPost");
             return BadRequest("FailedCreatingPost");
         }
-        /*[HttpDelete("deletepost/{postid}")]
-        public async Task<ActionResult<string>> DeletePost(int postid)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-
-            userService.deletePost();
-        }*/
+        
+        //VRACA SVE POSTOVE ULOGOVANOG KORISNIKA
         [HttpGet("getposts")]
         public async Task<ActionResult<string>> GetPosts()
         {
@@ -73,6 +66,7 @@ namespace HotSpotAPI.Controllers
                 return Ok(res);
             return BadRequest("ErrorWhileGettingPostsForSelectedUser");
         }
+        //PRIKAZUJE KONKRETAN POST, POST CIJI JE ID PROSLEDJEN
         [HttpGet("getpost/{postid}")]
         public async Task<ActionResult<string>> GetPosts(int postid)
         {
@@ -84,6 +78,38 @@ namespace HotSpotAPI.Controllers
             if (res != null)
                 return Ok(res);
             return BadRequest("NoPostWithThatId");
+        }
+        [HttpGet("getsorted/{sort}")]
+        public async Task<ActionResult<string>> GetSorted(int sort)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized("Unauthorized");
+            List<getPosts> sortedlist = new List<getPosts>();
+            List<getPosts> res = postService.getAllPosts();
+            //OD STARIJEG POSTA KA NOVIJEM
+            if (sort == 0)
+            {
+                sortedlist = res.OrderBy(x => x.DateTime).ToList();
+            }
+            //OD MANJE LAJKOVA KA VISE
+            else if(sort == 1)
+            {
+                sortedlist = res.OrderBy(x =>x.brojlajkova).ToList();
+            }
+            //OD NOVIJEG KA STARIJEM
+            else if (sort == 2)
+            {
+                sortedlist = res.OrderByDescending(x => x.DateTime).ToList();
+            }
+            //OD VISE KA MANJE LAJKOVA
+            else if (sort == 3)
+            {
+                sortedlist = res.OrderByDescending(x => x.brojlajkova).ToList();
+            }
+            if (sortedlist != null)
+                return Ok(sortedlist);
+            return BadRequest("ErrorWhileGettingPostsForSelectedUser");
         }
         [HttpGet("getpostbylocation/{location}")]
         public async Task<ActionResult<string>> GetPostsByLocation(string location)
