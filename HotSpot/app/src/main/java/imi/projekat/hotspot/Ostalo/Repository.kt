@@ -42,4 +42,8 @@ class Repository(){
     suspend fun getPostWithId(postid:Int):Response<getpostResponse>{
         return APIservis.Servis.getPostWithId(postid)
     }
+
+    suspend fun comment(comment:commentDTS): Response<ResponseBody> {
+        return APIservis.Servis.loginCall(comment)
+    }
 }

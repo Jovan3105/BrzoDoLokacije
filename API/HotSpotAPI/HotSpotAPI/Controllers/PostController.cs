@@ -124,7 +124,7 @@ namespace HotSpotAPI.Controllers
 
             bool res = postService.addComment(id, comm);
             if (!res)
-                return BadRequest();
+                return BadRequest("ErrorWhileAddingComment");
             return Ok();
         }
 

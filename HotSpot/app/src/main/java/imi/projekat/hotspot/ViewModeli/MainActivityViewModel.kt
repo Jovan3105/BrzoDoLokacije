@@ -31,6 +31,9 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     val GetPostWithIdResponse: MutableLiveData<BaseResponse<getpostResponse>>
         get() = _GetPostWithIdResponse
 
+    private var _PostCommentResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val PostCommentResponse=_PostCommentResponse.asSharedFlow()
+
     private var _GreskaHendler= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val GreskaHendler=_GreskaHendler.asSharedFlow()
 
@@ -135,6 +138,23 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     _GetPostWithIdResponse.postValue(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+
+    fun PostComment(comment:commentDTS){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.comment(comment)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _PostCommentResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _PostCommentResponse.emit(BaseResponse.Error(content))
                 }
             }
         }

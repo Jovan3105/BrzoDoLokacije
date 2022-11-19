@@ -50,4 +50,7 @@ interface ApiInterface {
     @GET("/api/Post/getpost/{postid}")
     suspend fun getPostWithId(@Path("postid") postid :Int):Response<getpostResponse>
 
+    @POST("/api/Post/comment")
+    suspend fun loginCall(@Body comment: commentDTS):Response<ResponseBody>
+
 }

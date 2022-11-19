@@ -1,41 +1,38 @@
 package imi.projekat.hotspot.UI.HomePage
 
-import android.app.Activity
-import android.content.Intent
+import android.app.Dialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import android.widget.AdapterView.OnItemClickListener
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.NavHostFragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
-import imi.projekat.hotspot.LoginActivity
-import imi.projekat.hotspot.MainActivity
+import imi.projekat.hotspot.ModeliZaZahteve.commentDTS
 import imi.projekat.hotspot.Ostalo.BaseResponse
-import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
-import imi.projekat.hotspot.databinding.FragmentConfirmEmailBinding
 import imi.projekat.hotspot.databinding.FragmentSinglePostBinding
+import kotlinx.android.synthetic.main.fragment_single_post.*
 import kotlinx.android.synthetic.main.fragment_single_post.view.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
 import kotlin.math.abs
 
@@ -50,14 +47,24 @@ class SinglePostFragment : Fragment() {
     private lateinit var circleIndicator: CircleIndicator3
     private lateinit var opisTekstView: TextView
     private lateinit var kratakOpisView: TextView
+    private var idPosta:Int=-1
+    private var currentSort=0
 
     override fun onResume() {
         super.onResume()
-        Log.d("RESUME","RESUME")
         val CommentDropdownSort=resources.getStringArray(R.array.CommentDropdownSort)
         val arrayAdapter=ArrayAdapter(requireContext(),R.layout.dropdown_item,CommentDropdownSort)
         binding.commentsSelector.setAdapter(arrayAdapter)
+        (textInputLayout.getEditText() as AutoCompleteTextView).onItemClickListener =
+            OnItemClickListener { adapterView, view, position, id ->
+                if(position!=currentSort){
+                    //pozovi back api
+                }
+                currentSort=position
+            }
+
         binding.commentsSelector.setText(CommentDropdownSort[0],false)
+
 
     }
 
@@ -96,7 +103,6 @@ class SinglePostFragment : Fragment() {
                     }
                     initImageCarousel(0)
                     setupTransformer()
-
                     opisTekstView.text=it.data?.description
                     kratakOpisView.text=it.data?.shortDescription
                 }
@@ -113,7 +119,20 @@ class SinglePostFragment : Fragment() {
         setupTransformer()
 
 
-
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.PostCommentResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
+                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                }
+                if(it is BaseResponse.Success){
+//                    val content = it.data!!.charStream().readText()
+//                    val id = UpravljanjeResursima.getResourceString(content,requireContext())
+//                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                    Log.d("USPSENO DODAT KOMENTAR","USPSENO DODAT KOMENTAR")
+                }
+            }
+        }
 
         viewPager2.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {
@@ -124,9 +143,13 @@ class SinglePostFragment : Fragment() {
         })
         circleIndicator.setViewPager(viewPager2)
 
+        idPosta=1
+        viewModel.getPostWithID(idPosta)
 
-        viewModel.getPostWithID(1)
 
+        binding.InsertCommentButton.setOnClickListener{
+            addComment()
+        }
     }
 
     private val runnable= Runnable {
@@ -166,6 +189,8 @@ class SinglePostFragment : Fragment() {
         })
 
 
+
+
     }
 
     private fun setupTransformer(){
@@ -178,5 +203,24 @@ class SinglePostFragment : Fragment() {
 
         viewPager2.setPageTransformer(transformer)
         circleIndicator.setViewPager(viewPager2)
+    }
+
+    private fun addComment() {
+        val dialog= Dialog(requireContext(),R.style.WrapEverythingDialog)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_insert_comment)
+
+        dialog.findViewById<ImageView>(R.id.btnCloseDialog).setOnClickListener{
+            Log.d("Gasenje dialoga","Gasenje dialoga")
+            dialog.dismiss()
+        }
+        dialog.findViewById<Button>(R.id.addCommentButton).setOnClickListener{
+            var comment=dialog.findViewById<EditText>(R.id.CommentTextBox).text.toString()
+            viewModel.PostComment(commentDTS(0,idPosta,comment))
+            dialog.dismiss()
+        }
+
+        dialog.show()
+
     }
 }

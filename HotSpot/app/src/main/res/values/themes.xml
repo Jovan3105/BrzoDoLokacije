@@ -55,7 +55,7 @@
 
 
 
-    <style name="MyDialog" parent="Theme.AppCompat.DayNight.Dialog">
+    <style name="MyDialog" parent="Theme.Material3.DayNight.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">false</item>
@@ -64,20 +64,18 @@
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
-        <item name="android:gravity">center</item>
+
 
     </style>
 
     <style name="WrapEverythingDialog" parent="MyDialog">
         <item name="windowMinWidthMajor">0dp</item>
         <item name="windowMinWidthMinor">0dp</item>
-        <item name="android:gravity">center</item>
     </style>
 
-    <style name="dropdownMeni" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+    <style name="dropdownMeni" parent="Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="boxStrokeColor">@color/pink2</item>
         <item name="hintTextColor">@color/pink2</item>
         <item name="endIconTint">@color/pink2</item>
-        <item name="android:padding">5dp</item>
     </style>
 </resources>
