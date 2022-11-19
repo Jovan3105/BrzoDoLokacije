@@ -128,5 +128,9 @@ namespace HotSpotAPI.ModeliZaZahteve
         public int ID { get; set; }
         public string username { get; set; }
     }
-
+    public class getuser
+    {
+        public string photo { get; set; } = string.Empty;
+        public List<follower> followers { get; set; }
+    }
 }

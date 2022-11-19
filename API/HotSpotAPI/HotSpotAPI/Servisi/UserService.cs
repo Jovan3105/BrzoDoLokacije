@@ -224,7 +224,7 @@ namespace HotSpotAPI.Servisi
                 context.SaveChanges();
             }
 
-            List<Followers> followers = context.Followers.Where(x=>x.ID == id || x.followID==id).ToList();
+            List<Followers> followers = context.Followers.Where(x=>x.userID == id || x.followID==id).ToList();
             foreach(Followers f in followers)
             {
                 context.Followers.Remove(f);
@@ -261,12 +261,12 @@ namespace HotSpotAPI.Servisi
         }
         public bool followUser(int userid, int followid)
         {
-            var fol = context.Followers.FirstOrDefault(x => x.ID == userid && x.followID == followid);
+            var fol = context.Followers.FirstOrDefault(x => x.userID == userid && x.followID == followid);
             if (fol != null)
                 return false;
 
             Followers f = new Followers();
-            f.ID = userid;
+            f.userID = userid;
             f.followID = followid;
 
             context.Followers.Add(f);
@@ -276,7 +276,7 @@ namespace HotSpotAPI.Servisi
         }
         public bool unfollowUser(int userid, int followid)
         {
-            var fol = context.Followers.FirstOrDefault(x => x.ID == userid && x.followID == followid);
+            var fol = context.Followers.FirstOrDefault(x => x.userID == userid && x.followID == followid);
             if (fol == null)
                 return false;
 
@@ -286,7 +286,7 @@ namespace HotSpotAPI.Servisi
         }
         public List<follower> getfollowUser(int id)
         {
-            var fol = context.Followers.Where(x => x.ID == id).ToList();
+            var fol = context.Followers.Where(x => x.userID == id).ToList();
             if (fol == null)
                 return null;
 
