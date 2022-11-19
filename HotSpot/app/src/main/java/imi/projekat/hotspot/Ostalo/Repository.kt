@@ -39,11 +39,15 @@ class Repository(){
         return APIservis.Servis.addPost(photos,description,location,shortDescription)
     }
 
-    suspend fun getPostWithId(postid:Int):Response<getpostResponse>{
+    suspend fun getPostWithId(postid:Int):Response<singlePost>{
         return APIservis.Servis.getPostWithId(postid)
     }
 
     suspend fun comment(comment:commentDTS): Response<ResponseBody> {
-        return APIservis.Servis.loginCall(comment)
+        return APIservis.Servis.comment(comment)
+    }
+
+    suspend fun getPostsByUserId(userid: Int): Response<List<singlePost>> {
+        return APIservis.Servis.getPostsByUserId(userid)
     }
 }

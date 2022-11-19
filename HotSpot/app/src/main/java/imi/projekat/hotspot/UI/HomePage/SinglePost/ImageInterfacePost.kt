@@ -1,4 +1,4 @@
-package imi.projekat.hotspot.UI.HomePage
+package imi.projekat.hotspot.UI.HomePage.SinglePost
 
 interface ImageInterfacePost {
     fun addImage()

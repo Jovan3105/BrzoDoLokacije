@@ -1,4 +1,4 @@
-package imi.projekat.hotspot.UI.HomePage
+package imi.projekat.hotspot.UI.HomePage.SinglePost
 
 import android.app.Dialog
 import android.graphics.Bitmap
@@ -30,7 +30,6 @@ import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentSinglePostBinding
 import kotlinx.android.synthetic.main.fragment_single_post.*
-import kotlinx.android.synthetic.main.fragment_single_post.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
@@ -43,7 +42,7 @@ class SinglePostFragment : Fragment() {
     private lateinit var viewPager2: ViewPager2
     private lateinit var handler: Handler
     private lateinit var imageList:ArrayList<Bitmap>
-    private lateinit var adapter:ImageAdapterHomePage
+    private lateinit var adapter: ImageAdapterHomePage
     private lateinit var circleIndicator: CircleIndicator3
     private lateinit var opisTekstView: TextView
     private lateinit var kratakOpisView: TextView

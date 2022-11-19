@@ -48,9 +48,12 @@ interface ApiInterface {
     suspend fun addPost(@Part photos:List<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part,@Part shortDescription:MultipartBody.Part):Response<ResponseBody>
 
     @GET("/api/Post/getpost/{postid}")
-    suspend fun getPostWithId(@Path("postid") postid :Int):Response<getpostResponse>
+    suspend fun getPostWithId(@Path("postid") postid :Int):Response<singlePost>
 
     @POST("/api/Post/comment")
-    suspend fun loginCall(@Body comment: commentDTS):Response<ResponseBody>
+    suspend fun comment(@Body comment: commentDTS):Response<ResponseBody>
+
+    @GET("/api/Post/getpostsbyid/{userid}")
+    suspend fun getPostsByUserId(@Path("userid") userid: Int):Response<List<singlePost>>
 
 }

@@ -1,4 +1,4 @@
-package imi.projekat.hotspot.UI.HomePage
+package imi.projekat.hotspot.UI.HomePage.SinglePost
 
 import android.graphics.Bitmap
 import android.view.LayoutInflater
