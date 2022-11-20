@@ -53,11 +53,35 @@
                     android:layout_gravity="start|center"
                     android:text="Ime Korisnika"/>
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/opisPostaWraper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/VlasnikPostaLayout"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/KratakOpis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:text="Kratak opis post-a"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/pink1" />
+            </LinearLayout>
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager2"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                app:layout_constraintTop_toBottomOf="@+id/VlasnikPostaLayout">
+                app:layout_constraintTop_toBottomOf="@+id/opisPostaWraper">
 
             </androidx.viewpager2.widget.ViewPager2>
             <androidx.constraintlayout.widget.ConstraintLayout

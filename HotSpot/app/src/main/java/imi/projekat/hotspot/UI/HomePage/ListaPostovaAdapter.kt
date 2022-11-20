@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -19,7 +20,6 @@ import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.UI.HomePage.SinglePost.ImageAdapterHomePage
 import imi.projekat.hotspot.databinding.PostZaRecyclerViewBinding
-import kotlinx.android.synthetic.main.post_za_recycler_view.view.*
 import me.relex.circleindicator.CircleIndicator3
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -28,17 +28,27 @@ import java.time.LocalDateTime
 import java.util.Date
 import kotlin.math.abs
 
-class ListaPostovaAdapter(private var ListaPostova:List<singlePost>)
-    :RecyclerView.Adapter<ListaPostovaAdapter.ListaPostovaViewHolder>() {
-    class ListaPostovaViewHolder(val binding:PostZaRecyclerViewBinding):RecyclerView.ViewHolder(binding.root){
+class ListaPostovaAdapter(
+    private var ListaPostova:List<singlePost>,
+    private val clickHandler: PostClickHandler
+):RecyclerView.Adapter<ListaPostovaAdapter.ListaPostovaViewHolder>() {
+    inner class ListaPostovaViewHolder(val binding:PostZaRecyclerViewBinding):RecyclerView.ViewHolder(binding.root),
+    View.OnClickListener{
         val SlikaKorisnika:ImageView=itemView.findViewById(R.id.SlikaKorisnika)
         val ImeKorisnika:TextView=itemView.findViewById(R.id.ImeKorisnika)
         val circleIndicator3:CircleIndicator3=itemView.findViewById(R.id.circleIndikator)
         val viewPager:ViewPager2=itemView.findViewById(binding.viewPager2.id)
         val VremeView:TextView=itemView.findViewById(binding.VremeView.id)
+        val KratakOpis:TextView=itemView.findViewById(binding.KratakOpis.id)
+        init{
+            binding.root.setOnClickListener(this)
+        }
+        override fun onClick(v: View?) {
+            val trenutniPost=ListaPostova[adapterPosition]
+            clickHandler.clickedPostItem(trenutniPost)
+        }
 
-        public fun initImageCarousel(listaSlika:ArrayList<Bitmap>){
-
+        public fun initImageCarousel(listaSlika: ArrayList<Bitmap>){
             var handler= Handler(Looper.myLooper()!!)
             var adapter= ImageAdapterHomePage(listaSlika,viewPager)
             viewPager.adapter = adapter
@@ -71,11 +81,22 @@ class ListaPostovaAdapter(private var ListaPostova:List<singlePost>)
             transformer.addTransformer { page, position ->
                 val r = 1 - abs(position)
                 page.scaleY = 0.85f + r * 0.14f
+                page.setOnClickListener{
+                    this.onClick(it)
+                }
             }
+
             viewPager.setPageTransformer(transformer)
             circleIndicator3.setViewPager(viewPager)
+
+
         }
+
+
+
     }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListaPostovaViewHolder {
         return ListaPostovaViewHolder(PostZaRecyclerViewBinding.inflate(LayoutInflater.from(parent.context),parent,false))
@@ -95,7 +116,6 @@ class ListaPostovaAdapter(private var ListaPostova:List<singlePost>)
             var curentDate: LocalDateTime =LocalDateTime.now()
             val postDate = LocalDateTime.parse(post.dateTime)
             var pom=Duration.between(postDate,curentDate).toDays()
-            Log.d(pom.toString(),pom.toString())
             when {
 
                 pom >=27->{
@@ -109,10 +129,10 @@ class ListaPostovaAdapter(private var ListaPostova:List<singlePost>)
                 pom <= 1-> {
                     var sati=Duration.between(postDate,curentDate).toHours()
                     when{
-                        sati.equals(0)->{
+                        sati.toInt()==0->{
                             output="Just now"
                         }
-                        sati.equals(1)->{
+                        sati.toInt()==1->{
                             output=sati.toString()+" hour ago"
                         }
                         else->{
@@ -135,7 +155,7 @@ class ListaPostovaAdapter(private var ListaPostova:List<singlePost>)
         }
 
 
-
+        holder.KratakOpis.text=post.shortDescription
         holder.VremeView.text=output
 
         var imageList=ArrayList<Bitmap>()

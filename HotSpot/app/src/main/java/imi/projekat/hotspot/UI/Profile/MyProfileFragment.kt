@@ -64,11 +64,9 @@ class MyProfileFragment : Fragment() {
 
                 }
                 if(it is BaseResponse.Success){
-                    Log.d("SES","SESESSE")
                     if(it.data!=null)
                     {
                         val content = it.data!!.charStream().readText()
-                        Log.d("slika",content)
                         val imageBytes = Base64.decode(content, Base64.DEFAULT)
                         val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                         profileImage.setImageBitmap(decodedImage)

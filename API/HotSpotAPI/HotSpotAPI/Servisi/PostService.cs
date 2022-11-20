@@ -99,6 +99,7 @@ namespace HotSpotAPI.Servisi
                 p.brojslika = post.NumOfPhotos;
                 p.brojlajkova = post.NumOfLikes;
                 p.shortDescription = post.shortDescription;
+                p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 basepath = Path.Combine(basepath, "user" + id + "post" + post.ID);
                 for (int i = 1; i <= post.NumOfPhotos; i++)
@@ -142,6 +143,7 @@ namespace HotSpotAPI.Servisi
                 p.brojslika = post.NumOfPhotos;
                 p.shortDescription = post.shortDescription;
                 p.brojlajkova = post.NumOfLikes;
+                p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 basepath = Path.Combine(basepath, "user" + kor.ID + "post" + post.ID);
                 for (int i = 1; i <= post.NumOfPhotos; i++)
@@ -170,6 +172,7 @@ namespace HotSpotAPI.Servisi
                 p.photos = new List<string>();
                 p.brojslika = post.NumOfPhotos;
                 p.shortDescription = post.shortDescription;
+                p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 basepath = Path.Combine(basepath, "user" + post.UserID + "post" + post.ID);
                 for (int i = 1; i <= post.NumOfPhotos; i++)
@@ -196,6 +199,7 @@ namespace HotSpotAPI.Servisi
             p.photos = new List<string>();
             p.brojslika = post.NumOfPhotos;
             p.shortDescription = post.shortDescription;
+            p.postID = post.ID;
             string basepath = storageService.CreatePost();
             basepath = Path.Combine(basepath, "user" + id + "post" + post.ID);
             for (int i = 1; i <= post.NumOfPhotos; i++)

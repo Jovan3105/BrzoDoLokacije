@@ -20,6 +20,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
@@ -31,6 +32,8 @@ import imi.projekat.hotspot.ModeliZaZahteve.singleComment
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.HomePage.RecyclerAdapter
+import imi.projekat.hotspot.UI.LoginRegister.ConfirmEmailArgs
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentSinglePostBinding
 import kotlinx.android.synthetic.main.dialog_insert_comment.*
@@ -54,12 +57,12 @@ class SinglePostFragment : Fragment() {
     private lateinit var circleIndicator: CircleIndicator3
     private lateinit var opisTekstView: TextView
     private lateinit var kratakOpisView: TextView
-    private var idPosta:Int=-1
     private var currentSort=0
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var recyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>
     private lateinit var nizKomentara: List<singleComment>
     private lateinit var comment:String
+    private val args: SinglePostFragmentArgs by navArgs()
 
     override fun onResume() {
         super.onResume()
@@ -91,6 +94,7 @@ class SinglePostFragment : Fragment() {
         binding= FragmentSinglePostBinding.inflate(inflater,container,false)
         opisTekstView=binding.root.findViewById(binding.DuziOpis.id)
         kratakOpisView=binding.root.findViewById(binding.KratakOpis.id)
+
         return binding.root
     }
 
@@ -130,6 +134,7 @@ class SinglePostFragment : Fragment() {
         setupTransformer()
 
 
+
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.PostCommentResponse.collectLatest{
                 if(it is BaseResponse.Error){
@@ -140,19 +145,16 @@ class SinglePostFragment : Fragment() {
 //                    val content = it.data!!.charStream().readText()
 //                    val id = UpravljanjeResursima.getResourceString(content,requireContext())
 //                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
-                    Log.d("USPSENO DODAT KOMENTAR","USPSENO DODAT KOMENTAR")
                 }
             }
         }
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.GetCommentsResponseHandler.collectLatest{
                 if(it is BaseResponse.Error){
-                    Log.d("test",it.toString())
                     val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
                     Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
                 }
                 if(it is BaseResponse.Success){
-                    Log.d("USPSENO DODAT KOMENTAR","USPSENO DODAT KOMENTAR")
                     nizKomentara= it.data!!
                     showComments(nizKomentara)
                 }
@@ -168,14 +170,13 @@ class SinglePostFragment : Fragment() {
         })
         circleIndicator.setViewPager(viewPager2)
 
-        idPosta=1
-        viewModel.getPostWithID(idPosta)
+        viewModel.getPostWithID(args.idPosta)
 
 
         binding.InsertCommentButton.setOnClickListener{
             addComment()
         }
-        viewModel.getCommentsById(idPosta)
+        viewModel.getCommentsById(args.idPosta)
     }
 
     private val runnable= Runnable {
@@ -242,7 +243,7 @@ class SinglePostFragment : Fragment() {
         }
         dialog.findViewById<Button>(R.id.addCommentButton).setOnClickListener{
             comment=dialog.findViewById<EditText>(R.id.CommentTextBox).text.toString()
-            viewModel.PostComment(commentDTS(0,idPosta,comment))
+            viewModel.PostComment(commentDTS(0,args.idPosta,comment))
             dialog.dismiss()
         }
 

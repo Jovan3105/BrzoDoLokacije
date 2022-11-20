@@ -1,7 +1,10 @@
 package imi.projekat.hotspot.ModeliZaZahteve
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-data class singlePost(
+@Parcelize
+class singlePost(
     val brojslika: Int,
     val ownerID: Int,
     val dateTime: String,
@@ -10,5 +13,7 @@ data class singlePost(
     val photos: List<String>,
     val profilephoto:String,
     val username:String,
-    val shortDescription: String
-)
+    val shortDescription: String,
+    val postID:Int
+):Parcelable
+

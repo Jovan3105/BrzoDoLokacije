@@ -70,7 +70,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         this.lifecycleScope.launch{
-
             viewModel.DodajPostResposne.collectLatest{
                 dijalog.isDismiss()
                 if(it is BaseResponse.Loading){
@@ -88,6 +87,15 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity,id, Toast.LENGTH_SHORT).show()
                 }
 
+            }
+        }
+
+        this.lifecycleScope.launch{
+            viewModel.GetPostsWithUserId.collectLatest{
+                dijalog.isDismiss()
+                if(it is BaseResponse.Loading){
+                    dijalog.startLoading()
+                }
             }
         }
 

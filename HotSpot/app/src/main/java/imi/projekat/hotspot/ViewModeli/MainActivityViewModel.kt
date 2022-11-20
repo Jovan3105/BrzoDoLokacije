@@ -183,7 +183,7 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 
     fun getPostsByUserId(userid: Int){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
-
+            _GetPostsWithUserId.emit(BaseResponse.Loading())
             val response=repository.getPostsByUserId(userid)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
