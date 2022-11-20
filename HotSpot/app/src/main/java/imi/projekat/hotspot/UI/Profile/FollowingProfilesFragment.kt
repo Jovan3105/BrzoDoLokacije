@@ -11,11 +11,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import imi.projekat.hotspot.ModeliZaZahteve.FollowingUserAdapter
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentFollowingProfilesBinding
+import kotlinx.android.synthetic.main.fragment_following_profiles.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -33,6 +36,8 @@ class FollowingProfilesFragment : Fragment() {
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding:FragmentFollowingProfilesBinding
     private lateinit var korisnici:ArrayList<FollowingUserAdapter>
+    private var layoutManager:RecyclerView.LayoutManager?=null
+    private var adapter:RecyclerView.Adapter<AdapterFollowingProfiles.ViewHolder>?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -68,8 +73,12 @@ class FollowingProfilesFragment : Fragment() {
                             val korisnik=FollowingUserAdapter(it.data!!.followers[i].username,decodedImage)
                             korisnici.add(korisnik)
                         }
+
+                        layoutManager=LinearLayoutManager(requireContext())
+                        recycler.layoutManager=layoutManager
                         Log.d("korisnici",korisnici[0].username)
-                        binding.listview.adapter=AdapterFollowingProfiles(requireActivity(),korisnici)
+                        val adapter=AdapterFollowingProfiles(korisnici)
+                        recycler.adapter=adapter
 
                     }
                     //Log.d("SES",it.data!!.users.size.toString())
@@ -83,6 +92,10 @@ class FollowingProfilesFragment : Fragment() {
 
         return inflater.inflate(R.layout.fragment_following_profiles,container,false)
     }
+
+
+
+
 
 
 }

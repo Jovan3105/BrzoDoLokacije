@@ -106,6 +106,10 @@ dependencies {
     //OKrugla slika
     implementation "de.hdodenhof:circleimageview:3.1.0"
 
+    //card view i recycler view
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+
+
 
 
 
