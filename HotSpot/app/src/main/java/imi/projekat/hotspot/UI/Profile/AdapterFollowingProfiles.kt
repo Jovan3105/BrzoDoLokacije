@@ -5,19 +5,31 @@ import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import imi.projekat.hotspot.ModeliZaZahteve.FollowingUserAdapter
 import imi.projekat.hotspot.R
 
-class AdapterFollowingProfiles(private var users:ArrayList<FollowingUserAdapter>):RecyclerView.Adapter<AdapterFollowingProfiles.ViewHolder>()
+class AdapterFollowingProfiles(private var users:ArrayList<FollowingUserAdapter>,
+private val listener:OnItemClickListener
+                               ):RecyclerView.Adapter<AdapterFollowingProfiles.ViewHolder>()
 {
-    class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView)
+    inner class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView),
+            OnClickListener
     {
        val username:TextView=itemView.findViewById(R.id.username)
         val photoview:ImageView=itemView.findViewById(R.id.profilePic)
         val dugme:Button=itemView.findViewById(R.id.unfollowButton)
+        init {
+            dugme.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            val position:Int=adapterPosition
+            listener.onItemClick(position)
+        }
 
 
     }
@@ -34,6 +46,7 @@ class AdapterFollowingProfiles(private var users:ArrayList<FollowingUserAdapter>
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.username.text=users[position].username
         holder.photoview.setImageBitmap(users[position].photo)
+       holder.dugme.text=users[position].buttonName
 //        holder.dugme.setOnClickListener{
 //
 //        }OPCIONO

@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import imi.projekat.hotspot.LoginActivity
 import imi.projekat.hotspot.ModeliZaZahteve.FollowingUserAdapter
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.R
@@ -32,7 +33,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [FollowingProfilesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FollowingProfilesFragment : Fragment() {
+class FollowingProfilesFragment : Fragment(),AdapterFollowingProfiles.OnItemClickListener {
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding:FragmentFollowingProfilesBinding
     private lateinit var korisnici:ArrayList<FollowingUserAdapter>
@@ -40,6 +41,9 @@ class FollowingProfilesFragment : Fragment() {
     private var adapter:RecyclerView.Adapter<AdapterFollowingProfiles.ViewHolder>?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        korisnici=ArrayList()
+
+
 
     }
 
@@ -48,7 +52,6 @@ class FollowingProfilesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        korisnici=ArrayList()
         viewModel.GetAllFollowingByUser()
         binding=FragmentFollowingProfilesBinding.inflate(inflater)
         viewLifecycleOwner.lifecycleScope.launch{
@@ -70,32 +73,35 @@ class FollowingProfilesFragment : Fragment() {
                             Log.d("username",it.data!!.followers[i].username)
                             val imageBytes = Base64.decode(content, Base64.DEFAULT)
                             val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            val korisnik=FollowingUserAdapter(it.data!!.followers[i].username,decodedImage)
+                            val korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,decodedImage,"Unfollow")
+                           // Log.d("id",it.data!!.followers[i].id.toString())
                             korisnici.add(korisnik)
                         }
 
                         layoutManager=LinearLayoutManager(requireContext())
+                        adapter=AdapterFollowingProfiles(korisnici,this@FollowingProfilesFragment)
                         recycler.layoutManager=layoutManager
-                        Log.d("korisnici",korisnici[0].username)
-                        val adapter=AdapterFollowingProfiles(korisnici)
                         recycler.adapter=adapter
 
+
                     }
-                    //Log.d("SES",it.data!!.users.size.toString())
-//                    for (i in 0 until  it.data!!.size){
-//                        Log.d("username",it.data[i].username)
-//                    }
 
                 }
             }
         }
 
+
+
         return inflater.inflate(R.layout.fragment_following_profiles,container,false)
     }
 
-
-
-
+    override fun onItemClick(position: Int) {
+        Log.d("adapter",adapter.toString())
+       val clickedItem=korisnici[position]
+        Log.d("usernamekliknutog",clickedItem.username)
+        clickedItem.buttonName="Follow"
+        adapter!!.notifyItemChanged(position)
+    }
 
 
 }
