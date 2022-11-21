@@ -1,6 +1,7 @@
 package imi.projekat.hotspot.ViewModeli
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
