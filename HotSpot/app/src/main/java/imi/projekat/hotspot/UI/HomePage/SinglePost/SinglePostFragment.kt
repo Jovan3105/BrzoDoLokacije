@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.VectorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -43,6 +44,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.relex.circleindicator.CircleIndicator3
 import org.w3c.dom.Comment
+import org.w3c.dom.Text
+import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.LocalDateTime
 import kotlin.math.abs
 import kotlin.math.log
 
@@ -63,6 +68,8 @@ class SinglePostFragment : Fragment() {
     private lateinit var nizKomentara: List<singleComment>
     private lateinit var comment:String
     private val args: SinglePostFragmentArgs by navArgs()
+    private lateinit var likeDugme:ImageButton
+    private lateinit var vremeTextView:TextView
 
     override fun onResume() {
         super.onResume()
@@ -94,7 +101,8 @@ class SinglePostFragment : Fragment() {
         binding= FragmentSinglePostBinding.inflate(inflater,container,false)
         opisTekstView=binding.root.findViewById(binding.DuziOpis.id)
         kratakOpisView=binding.root.findViewById(binding.KratakOpis.id)
-
+        likeDugme=binding.root.findViewById(binding.likeButton.id)
+        vremeTextView=binding.root.findViewById(binding.vremeTextView.id)
         return binding.root
     }
 
@@ -120,6 +128,61 @@ class SinglePostFragment : Fragment() {
                     setupTransformer()
                     opisTekstView.text=it.data?.description
                     kratakOpisView.text=it.data?.shortDescription
+                    if(it.data?.likedByMe == true)
+                        likeDugme.setImageResource(R.drawable.puno_srce)
+                    else{
+                        likeDugme.setImageResource(R.drawable.prazno_srce)
+                    }
+
+                    var output="ERROR"
+                    val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        var curentDate: LocalDateTime = LocalDateTime.now()
+                        val postDate = LocalDateTime.parse(it.data?.dateTime)
+                        var pom= Duration.between(postDate,curentDate).toDays()
+                        Log.d("SES",pom.toString())
+                        when {
+
+                            pom >=27->{
+                                val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                                val formatter = SimpleDateFormat("dd.MM.yyyy")
+                                output = formatter.format(parser.parse(it.data?.dateTime))
+                            }
+                            pom in 2..26 -> {
+                                output=pom.toString()+" days ago"
+                            }
+                            pom.toInt() ==1->{
+                                output=pom.toString()+" day ago"
+                            }
+                            pom < 1-> {
+                                var sati= Duration.between(postDate,curentDate).toHours()
+                                when{
+                                    sati.toInt()==0->{
+                                        output="Just now"
+                                    }
+                                    sati.toInt()==1->{
+                                        output=sati.toString()+" hour ago"
+                                    }
+                                    else->{
+                                        output=sati.toString()+" hours ago"
+                                    }
+                                }
+                            }
+
+                            else -> {
+                                output="ERROR"
+                            }
+                        }
+
+
+
+                    } else {
+                        val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                        val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
+                        output = formatter.format(parser.parse(it.data?.dateTime))
+                    }
+                    vremeTextView.text=output
+
+
                 }
                 is BaseResponse.Error->{
                 }
@@ -177,6 +240,8 @@ class SinglePostFragment : Fragment() {
             addComment()
         }
         viewModel.getCommentsById(args.idPosta)
+
+
     }
 
     private val runnable= Runnable {

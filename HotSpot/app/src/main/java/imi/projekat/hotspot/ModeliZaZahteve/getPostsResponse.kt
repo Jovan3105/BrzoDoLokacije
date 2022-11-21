@@ -14,6 +14,8 @@ class singlePost(
     val profilephoto:String,
     val username:String,
     val shortDescription: String,
-    val postID:Int
+    val postID:Int,
+    val brojlajkova:Int,
+    var likedByMe:Boolean
 ):Parcelable
 

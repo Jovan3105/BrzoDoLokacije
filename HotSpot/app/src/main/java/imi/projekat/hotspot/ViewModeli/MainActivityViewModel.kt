@@ -43,7 +43,11 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _GetCommentsResponseHandler= MutableSharedFlow<BaseResponse<List<singleComment>>>()
     val GetCommentsResponseHandler=_GetCommentsResponseHandler.asSharedFlow()
 
+    private var _LikePostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val LikePostResponse=_LikePostResponse.asSharedFlow()
 
+    private var _DislikePostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val DislikePostResponse=_DislikePostResponse.asSharedFlow()
 
     var handleJob: Job?=null
 
@@ -198,5 +202,35 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
+    fun likePost(like:likeDTS){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _LikePostResponse.emit(BaseResponse.Loading())
+            val response=repository.likePost(like)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _LikePostResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _LikePostResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
 
+    fun dislikePost(dislike:likeDTS){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _DislikePostResponse.emit(BaseResponse.Loading())
+            val response=repository.dislikePost(dislike)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _DislikePostResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _DislikePostResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
 }

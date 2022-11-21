@@ -53,4 +53,11 @@ class Repository(){
     suspend fun getCommentsWithID(postid:Int): Response<List<singleComment>> {
         return APIservis.Servis.getCommentsWithID(postid)
     }
+    suspend fun likePost(like: likeDTS):Response<ResponseBody>{
+        return APIservis.Servis.likePost(like);
+    }
+
+    suspend fun dislikePost(@Body dislike: likeDTS):Response<ResponseBody>{
+        return APIservis.Servis.dislikePost(dislike);
+    }
 }

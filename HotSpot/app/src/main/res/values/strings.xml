@@ -78,7 +78,7 @@
     <string name="EmailAlreadyVerified">Account is already verified</string>
     <string name="wrongPassword">Wrong password</string>
     <string name="ErrorWhileAddingComment">Error while adding comment</string>
-
+    <string name="ErrorWhileGettingPosts">Error while getting posts</string>
     //success
     <string name="SuccessfulLogin">Successful login</string>
     <string name="SuccessfulRegistration">Successful registration</string>

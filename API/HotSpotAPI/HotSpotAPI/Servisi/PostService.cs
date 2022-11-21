@@ -344,7 +344,7 @@ namespace HotSpotAPI.Servisi
 
         public bool addLike(int id, int postid)
         {
-            var post = context.Postovi.FirstOrDefault(x => x.UserID != id && x.ID == postid);
+            var post = context.Postovi.FirstOrDefault(x => x.ID == postid);
             if (post == null)
                 return false;
             post.NumOfLikes++;
@@ -366,7 +366,7 @@ namespace HotSpotAPI.Servisi
             context.Likes.Remove(like);
             context.SaveChanges();
 
-            var post = context.Postovi.FirstOrDefault(x => x.UserID != id && x.ID == postid);
+            var post = context.Postovi.FirstOrDefault(x => x.ID == postid);
             if (post == null)
                 return false;
             post.NumOfLikes--;

@@ -78,6 +78,7 @@ namespace HotSpotAPI.ModeliZaZahteve
         public int brojlajkova { get; set; }
         public string shortDescription { get; set; }
         public int postID { get; set; }
+        public bool likedByMe { get; set; }
     }
     
     public class Photo

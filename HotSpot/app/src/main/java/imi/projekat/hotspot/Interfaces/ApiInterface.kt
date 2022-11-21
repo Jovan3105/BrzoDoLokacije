@@ -59,4 +59,10 @@ interface ApiInterface {
     @GET("/api/Post/comments/{postid}")
     suspend fun getCommentsWithID(@Path("postid") postid :Int):Response<List<singleComment>>
 
+    @POST("/api/Post/like")
+    suspend fun likePost(@Body like: likeDTS):Response<ResponseBody>
+
+    @POST("/api/Post/dislike")
+    suspend fun dislikePost(@Body dislike: likeDTS):Response<ResponseBody>
+
 }

@@ -6,26 +6,26 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import imi.projekat.hotspot.ModeliZaZahteve.likeDTS
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.UI.HomePage.SinglePost.ImageAdapterHomePage
 import imi.projekat.hotspot.databinding.PostZaRecyclerViewBinding
+import kotlinx.android.synthetic.main.post_za_recycler_view.view.*
 import me.relex.circleindicator.CircleIndicator3
 import java.text.SimpleDateFormat
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.Date
 import kotlin.math.abs
 
 class ListaPostovaAdapter(
@@ -40,8 +40,20 @@ class ListaPostovaAdapter(
         val viewPager:ViewPager2=itemView.findViewById(binding.viewPager2.id)
         val VremeView:TextView=itemView.findViewById(binding.VremeView.id)
         val KratakOpis:TextView=itemView.findViewById(binding.KratakOpis.id)
+        val likeDugme: ImageButton=itemView.findViewById(binding.likeButton.id)
         init{
             binding.root.setOnClickListener(this)
+
+
+
+            binding.likeButton.setOnClickListener{
+                if(ListaPostova[adapterPosition].likedByMe==false){
+                    clickHandler.likePost(likeDTS(ListaPostova[adapterPosition].postID))
+                    return@setOnClickListener
+                }
+                clickHandler.dislikePost(likeDTS(ListaPostova[adapterPosition].postID))
+
+            }
         }
         override fun onClick(v: View?) {
             val trenutniPost=ListaPostova[adapterPosition]
@@ -123,11 +135,14 @@ class ListaPostovaAdapter(
                     val formatter = SimpleDateFormat("dd.MM.yyyy")
                     output = formatter.format(parser.parse(post.dateTime))
                 }
-                pom > 1 -> {
+                pom in 2..26 -> {
                     output=pom.toString()+" days ago"
                 }
-                pom <= 1-> {
-                    var sati=Duration.between(postDate,curentDate).toHours()
+                pom.toInt() ==1->{
+                    output=pom.toString()+" day ago"
+                }
+                pom < 1-> {
+                    var sati= Duration.between(postDate,curentDate).toHours()
                     when{
                         sati.toInt()==0->{
                             output="Just now"
@@ -157,6 +172,11 @@ class ListaPostovaAdapter(
 
         holder.KratakOpis.text=post.shortDescription
         holder.VremeView.text=output
+        if(post.likedByMe)
+            holder.likeDugme.setImageResource(R.drawable.puno_srce)
+        else{
+            holder.likeDugme.setImageResource(R.drawable.prazno_srce)
+        }
 
         var imageList=ArrayList<Bitmap>()
         for (i in 0 until  post.photos.size){

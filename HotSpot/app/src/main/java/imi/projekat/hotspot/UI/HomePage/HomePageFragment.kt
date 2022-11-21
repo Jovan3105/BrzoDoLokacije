@@ -1,7 +1,9 @@
 package imi.projekat.hotspot.UI.HomePage
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import imi.projekat.hotspot.ModeliZaZahteve.likeDTS
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
@@ -76,8 +79,46 @@ class HomePageFragment : Fragment(),PostClickHandler {
             }
         }
 
-
-
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.LikePostResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
+                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                }
+                if(it is BaseResponse.Success){
+                    if(it.data!=null){
+                        val content = it.data!!.charStream().readText()
+                        for (i in 0 until  listaPostova.size){
+                            if(listaPostova[i].postID==content.toInt()){
+                                listaPostova[i].likedByMe=true
+                                break
+                            }
+                        }
+                        listaPostovaAdapter.update(listaPostova)
+                    }
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.DislikePostResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
+                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                }
+                if(it is BaseResponse.Success){
+                    if(it.data!=null){
+                        val content = it.data!!.charStream().readText()
+                        for (i in 0 until  listaPostova.size){
+                            if(listaPostova[i].postID==content.toInt()){
+                                listaPostova[i].likedByMe=false
+                                break
+                            }
+                        }
+                        listaPostovaAdapter.update(listaPostova)
+                    }
+                }
+            }
+        }
         viewModel.getPostsByUserId(1)
 
 
@@ -99,6 +140,14 @@ class HomePageFragment : Fragment(),PostClickHandler {
     override fun clickedPostItem(post: singlePost) {
         val action:NavDirections=HomePageFragmentDirections.actionHomePageFragmentToSinglePostFragment(post.postID)
         findNavController().navigate(action)
+    }
+
+    override fun likePost(like: likeDTS) {
+        viewModel.likePost(like)
+    }
+
+    override fun dislikePost(like: likeDTS) {
+        viewModel.dislikePost(like)
     }
 
 

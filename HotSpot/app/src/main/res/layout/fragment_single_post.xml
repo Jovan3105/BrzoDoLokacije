@@ -32,21 +32,29 @@
             tools:layout_editor_absoluteX="0dp">
 
 
+            <TextView
+                android:id="@+id/vremeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="33dp"
+                android:text="vreme"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <me.relex.circleindicator.CircleIndicator3
                 android:id="@+id/circleIndikator"
                 android:layout_width="wrap_content"
                 android:layout_height="10dp"
-                android:layout_marginTop="23dp"
-                android:layout_marginBottom="23dp"
                 app:ci_drawable="@drawable/ic_dot_selected"
                 app:ci_drawable_unselected="@drawable/ic_dot_default"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/likeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="30dp"

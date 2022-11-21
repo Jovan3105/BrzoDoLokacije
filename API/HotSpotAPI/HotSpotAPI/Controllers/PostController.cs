@@ -44,14 +44,33 @@ namespace HotSpotAPI.Controllers
         [HttpGet("getposts")]
         public async Task<ActionResult<string>> GetPosts()
         {
+
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
+
             List<getPosts> res = postService.getAllPosts(id);
-            if (res != null)
-                return Ok(res);
-            return BadRequest();
+
+            List<likes> lajkovi = postService.getLikes(id);
+
+            if(res==null)
+                return BadRequest("ErrorWhileGettingPosts");
+            if (lajkovi!=null)
+                for (int i=0; i < res.Count; i++)
+                {
+                    for (int j = 0; j < lajkovi.Count; j++)
+                    {
+                        if (lajkovi[j].postid == res[i].postID)
+                        {
+                            res[i].likedByMe = true;
+                            lajkovi.RemoveAt(j);
+                        }
+                    }
+                }
+
+            return Ok(res);
+            
         }
         //KADA KORISNIK HOCE DA VIDI PROFIL DRUGOG KORISNIKA
         [HttpGet("getpostsbyid/{userid}")]
@@ -62,9 +81,25 @@ namespace HotSpotAPI.Controllers
                 return Unauthorized("Unauthorized");
 
             List<getPosts> res = postService.getAllPosts(userid);
-            if (res != null)
-                return Ok(res);
-            return BadRequest("ErrorWhileGettingPostsForSelectedUser");
+
+            List<likes> lajkovi = postService.getLikes(id);
+
+            if (res == null)
+                return BadRequest("ErrorWhileGettingPostsForSelectedUser");
+            if (lajkovi != null)
+                for (int i = 0; i < res.Count; i++)
+                {
+                    for (int j = 0; j < lajkovi.Count; j++)
+                    {
+                        if (lajkovi[j].postid == res[i].postID)
+                        {
+                            res[i].likedByMe = true;
+                            lajkovi.RemoveAt(j);
+                        }
+                    }
+                }
+            return Ok(res);
+            
         }
         //PRIKAZUJE KONKRETAN POST, POST CIJI JE ID PROSLEDJEN
         [HttpGet("getpost/{postid}")]
@@ -75,9 +110,21 @@ namespace HotSpotAPI.Controllers
                 return Unauthorized();
 
             getPosts res = postService.getPost(id, postid);
-            if (res != null)
-                return Ok(res);
-            return BadRequest("NoPostWithThatId");
+
+            List<likes> lajkovi = postService.getLikes(id);
+
+            if (res == null)
+                return BadRequest("NoPostWithThatId");
+            if (lajkovi != null)
+                for (int j = 0; j < lajkovi.Count; j++)
+                {
+                    if (lajkovi[j].postid == res.postID)
+                    {
+                        res.likedByMe = true;
+                        break;
+                    }
+                }
+            return Ok(res);
         }
         [HttpGet("getsorted/{sort}")]
         public async Task<ActionResult<string>> GetSorted(int sort)
@@ -87,6 +134,25 @@ namespace HotSpotAPI.Controllers
                 return Unauthorized("Unauthorized");
             List<getPosts> sortedlist = new List<getPosts>();
             List<getPosts> res = postService.getAllPosts();
+
+            List<likes> lajkovi = postService.getLikes(id);
+
+            if (res == null)
+                return BadRequest("ErrorWhileGettingPosts");
+            if (lajkovi != null)
+                for (int i = 0; i < res.Count; i++)
+                {
+                    for (int j = 0; j < lajkovi.Count; j++)
+                    {
+                        if (lajkovi[j].postid == res[i].postID)
+                        {
+                            res[i].likedByMe = true;
+                            lajkovi.RemoveAt(j);
+                        }
+                    }
+                }
+
+
             //OD STARIJEG POSTA KA NOVIJEM
             if (sort == 0)
             {
@@ -226,8 +292,8 @@ namespace HotSpotAPI.Controllers
 
             bool res = postService.addLike(id, postid.postid);
             if (!res)
-                return BadRequest();
-            return Ok();
+                return BadRequest("ConnectionError");
+            return Ok(postid.postid);
         }
 
         [HttpPost("dislike")]
@@ -240,7 +306,7 @@ namespace HotSpotAPI.Controllers
             bool res = postService.dislike(id, postid.postid);
             if (!res)
                 return BadRequest();
-            return Ok();
+            return Ok(postid.postid);
         }
         [HttpGet("likes")]
         public async Task<ActionResult<List<likes>>> getLikesByUser()
