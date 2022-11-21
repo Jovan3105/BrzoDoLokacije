@@ -21,6 +21,7 @@ namespace HotSpotAPI.Servisi
         public bool followUser(int userid, int followid);
         public List<follower> getfollowUser(int id);
         public bool unfollowUser(int userid, int followid);
+        public specialInfo getSpecialInfo(int id);
     }
     public class UserService : IUserService
     {
@@ -326,6 +327,23 @@ namespace HotSpotAPI.Servisi
             }
             return fols;
             
+        }
+        public specialInfo getSpecialInfo(int id)
+        {
+            specialInfo si = new specialInfo();
+            var followers = context.Followers.Where(x => x.followID == id).ToList();
+            si.brojpratilaca = followers.Count();
+            var posts = context.Postovi.Where(x=>x.UserID==id).ToList();
+            si.brojpostova = posts.Count();
+            int numOfLikes = 0;
+            foreach(var post in posts)
+            {
+                numOfLikes += post.NumOfLikes;
+            }
+            si.prosecanbrojlajkova = (double)numOfLikes/ (double)posts.Count();
+            var posts2 = context.Postovi.Where(x => x.UserID == id).Select(x => x.Location).Distinct();
+            si.brojlokacija = posts2.Count();
+            return si;
         }
 
     }

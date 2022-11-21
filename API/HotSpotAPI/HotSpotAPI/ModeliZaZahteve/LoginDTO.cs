@@ -134,4 +134,11 @@ namespace HotSpotAPI.ModeliZaZahteve
         //public string photo { get; set; } = string.Empty;
         public List<follower> followers { get; set; }
     }
+    public class specialInfo
+    {
+        public int brojpostova { get; set; }
+        public double prosecanbrojlajkova { get; set; }
+        public int brojlokacija { get; set; }
+        public int brojpratilaca { get; set; }
+    }
 }
