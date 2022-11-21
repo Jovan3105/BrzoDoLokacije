@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_homePageFragment_to_singlePostFragment"
             app:destination="@id/singlePostFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_homePageMap"
+            app:destination="@id/homePageMap" />
     </fragment>
     <fragment
         android:id="@+id/createPostFragment"
@@ -49,6 +52,9 @@
         <action
             android:id="@+id/action_myProfileFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_myProfileFragment_to_followingProfilesFragment"
+            app:destination="@id/followingProfilesFragment" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -76,4 +82,14 @@
             android:name="idPosta"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/homePageMap"
+        android:name="imi.projekat.hotspot.UI.HomePage.HomePageMap"
+        android:label="fragment_home_page_map"
+        tools:layout="@layout/fragment_home_page_map" />
+    <fragment
+        android:id="@+id/followingProfilesFragment"
+        android:name="imi.projekat.hotspot.UI.Profile.FollowingProfilesFragment"
+        android:label="fragment_following_profiles"
+        tools:layout="@layout/fragment_following_profiles" />
 </navigation>

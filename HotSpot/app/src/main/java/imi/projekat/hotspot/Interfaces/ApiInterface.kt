@@ -1,6 +1,5 @@
 package imi.projekat.hotspot.Interfaces
 
-import android.hardware.biometrics.BiometricManager.Strings
 import imi.projekat.hotspot.ModeliZaZahteve.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -64,5 +63,8 @@ interface ApiInterface {
 
     @POST("/api/Post/dislike")
     suspend fun dislikePost(@Body dislike: likeDTS):Response<ResponseBody>
+
+    @GET("/api/User/GetAllFollowingByUser")
+    suspend fun getAllFollowingByUSer():Response<getuser>
 
 }

@@ -1,5 +1,6 @@
 package imi.projekat.hotspot.ModeliZaZahteve
 
+import android.graphics.Bitmap
 import android.util.Base64
 import android.util.Base64InputStream
 import android.util.Base64OutputStream
@@ -13,3 +14,25 @@ data class loginDTS(
 data class LoginResponse(val message:String?,val token:String?,val refreshToken:String?,val profilePhoto:String?)
 
 data class changeAccDataResponse(val message:String?,val token:String?,val id:Any?)
+
+data class ProfileDTR(
+    val id: Int,
+    val username: String
+)
+
+data class MyProfileResponse(val photo:String?,val followers:List<ProfileDTR>)
+
+data class getuser (
+    val followers:ArrayList<FollowingUserPom>
+)
+
+data class FollowingUserPom(
+    val id:Int,
+    val username:String,
+    val userPhoto:String
+)
+
+data class FollowingUserAdapter(
+    val username: String,
+    val photo:Bitmap
+)

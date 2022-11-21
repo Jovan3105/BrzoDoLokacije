@@ -110,19 +110,87 @@ namespace HotSpotAPI.Controllers
             return BadRequest();
         }
         [HttpGet("GetPhoto")]
-        public async Task<ActionResult<string>> GetUserinfo()
+        public async Task<ActionResult<String>> GetUserinfo()
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
             string slika = userService.getPhoto(id);
-            if (slika == "" || slika == null)
+            if (slika != "" && slika != null)
             {
-                return null;
+                string pom;
+                Byte[] b = System.IO.File.ReadAllBytes(slika);
+                pom = Convert.ToBase64String(b, 0, b.Length);
+                return Ok(pom);
             }
-            Byte[] b = System.IO.File.ReadAllBytes(slika);
-            return Convert.ToBase64String(b, 0, b.Length);
+            return BadRequest();
+            
         }
-        
+
+        [HttpGet("GetAllFollowingByUser")]
+        public async Task<ActionResult<getuser>> GetAllFollowingByUser()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            getuser g = new getuser();
+            List<follower> f = userService.getfollowUser(id);
+            if (f == null)
+                return BadRequest();
+
+            g.followers = f;
+            return g;
+
+        }
+
+        [HttpPost("follow/{userid}")]
+        public async Task<ActionResult<string>> FollowUser(int userid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.followUser(id, userid);
+            if (!res)
+                return BadRequest();
+            return Ok();
+        }
+        [HttpPost("unfollow/{userid}")]
+        public async Task<ActionResult<string>> UnfollowUser(int userid)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = userService.unfollowUser(id, userid);
+            if (!res)
+                return BadRequest();
+            return Ok();
+        }
+
+        [HttpGet("follow")]
+        public async Task<ActionResult<string>> GetFollowers()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<follower> f = userService.getfollowUser(id);
+            if (f != null)
+                return Ok(f);
+            return BadRequest();
+        }
+        [HttpGet("specialInfo")]
+        public async Task<ActionResult<string>> GetSpecialInfo()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            specialInfo infos = userService.getSpecialInfo(id);
+
+            return Ok(infos);
+        }
     }
 }

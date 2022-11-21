@@ -30,6 +30,7 @@
     <string name="newPassword">New password</string>
     <string name="addImage">Add image</string>
     <string name="addLocation">Add location</string>
+    <string name="Unfollow">Unfollow</string>
     <string name="Comments">Comments</string>
     <string name="CreatePost">Publish</string>
     <string name="LongPostDescription">Long post description</string>

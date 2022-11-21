@@ -236,13 +236,13 @@ class CreatePostFragment : Fragment(),addImageInterface {
                 for (i in 0 until  it.data?.clipData!!.itemCount){
                     val source= ImageDecoder.createSource(resolver, it.data!!.clipData?.getItemAt(i)?.uri!!)
                     bitmapaSlike=ImageDecoder.decodeBitmap(source)
-                   imageListUri.add(it.data!!.data)
+                   imageListUri.add(it.data!!.clipData?.getItemAt(i)?.uri!!)
                     imageList.add(bitmapaSlike)
                 }
             } else {
                 for (i in 0..it.data?.clipData!!.itemCount){
                     bitmapaSlike=MediaStore.Images.Media.getBitmap(resolver,it.data!!.clipData?.getItemAt(i)?.uri!!)
-                   imageListUri.add(it.data!!.data)
+                   imageListUri.add(it.data!!.clipData?.getItemAt(i)?.uri!!)
                     imageList.add(bitmapaSlike)
                 }
 

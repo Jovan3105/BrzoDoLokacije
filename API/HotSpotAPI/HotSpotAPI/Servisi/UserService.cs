@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using HotSpotAPI.Modeli;
 using HotSpotAPI.ModeliZaZahteve;
+using System.Diagnostics;
 
 namespace HotSpotAPI.Servisi
 {
@@ -17,7 +18,10 @@ namespace HotSpotAPI.Servisi
         public bool ChangePhoto(int id, IFormFile photo);
         public userinfo getUserInfo(int id);
         public bool deleteAccount(int id);
-
+        public bool followUser(int userid, int followid);
+        public List<follower> getfollowUser(int id);
+        public bool unfollowUser(int userid, int followid);
+        public specialInfo getSpecialInfo(int id);
     }
     public class UserService : IUserService
     {
@@ -205,7 +209,7 @@ namespace HotSpotAPI.Servisi
             List<Post> posts = context.Postovi.Where(x=>x.UserID == id).ToList();
             foreach(Post p in posts)
             {
-                context.Remove(p);
+                context.Postovi.Remove(p);
                 context.SaveChanges();
             }
 
@@ -219,6 +223,13 @@ namespace HotSpotAPI.Servisi
                 context.SaveChanges();
 
                 context.Likes.Remove(l);
+                context.SaveChanges();
+            }
+
+            List<Followers> followers = context.Followers.Where(x=>x.userID == id || x.followID==id).ToList();
+            foreach(Followers f in followers)
+            {
+                context.Followers.Remove(f);
                 context.SaveChanges();
             }
             return true;
@@ -243,6 +254,97 @@ namespace HotSpotAPI.Servisi
             }
             return u;
         }
-        
+        public string getUsernameById(int id)
+        {
+            Korisnik name = context.Korisnici.Find(id);
+            if (name != null)
+                return name.Username;
+            return "";
+        }
+        public string getUserPhoto(int id)
+        {
+            Korisnik user = context.Korisnici.Find(id);
+            if(user!=null)
+            {
+                if(user.ProfileImage != null || user.ProfileImage!="")
+                {
+                    Byte[] b = System.IO.File.ReadAllBytes(user.ProfileImage);
+                    return Convert.ToBase64String(b, 0, b.Length);
+                }
+                return "1";
+            }
+            return "0";
+        }
+        public bool followUser(int userid, int followid)
+        {
+            var fol = context.Followers.FirstOrDefault(x => x.userID == userid && x.followID == followid);
+            if (fol != null)
+                return false;
+
+            Followers f = new Followers();
+            f.userID = userid;
+            f.followID = followid;
+
+            context.Followers.Add(f);
+            context.SaveChanges();
+
+            return true;
+        }
+        public bool unfollowUser(int userid, int followid)
+        {
+            var fol = context.Followers.FirstOrDefault(x => x.userID == userid && x.followID == followid);
+            if (fol == null)
+                return false;
+
+            context.Followers.Remove(fol);
+            context.SaveChanges();
+            return true;
+        }
+        public List<follower> getfollowUser(int id)
+        {
+            var fol = context.Followers.Where(x => x.userID == id).ToList();
+            Debug.WriteLine(fol);
+            if (fol == null)
+                return null;
+
+            List<follower> fols = new List<follower>();
+            string pom;
+            foreach(Followers f in fol)
+            {
+                follower f1 = new follower();
+                f1.username = getUsernameById(f.followID);
+                if (f1.username == "" || f1.username == null)
+                    return null;
+                pom = getUserPhoto(f.followID);
+                if (pom.Equals("0"))
+                    return null;
+                if(pom.Equals("1"))
+                    f1.userPhoto = "";
+                if (!pom.Equals("1"))
+                    f1.userPhoto = pom;
+                f1.ID = f.followID;
+                fols.Add(f1);
+            }
+            return fols;
+            
+        }
+        public specialInfo getSpecialInfo(int id)
+        {
+            specialInfo si = new specialInfo();
+            var followers = context.Followers.Where(x => x.followID == id).ToList();
+            si.brojpratilaca = followers.Count();
+            var posts = context.Postovi.Where(x=>x.UserID==id).ToList();
+            si.brojpostova = posts.Count();
+            int numOfLikes = 0;
+            foreach(var post in posts)
+            {
+                numOfLikes += post.NumOfLikes;
+            }
+            si.prosecanbrojlajkova = (double)numOfLikes/ (double)posts.Count();
+            var posts2 = context.Postovi.Where(x => x.UserID == id).Select(x => x.Location).Distinct();
+            si.brojlokacija = posts2.Count();
+            return si;
+        }
+
     }
 }

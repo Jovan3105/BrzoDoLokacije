@@ -130,4 +130,23 @@ namespace HotSpotAPI.ModeliZaZahteve
         public int postid { get; set; }
         public int commid { get; set; }
     }
+
+    public class follower
+    {
+        public int ID { get; set; }
+        public string username { get; set; }
+        public dynamic userPhoto { get; set; }
+    }
+    public class getuser
+    {
+        //public string photo { get; set; } = string.Empty;
+        public List<follower> followers { get; set; }
+    }
+    public class specialInfo
+    {
+        public int brojpostova { get; set; }
+        public double prosecanbrojlajkova { get; set; }
+        public int brojlokacija { get; set; }
+        public int brojpratilaca { get; set; }
+    }
 }
