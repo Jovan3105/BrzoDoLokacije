@@ -33,6 +33,8 @@ data class FollowingUserPom(
 )
 
 data class FollowingUserAdapter(
+    val id:Int,
     val username: String,
-    val photo:Bitmap
+    val photo:Bitmap,
+    var buttonName:String
 )

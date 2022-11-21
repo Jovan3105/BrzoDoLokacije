@@ -67,4 +67,6 @@ interface ApiInterface {
     @GET("/api/User/GetAllFollowingByUser")
     suspend fun getAllFollowingByUSer():Response<getuser>
 
+
+
 }
