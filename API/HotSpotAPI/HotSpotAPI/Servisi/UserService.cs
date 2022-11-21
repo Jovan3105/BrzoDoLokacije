@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using HotSpotAPI.Modeli;
 using HotSpotAPI.ModeliZaZahteve;
+using System.Diagnostics;
 
 namespace HotSpotAPI.Servisi
 {
@@ -15,21 +16,12 @@ namespace HotSpotAPI.Servisi
         public void verifyUser(string username);
         public string getPhoto(int id);
         public bool ChangePhoto(int id, IFormFile photo);
-        public bool addNewPost(int id, addPost newPost);
-        public List<getPosts> getAllPosts(int id);
-        public getPosts getPost(int id, int postID);
-        public bool deletePost(int id, int postID);
-        public List<getPosts> getAllPostsByLocaton(string location);
-        public bool addComment(int id, comment comm);
-        public List<comments> GetComments(int postid);
-        public bool DeleteComment(int commid, int postid, int userid);
-        public bool EditComment(int commid, int postId, string newtext, int id);
         public userinfo getUserInfo(int id);
-        public bool addLike(int id, int postid);
-        public bool dislike(int id, int postid);
-        public List<likes> getLikes(int id);
-        public List<comments> GetReplies(int postId, int commid);
         public bool deleteAccount(int id);
+        public bool followUser(int userid, int followid);
+        public List<follower> getfollowUser(int id);
+        public bool unfollowUser(int userid, int followid);
+        public specialInfo getSpecialInfo(int id);
     }
     public class UserService : IUserService
     {
@@ -217,234 +209,29 @@ namespace HotSpotAPI.Servisi
             List<Post> posts = context.Postovi.Where(x=>x.UserID == id).ToList();
             foreach(Post p in posts)
             {
-                context.Remove(p);
+                context.Postovi.Remove(p);
                 context.SaveChanges();
             }
-            return true;
-        }
-        public bool addNewPost(int id, addPost newPost)
-        {
-            var user = context.Korisnici.Find(id);
-            if (user == null)
-                return false;
 
-            Post p = new Post();
-            p.UserID = id;
-            p.Description = newPost.description;
-            p.Location = newPost.location;
-            p.DateTime = DateTime.Now;
-            p.NumOfPhotos = newPost.photos.Count;
-            context.Postovi.Add(p);
-            context.SaveChanges();
-
-            string basepath = storageService.CreatePost();
-            if (!Directory.Exists(basepath))
-                Directory.CreateDirectory(basepath);
-
-            int brojac = 1;
-            foreach(IFormFile slika in newPost.photos)
-            {
-                string path = Path.Combine(basepath, "user" + id + "post"+p.ID+"photo"+brojac+".jpg");
-                using (FileStream stream = System.IO.File.Create(path))
-                {
-                    slika.CopyTo(stream);
-                    stream.Flush();
-                }
-                brojac += 1;
-            }
-            return true;
-        }
-        public List<getPosts> getAllPosts(int id)
-        {
-            List<Post> posts = context.Postovi.Where(x=>x.UserID == id).ToList();
-            List<getPosts> postsList = new List<getPosts>();
+            List<Like> lajkovi = context.Likes.Where(x => x.UserID == id).ToList();
             
-            foreach(Post post in posts)
+            foreach(Like l in lajkovi)
             {
-                getPosts p = new getPosts();
-                p.description = post.Description;
-                p.location = post.Location;
-                p.DateTime = post.DateTime;
-                p.photos = new List<string>();
-                p.brojslika = post.NumOfPhotos;
-                string basepath = storageService.CreatePost();
-                basepath = Path.Combine(basepath, "user" + id+"post"+post.ID);
-                for (int i=1;i<=post.NumOfPhotos;i++)
-                {
-                    string path = Path.Combine(basepath + "photo" + i+".jpg");
-                    Byte[] b = System.IO.File.ReadAllBytes(path);
-                    string slika = Convert.ToBase64String(b, 0, b.Length);
-                    p.photos.Add(slika);
-                }
-                postsList.Add(p);
+                Post p = context.Postovi.FirstOrDefault(x => x.ID == l.PostID);
+                if(p!=null)
+                    p.NumOfLikes--;
+                context.SaveChanges();
+
+                context.Likes.Remove(l);
+                context.SaveChanges();
             }
 
-            return postsList;
-        }
-        public List<getPosts> getAllPostsByLocaton(string location)
-        {
-            List<Post> posts = context.Postovi.Where(x => x.Location.Equals(location)).ToList();
-            List<getPosts> postsList = new List<getPosts>();
-
-            foreach (Post post in posts)
+            List<Followers> followers = context.Followers.Where(x=>x.userID == id || x.followID==id).ToList();
+            foreach(Followers f in followers)
             {
-                getPosts p = new getPosts();
-                p.description = post.Description;
-                p.location = post.Location;
-                p.DateTime = post.DateTime;
-                p.photos = new List<string>();
-                p.brojslika = post.NumOfPhotos;
-                string basepath = storageService.CreatePost();
-                basepath = Path.Combine(basepath, "user" + post.UserID + "post" + post.ID);
-                for (int i = 1; i <= post.NumOfPhotos; i++)
-                {
-                    string path = Path.Combine(basepath + "photo" + i + ".jpg");
-                    Byte[] b = System.IO.File.ReadAllBytes(path);
-                    string slika = Convert.ToBase64String(b, 0, b.Length);
-                    p.photos.Add(slika);
-                }
-                postsList.Add(p);
+                context.Followers.Remove(f);
+                context.SaveChanges();
             }
-
-            return postsList;
-        }
-        public getPosts getPost(int id, int postID)
-        {
-            Post post = context.Postovi.FirstOrDefault(x => x.UserID == id && x.ID == postID);
-            if (post == null)
-                return null;
-            getPosts p = new getPosts();
-            p.description = post.Description;
-            p.location = post.Location;
-            p.DateTime = post.DateTime;
-            p.photos = new List<string>();
-            p.brojslika = post.NumOfPhotos;
-            string basepath = storageService.CreatePost();
-            basepath = Path.Combine(basepath, "user" + id + "post" + post.ID);
-            for (int i = 1; i <= post.NumOfPhotos; i++)
-            {
-                string path = Path.Combine(basepath + "photo" + i + ".jpg");
-                Byte[] b = System.IO.File.ReadAllBytes(path);
-                string slika = Convert.ToBase64String(b, 0, b.Length);
-                p.photos.Add(slika);
-            }
-            return p;
-        }
-        public bool deletePost(int id, int postID)
-        {
-            Post post = context.Postovi.FirstOrDefault(x => x.UserID == id && x.ID == postID);
-            if(post == null)
-                return false;
-
-            bool res = storageService.deletePost(id, postID, post.NumOfPhotos);
-            if (!res)
-                return false;
-
-            context.Remove(post);
-            context.SaveChanges();
-            return true;
-        }
-        public bool addComment(int id, comment comm)
-        {
-            var post = context.Postovi.FirstOrDefault(x => x.ID == comm.postid);
-            if (post == null)
-                return false;
-
-            Komentari kom = new Komentari();
-            kom.PostID = comm.postid;
-            kom.DateTime = DateTime.Now;
-            kom.Text = comm.text;
-            kom.UserID = id;
-            kom.ParentID = comm.parentid;
-            context.Komentari.Add(kom);
-            context.SaveChanges();
-
-            return true;
-        }
-
-        public List<comments> GetComments(int postid)
-        {
-            var komentari = context.Komentari.Where(x=>x.PostID == postid && x.ParentID==0).ToList();
-            if(komentari==null)
-                return null;
-
-            List<comments> koms = new List<comments>();
-            foreach(Komentari c in komentari)
-            {
-                comments kom = new comments();
-                kom.OwnerID = c.UserID;
-                var user = context.Korisnici.FirstOrDefault(x => x.ID == c.UserID);
-                if (user == null)
-                    return null;
-                string photopath = user.ProfileImage;
-                if (photopath == "" || photopath == null)
-                    kom.userPhoto = "";
-                else
-                {
-                    byte[] b = System.IO.File.ReadAllBytes(photopath);
-                    string slika = Convert.ToBase64String(b, 0, b.Length);
-                    kom.userPhoto = slika;
-                }
-                kom.username = user.Username;
-                kom.text = c.Text;
-                kom.time = c.DateTime;
-
-                koms.Add(kom);
-            }
-            return koms;
-        }
-        public List<comments> GetReplies(int postId, int commid)
-        {
-            var komentari = context.Komentari.Where(x => x.PostID == postId && x.ParentID==commid).ToList();
-            if (komentari == null)
-                return null;
-
-            List<comments> koms = new List<comments>();
-            foreach (Komentari c in komentari)
-            {
-                comments kom = new comments();
-                kom.OwnerID = c.UserID;
-                var user = context.Korisnici.FirstOrDefault(x => x.ID == c.UserID);
-                if (user == null)
-                    return null;
-                string photopath = user.ProfileImage;
-                if (photopath == "" || photopath == null)
-                    kom.userPhoto = "";
-                else
-                {
-                    byte[] b = System.IO.File.ReadAllBytes(photopath);
-                    string slika = Convert.ToBase64String(b, 0, b.Length);
-                    kom.userPhoto = slika;
-                }
-
-                kom.username = user.Username;
-                kom.text = c.Text;
-                kom.time = c.DateTime;
-
-                koms.Add(kom);
-            }
-            return koms;
-        }
-        public bool DeleteComment(int commid, int postid, int userid)
-        {
-            var com = context.Komentari.FirstOrDefault(x=>x.ID== commid && x.PostID == postid && x.UserID == userid);
-            if (com == null)
-                return false;
-
-            context.Komentari.Remove(com);
-            context.SaveChanges();
-            return true;
-        }
-        public bool EditComment(int commid, int postId, string newtext, int id)
-        {
-            var com = context.Komentari.FirstOrDefault(x => x.ID == commid && x.PostID == postId && x.UserID == id);
-            if (com == null)
-                return false;
-
-            com.Text = newtext;
-            com.DateTime = DateTime.Now;
-            context.SaveChanges();
-
             return true;
         }
         public userinfo getUserInfo(int id)
@@ -454,7 +241,7 @@ namespace HotSpotAPI.Servisi
                 return null;
             userinfo u = new userinfo();
             u.username = user.Username;
-            
+
             string slika = getPhoto(id);
             if (slika == "" || slika == null)
             {
@@ -467,53 +254,97 @@ namespace HotSpotAPI.Servisi
             }
             return u;
         }
-
-        public bool addLike(int id, int postid)
+        public string getUsernameById(int id)
         {
-            var post = context.Postovi.FirstOrDefault(x => x.UserID != id && x.ID==postid);
-            if (post == null)
+            Korisnik name = context.Korisnici.Find(id);
+            if (name != null)
+                return name.Username;
+            return "";
+        }
+        public string getUserPhoto(int id)
+        {
+            Korisnik user = context.Korisnici.Find(id);
+            if(user!=null)
+            {
+                if(user.ProfileImage != null || user.ProfileImage!="")
+                {
+                    Byte[] b = System.IO.File.ReadAllBytes(user.ProfileImage);
+                    return Convert.ToBase64String(b, 0, b.Length);
+                }
+                return "1";
+            }
+            return "0";
+        }
+        public bool followUser(int userid, int followid)
+        {
+            var fol = context.Followers.FirstOrDefault(x => x.userID == userid && x.followID == followid);
+            if (fol != null)
                 return false;
-            post.NumOfLikes++;
 
-            Like l = new Like();
-            l.PostID = postid;
-            l.UserID = id;
-            context.Likes.Add(l);
+            Followers f = new Followers();
+            f.userID = userid;
+            f.followID = followid;
+
+            context.Followers.Add(f);
             context.SaveChanges();
 
             return true;
         }
-        public bool dislike(int id, int postid)
+        public bool unfollowUser(int userid, int followid)
         {
-            var like = context.Likes.FirstOrDefault(x => x.UserID == id && x.PostID == postid);
-            if (like == null)
+            var fol = context.Followers.FirstOrDefault(x => x.userID == userid && x.followID == followid);
+            if (fol == null)
                 return false;
 
-            context.Likes.Remove(like);
-            context.SaveChanges();
-
-            var post = context.Postovi.FirstOrDefault(x => x.UserID != id && x.ID == postid);
-            if (post == null)
-                return false;
-            post.NumOfLikes--;
+            context.Followers.Remove(fol);
             context.SaveChanges();
             return true;
         }
-        public List<likes> getLikes(int id)
+        public List<follower> getfollowUser(int id)
         {
-            List <likes> lista = new List<likes>();
-            var likes = context.Likes.Where(x => x.UserID == id).ToList();
-            if (likes == null)
+            var fol = context.Followers.Where(x => x.userID == id).ToList();
+            Debug.WriteLine(fol);
+            if (fol == null)
                 return null;
 
-            foreach(Like like in likes)
+            List<follower> fols = new List<follower>();
+            string pom;
+            foreach(Followers f in fol)
             {
-                likes l = new likes();
-                l.postid = like.PostID;
-                lista.Add(l);
+                follower f1 = new follower();
+                f1.username = getUsernameById(f.followID);
+                if (f1.username == "" || f1.username == null)
+                    return null;
+                pom = getUserPhoto(f.followID);
+                if (pom.Equals("0"))
+                    return null;
+                if(pom.Equals("1"))
+                    f1.userPhoto = "";
+                if (!pom.Equals("1"))
+                    f1.userPhoto = pom;
+                f1.ID = f.followID;
+                fols.Add(f1);
             }
-
-            return lista;
+            return fols;
+            
         }
+        public specialInfo getSpecialInfo(int id)
+        {
+            specialInfo si = new specialInfo();
+            var followers = context.Followers.Where(x => x.followID == id).ToList();
+            si.brojpratilaca = followers.Count();
+            var posts = context.Postovi.Where(x=>x.UserID==id).ToList();
+            si.brojpostova = posts.Count();
+            int numOfLikes = 0;
+            foreach(var post in posts)
+            {
+                numOfLikes += post.NumOfLikes;
+            }
+            si.prosecanbrojlajkova = (double)numOfLikes/ (double)posts.Count();
+            var posts2 = context.Postovi.Where(x => x.UserID == id).Select(x => x.Location).Distinct();
+            si.brojlokacija = posts2.Count();
+            return si;
+        }
+
     }
 }

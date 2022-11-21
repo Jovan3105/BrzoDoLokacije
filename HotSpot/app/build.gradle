@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace 'imi.projekat.hotspot'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "imi.projekat.hotspot"
         minSdk 23
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -94,5 +94,26 @@ dependencies {
 
     //circle indicator
     implementation 'me.relex:circleindicator:2.1.6'
+
+    //Mapa
+    implementation 'org.osmdroid:osmdroid-android:6.1.14'
+    //implementation 'com.github.MKergall:osmbonuspack:6.9.0'
+
+    implementation "androidx.compose.material3:material3:1.0.1"
+    implementation "androidx.compose.material3:material3-window-size-class:1.0.1"
+    implementation "com.google.accompanist:accompanist-webview:0.27.0"
+
+    //Recycler View
+    //implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    //OKrugla slika
+    implementation "de.hdodenhof:circleimageview:3.1.0"
+
+    //card view i recycler view
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
+
+
+
+
+
 
 }

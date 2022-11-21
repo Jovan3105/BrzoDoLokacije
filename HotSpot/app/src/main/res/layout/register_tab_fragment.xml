@@ -24,7 +24,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:hintTextAppearance="@style/HintText">
+            style="@style/Custom_textinputlayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/Username"
@@ -41,7 +41,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:hintTextAppearance="@style/HintText"
+            style="@style/Custom_textinputlayout"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -63,7 +63,7 @@
             android:layout_height="match_parent"
             app:endIconMode="password_toggle"
             android:id="@+id/passwordWrapper"
-            app:hintTextAppearance="@style/HintText">
+            style="@style/Custom_textinputlayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/Password"
@@ -81,7 +81,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:hintTextAppearance="@style/HintText"
+            style="@style/Custom_textinputlayout"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -97,7 +97,7 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/signUpDugme"
             android:layout_width="209dp"
             android:layout_height="wrap_content"

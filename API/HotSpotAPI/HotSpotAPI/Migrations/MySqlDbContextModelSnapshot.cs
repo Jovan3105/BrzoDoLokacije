@@ -19,6 +19,23 @@ namespace HotSpotAPI.Migrations
                 .HasAnnotation("ProductVersion", "6.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("HotSpotAPI.Modeli.Followers", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("followID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("userID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Followers");
+                });
+
             modelBuilder.Entity("HotSpotAPI.Modeli.Kod", b =>
                 {
                     b.Property<int>("ID")
@@ -47,6 +64,9 @@ namespace HotSpotAPI.Migrations
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NumOFLikes")
+                        .HasColumnType("int");
 
                     b.Property<int>("ParentID")
                         .HasColumnType("int");
@@ -129,6 +149,26 @@ namespace HotSpotAPI.Migrations
                     b.ToTable("Likes");
                 });
 
+            modelBuilder.Entity("HotSpotAPI.Modeli.LikeKomentara", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CommentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("LikeKomentara");
+                });
+
             modelBuilder.Entity("HotSpotAPI.Modeli.Novalozinka", b =>
                 {
                     b.Property<int>("ID")
@@ -172,6 +212,10 @@ namespace HotSpotAPI.Migrations
 
                     b.Property<int>("UserID")
                         .HasColumnType("int");
+
+                    b.Property<string>("shortDescription")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("ID");
 

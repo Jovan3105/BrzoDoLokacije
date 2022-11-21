@@ -1,28 +1,21 @@
 package imi.projekat.hotspot.UI.LoginRegister
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import imi.projekat.hotspot.Dialogs.LoadingDialog
 import imi.projekat.hotspot.LoginActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.LoginActivityViewModel
-import imi.projekat.hotspot.databinding.ActivityLoginBinding
 import imi.projekat.hotspot.databinding.FragmentConfirmEmailBinding
-import kotlinx.android.synthetic.main.custom_dialog.*
 
 
 class ConfirmEmail : Fragment() {

@@ -110,211 +110,87 @@ namespace HotSpotAPI.Controllers
             return BadRequest();
         }
         [HttpGet("GetPhoto")]
-        public async Task<ActionResult<string>> GetUserinfo()
+        public async Task<ActionResult<String>> GetUserinfo()
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
             string slika = userService.getPhoto(id);
-            if (slika == "" || slika == null)
+            if (slika != "" && slika != null)
             {
-                return null;
+                string pom;
+                Byte[] b = System.IO.File.ReadAllBytes(slika);
+                pom = Convert.ToBase64String(b, 0, b.Length);
+                return Ok(pom);
             }
-            Byte[] b = System.IO.File.ReadAllBytes(slika);
-            return Convert.ToBase64String(b, 0, b.Length);
-        }
-        [HttpPost("addpost")]
-        public async Task<ActionResult<string>> AddPost([FromForm] addPost newPost)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-
-            bool res = userService.addNewPost(id, newPost);
-            if (res)
-                return Ok();
             return BadRequest();
+            
         }
 
-        [HttpGet("getposts")]
-        public async Task<ActionResult<string>> GetPosts()
+        [HttpGet("GetAllFollowingByUser")]
+        public async Task<ActionResult<getuser>> GetAllFollowingByUser()
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            List<getPosts> res = userService.getAllPosts(id);
-            if (res != null)
-                return Ok(res);
-            return BadRequest();
+            getuser g = new getuser();
+            List<follower> f = userService.getfollowUser(id);
+            if (f == null)
+                return BadRequest();
+
+            g.followers = f;
+            return g;
+
         }
-        //KADA KORISNIK HOCE DA VIDI PROFIL DRUGOG KORISNIKA
-        [HttpGet("getpostsbyid/{userid}")]
-        public async Task<ActionResult<string>> GetPostsById(int userid)
+
+        [HttpPost("follow/{userid}")]
+        public async Task<ActionResult<string>> FollowUser(int userid)
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            List<getPosts> res = userService.getAllPosts(userid);
-            if (res != null)
-                return Ok(res);
-            return BadRequest();
+            bool res = userService.followUser(id, userid);
+            if (!res)
+                return BadRequest();
+            return Ok();
         }
-        [HttpGet("getpost/{postid}")]
-        public async Task<ActionResult<string>> GetPosts(int postid)
+        [HttpPost("unfollow/{userid}")]
+        public async Task<ActionResult<string>> UnfollowUser(int userid)
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            getPosts res = userService.getPost(id, postid);
-            if (res != null)
-                return Ok(res);
-            return BadRequest();
-        }
-        [HttpGet("getpostbylocation/{location}")]
-        public async Task<ActionResult<string>> GetPostsByLocation(string location)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-
-            List<getPosts> res = userService.getAllPostsByLocaton(location);
-            if (res != null)
-                return Ok(res);
-            return BadRequest();
-        }
-        [HttpDelete("deletepost")]
-        public async Task<ActionResult<string>> DeletePost(int postID)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-            bool res = userService.deletePost(id, postID);
-            if (res)
-                return Ok();
-            return BadRequest();
-        }
-        [HttpPost("KreirajPost")]
-        public async Task<ActionResult<string>> KreirajPost()
-        {
-            Debug.WriteLine("RADI");
-            return Ok("DOBAR ZAHTEV");
-        }
-
-        [HttpPost("comment")]
-        public async Task<ActionResult<string>> AddComment(comment comm)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-
-            bool res = userService.addComment(id, comm);
+            bool res = userService.unfollowUser(id, userid);
             if (!res)
                 return BadRequest();
             return Ok();
         }
 
-        [HttpGet("comments/{postid}")]
-        public async Task<ActionResult<string>> GetComments(int postid)
+        [HttpGet("follow")]
+        public async Task<ActionResult<string>> GetFollowers()
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            List<comments> res = userService.GetComments(postid);
-            if (res == null)
-                return BadRequest();
-            return Ok(res);
+            List<follower> f = userService.getfollowUser(id);
+            if (f != null)
+                return Ok(f);
+            return BadRequest();
         }
-
-        [HttpGet("comments/{postid}/replies/{commid}")]
-        public async Task<ActionResult<string>> GetComments(int postid, int commid)
+        [HttpGet("specialInfo")]
+        public async Task<ActionResult<string>> GetSpecialInfo()
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            List<comments> res = userService.GetReplies(postid, commid);
-            if (res == null)
-                return BadRequest();
-            return Ok(res);
-        }
-        [HttpDelete("comment")]
-        public async Task<ActionResult<string>> DeleteComment(com com)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
+            specialInfo infos = userService.getSpecialInfo(id);
 
-            bool res = userService.DeleteComment(com.commid, com.postId, id);
-            if (!res)
-                return BadRequest();
-            return Ok();
-        }
-
-        [HttpPut("comment")]
-        public async Task<ActionResult<string>> EditComment(editcom com)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-
-            bool res = userService.EditComment(com.commid, com.postId, com.newtext, id);
-            if (!res)
-                return BadRequest();
-            return Ok();
-        }
-        [HttpGet("getUserByID/{idusera}")]
-        public async Task<ActionResult<string>> getUserInfo(int idusera)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-
-            userinfo u = userService.getUserInfo(idusera);
-            if (u != null)
-                return Ok(u);
-            return BadRequest(null);
-        }
-
-        [HttpPost("like")]
-        public async Task<ActionResult<string>> LikePost(int postid)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-
-            bool res = userService.addLike(id, postid);
-            if (!res)
-                return BadRequest();
-            return Ok();
-        }
-
-        [HttpPost("dislike")]
-        public async Task<ActionResult<string>> DislikePost(int postid)
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-
-            bool res = userService.dislike(id, postid);
-            if (!res)
-                return BadRequest();
-            return Ok();
-        }
-        [HttpGet("likes")]
-        public async Task<ActionResult<List<likes>>> getLikesByUser()
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-
-            List<likes> likes = userService.getLikes(id);
-            if (likes==null)
-                return BadRequest();
-            return Ok(likes);
+            return Ok(infos);
         }
     }
 }

@@ -1,15 +1,12 @@
 package imi.projekat.hotspot.ViewModeli
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import imi.projekat.hotspot.ModeliZaZahteve.*
 import imi.projekat.hotspot.Ostalo.BaseResponse
-import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.Repository
-import imi.projekat.hotspot.Ostalo.SingleLiveEvent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -24,23 +21,50 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _liveProfilePhotoResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val liveProfilePhotoResponse=_liveProfilePhotoResponse.asSharedFlow()
 
-    private var _KreirajPostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
-    val KreirajPostResponse =_KreirajPostResponse.asSharedFlow()
+    private var _DodajPostResposne= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val DodajPostResposne=_DodajPostResposne.asSharedFlow()
+
+    private var _GetPostWithIdResponse=MutableLiveData<BaseResponse<singlePost>>()
+    val GetPostWithIdResponse: MutableLiveData<BaseResponse<singlePost>>
+        get() = _GetPostWithIdResponse
+    private var _liveAllFollowingByUser= MutableSharedFlow<BaseResponse<getuser>>()
+    val liveAllFollowingByUser=_liveAllFollowingByUser.asSharedFlow()
 
 
+    private var _PostCommentResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val PostCommentResponse=_PostCommentResponse.asSharedFlow()
+
+    private var _GetPostsWithUserId= MutableSharedFlow<BaseResponse<List<singlePost>>>()
+    val GetPostsWithUserId=_GetPostsWithUserId.asSharedFlow()
+
+    private var _GreskaHendler= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val GreskaHendler=_GreskaHendler.asSharedFlow()
+
+    private var _GetCommentsResponseHandler= MutableSharedFlow<BaseResponse<List<singleComment>>>()
+    val GetCommentsResponseHandler=_GetCommentsResponseHandler.asSharedFlow()
+
+    private var _LikePostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val LikePostResponse=_LikePostResponse.asSharedFlow()
+
+    private var _DislikePostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val DislikePostResponse=_DislikePostResponse.asSharedFlow()
 
     var handleJob: Job?=null
 
     val exceptionHandler=CoroutineExceptionHandler{_,throwable->onError(
         "ConnectionError"
     )
-        Log.d("Exception",throwable.localizedMessage.toString())
+        Log.d("ExceptionInMainView",throwable.localizedMessage.toString())
     }
 
 
 
     private fun onError(greska: String){
-       // _liveEditProfileResponse.emit(BaseResponse.Error(greska))
+        runBlocking{
+            launch {
+                _GreskaHendler.emit(BaseResponse.Error(greska))
+            }
+        }
     }
 
     override fun onCleared() {
@@ -70,20 +94,19 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
-    fun KreirajPost(post:String){
-        //KreirajPostResponse.value=BaseResponse.Loading()
+    fun addPost(@Part photos:ArrayList<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part,@Part shortDescription:MultipartBody.Part){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
-            val response=repository.KreirajPost(post)
+            _DodajPostResposne.emit(BaseResponse.Loading())
+            val response=repository.addPost(photos,description,location,shortDescription)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     Log.d("Brzi1",response.toString())
-                    _KreirajPostResponse.emit(BaseResponse.Success(response.body()))
+                    _DodajPostResposne.emit(BaseResponse.Success(response.body()))
 
                 }
                 else{
                     val content = response.errorBody()!!.charStream().readText()
-                    Log.d("Brzi2",response.toString())
-                    _KreirajPostResponse.emit(BaseResponse.Error(response.toString()))
+                    _DodajPostResposne.emit(BaseResponse.Error(content))
 
                 }
             }
@@ -105,14 +128,131 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 //                    val type = object : TypeToken<ResponseBody>() {}.type
 //                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
 
-                    val content = response.errorBody()!!.charStream().readText()
-                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
+//                    val content = response.errorBody()!!.charStream().readText()
+//                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
+                }
+            }
+        }
+    }
+
+    fun GetAllFollowingByUser(){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.getAllFollowingByUSer()
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _liveAllFollowingByUser.emit(BaseResponse.Success(response.body()))
+
+                }
+                else{
+
+//                    val gson = Gson()
+//                    val type = object : TypeToken<ResponseBody>() {}.type
+//                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
+
+//                    val content = response.errorBody()!!.charStream().readText()
+//                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
                 }
             }
         }
     }
 
 
+    fun getPostWithID(postid:Int){
+        _GetPostWithIdResponse.value=BaseResponse.Loading()
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.getPostWithId(postid)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _GetPostWithIdResponse.value=BaseResponse.Success(response.body())
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _GetPostWithIdResponse.postValue(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
 
 
+    fun PostComment(comment:commentDTS){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.comment(comment)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _PostCommentResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _PostCommentResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+    fun getCommentsById(postid: Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+
+            val response=repository.getCommentsWithID(postid)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _GetCommentsResponseHandler.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _GetCommentsResponseHandler.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun getPostsByUserId(userid: Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _GetPostsWithUserId.emit(BaseResponse.Loading())
+            val response=repository.getPostsByUserId(userid)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _GetPostsWithUserId.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    Log.d("GRES",response.toString())
+                    _GetPostsWithUserId.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun likePost(like:likeDTS){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _LikePostResponse.emit(BaseResponse.Loading())
+            val response=repository.likePost(like)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _LikePostResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _LikePostResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun dislikePost(dislike:likeDTS){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _DislikePostResponse.emit(BaseResponse.Loading())
+            val response=repository.dislikePost(dislike)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _DislikePostResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _DislikePostResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
 }

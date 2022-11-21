@@ -29,6 +29,7 @@ import imi.projekat.hotspot.databinding.FragmentMyProfileBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
+import kotlin.properties.Delegates
 
 
 class MyProfileFragment : Fragment() {
@@ -38,6 +39,7 @@ class MyProfileFragment : Fragment() {
     private lateinit var email:TextView
     private lateinit var jwt: JWT
     private var Photobitmap:Bitmap?=null
+    private var followingNumber:Int = 0
     private val viewModel: MainActivityViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,14 +67,12 @@ class MyProfileFragment : Fragment() {
                 }
                 if(it is BaseResponse.Success){
                     Log.d("SES","SESESSE")
-                    if(it.data!=null)
+                    if(it.data!=null)// da se istestira
                     {
                         val content = it.data!!.charStream().readText()
-                        Log.d("slika",content)
                         val imageBytes = Base64.decode(content, Base64.DEFAULT)
                         val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
                         profileImage.setImageBitmap(decodedImage)
-
                     }
 
 
@@ -107,9 +107,14 @@ class MyProfileFragment : Fragment() {
         val ltrAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.left_to_right)
         val rtlAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.rigth_to_left)
         val btpAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.bot_to_top)
-        binding.button.setOnClickListener {
+<<<<<<< HEAD
+
+=======
+        binding.followingButton.setOnClickListener {
             Log.d("brzi","kocka")
+            findNavController().navigate(R.id.action_myProfileFragment_to_followingProfilesFragment)
         }
+>>>>>>> follow
 
         binding.imageView2.setOnClickListener{
             findNavController().navigate(R.id.action_myProfileFragment_to_editProfileFragment)

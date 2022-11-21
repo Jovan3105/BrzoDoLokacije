@@ -1,6 +1,5 @@
 package imi.projekat.hotspot.Interfaces
 
-import android.hardware.biometrics.BiometricManager.Strings
 import imi.projekat.hotspot.ModeliZaZahteve.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -42,4 +41,30 @@ interface ApiInterface {
 
     @GET("/api/User/GetPhoto")
     suspend fun getPhoto():Response<ResponseBody>
+
+    @Multipart
+    @POST("/api/Post/addpost")
+    suspend fun addPost(@Part photos:List<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part,@Part shortDescription:MultipartBody.Part):Response<ResponseBody>
+
+    @GET("/api/Post/getpost/{postid}")
+    suspend fun getPostWithId(@Path("postid") postid :Int):Response<singlePost>
+
+    @POST("/api/Post/comment")
+    suspend fun comment(@Body comment: commentDTS):Response<ResponseBody>
+
+    @GET("/api/Post/getpostsbyid/{userid}")
+    suspend fun getPostsByUserId(@Path("userid") userid: Int):Response<List<singlePost>>
+
+    @GET("/api/Post/comments/{postid}")
+    suspend fun getCommentsWithID(@Path("postid") postid :Int):Response<List<singleComment>>
+
+    @POST("/api/Post/like")
+    suspend fun likePost(@Body like: likeDTS):Response<ResponseBody>
+
+    @POST("/api/Post/dislike")
+    suspend fun dislikePost(@Body dislike: likeDTS):Response<ResponseBody>
+
+    @GET("/api/User/GetAllFollowingByUser")
+    suspend fun getAllFollowingByUSer():Response<getuser>
+
 }

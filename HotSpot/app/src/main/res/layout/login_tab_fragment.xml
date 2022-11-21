@@ -25,8 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:hintEnabled="true"
-            app:hintTextAppearance="@style/HintText"
-            app:errorTextAppearance="@style/ErrorText"
+            style="@style/Custom_textinputlayout"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -49,8 +48,7 @@
             android:layout_height="match_parent"
             app:endIconMode="password_toggle"
             app:hintEnabled="true"
-            app:hintTextAppearance="@style/HintText"
-            app:errorTextAppearance="@style/ErrorText"
+            style="@style/Custom_textinputlayout"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -77,7 +75,7 @@
             android:textSize="13sp"
             android:textStyle="normal" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/loginButton"
             android:layout_width="209dp"
             android:layout_height="wrap_content"

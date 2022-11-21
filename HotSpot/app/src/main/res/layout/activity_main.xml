@@ -8,17 +8,18 @@
     tools:context=".MainActivity">
     <com.google.android.material.bottomnavigation.BottomNavigationView
       android:id="@+id/bottomNavigationView2"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:layout_height="60dp"
       android:background="@color/pink1"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toStartOf="parent"
       app:menu="@menu/bottom_nav"
-      app:itemIconTint="@color/white"
-      app:itemTextColor="@color/white"
-      />
+      app:itemIconTint="@drawable/bottom_menu_item_selected"
+      app:itemTextColor="@color/black"
+        app:labelVisibilityMode="unlabeled"
+        app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"
+        />
 
   <androidx.fragment.app.FragmentContainerView
       android:id="@+id/fragmentContainerViewMainActivity"

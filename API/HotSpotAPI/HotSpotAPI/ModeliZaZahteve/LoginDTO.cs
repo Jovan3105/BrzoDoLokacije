@@ -62,15 +62,23 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string description { get; set; } = string.Empty;
         public string location { get; set; } = string.Empty;
         public List<IFormFile> photos { get; set; }
+        public string shortDescription { get; set; } = string.Empty;
     }
 
     public class getPosts
     {
+        public int ownerID { get; set; }
+        public string username { get; set; } = string.Empty;
+        public string profilephoto { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
         public string location { get; set; } = string.Empty;
         public DateTime DateTime { get; set; }
         public List<string> photos { get; set; }
         public int brojslika { get; set; }
+        public int brojlajkova { get; set; }
+        public string shortDescription { get; set; }
+        public int postID { get; set; }
+        public bool likedByMe { get; set; }
     }
     
     public class Photo
@@ -93,6 +101,7 @@ namespace HotSpotAPI.ModeliZaZahteve
         public dynamic userPhoto { get; set; }
         public string username { set; get; } = string.Empty;
         public DateTime time { get; set; }
+        public int NumOfLikes { get; set; }
     }
 
     public class com
@@ -114,5 +123,30 @@ namespace HotSpotAPI.ModeliZaZahteve
     public class likes
     {
         public int postid { get; set; }
+    }
+
+    public class comlikes
+    {
+        public int postid { get; set; }
+        public int commid { get; set; }
+    }
+
+    public class follower
+    {
+        public int ID { get; set; }
+        public string username { get; set; }
+        public dynamic userPhoto { get; set; }
+    }
+    public class getuser
+    {
+        //public string photo { get; set; } = string.Empty;
+        public List<follower> followers { get; set; }
+    }
+    public class specialInfo
+    {
+        public int brojpostova { get; set; }
+        public double prosecanbrojlajkova { get; set; }
+        public int brojlokacija { get; set; }
+        public int brojpratilaca { get; set; }
     }
 }

@@ -23,7 +23,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            >
 
         </androidx.viewpager2.widget.ViewPager2>
         <LinearLayout
@@ -53,13 +54,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/button2"
-                android:layout_width="112dp"
-                android:layout_height="61dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
                 android:textColor="@color/white"
                 android:background="@drawable/dugme_pozadina"
-                android:text="@string/addImage" />
+                android:text="@string/addImage"
+                android:drawableLeft="@drawable/galleryicon"/>
 
         </LinearLayout>
 
@@ -68,35 +71,89 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/linearLayout"
             tools:layout_editor_absoluteX="20dp">
 
-            <EditText
-                android:maxLength="100"
-                android:id="@+id/opisPosta"
-                style="@style/InputPolje"
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                app:counterEnabled="true"
+                app:counterMaxLength="30"
                 android:layout_marginBottom="10dp"
-                android:gravity="top|left"
-                android:hint="Text Example"
-                android:inputType="textMultiLine"
-                android:lines="3"
-                android:padding="10dp"
-                android:singleLine="false" />
+                style="@style/Custom_textinputlayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                    android:maxLength="30"
+                    android:id="@+id/kratakOpisPosta"
+                    style="@style/InputPolje"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|left"
+                    android:hint="@string/ShortPostDescription"
+                    android:inputType="textMultiLine"
+                    android:lines="2"
+                    android:padding="10dp"
+                    android:singleLine="false"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:counterEnabled="true"
+                app:counterMaxLength="100"
+                android:layout_marginBottom="10dp"
+                style="@style/Custom_textinputlayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:maxLength="100"
+                    android:id="@+id/opisPosta"
+                    style="@style/InputPolje"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|left"
+                    android:hint="@string/LongPostDescription"
+                    android:inputType="textMultiLine"
+                    android:lines="4"
+                    android:padding="10dp"
+                    android:singleLine="false"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
         </LinearLayout>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button3"
-            android:layout_width="112dp"
-            android:layout_height="61dp"
-            android:layout_marginTop="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:textSize="25dp"
+            android:padding="10dp"
             android:background="@drawable/dugme_pozadina"
-            android:text="@string/addImage"
+            android:text="@string/CreatePost"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button4" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:drawableLeft="@drawable/ic_baseline_location_on_24"
+            android:id="@+id/button4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:padding="10dp"
+
+            android:background="@drawable/dugme_pozadina"
+            android:text="@string/addLocation"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

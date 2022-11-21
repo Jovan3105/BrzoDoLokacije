@@ -8,5 +8,6 @@
         public int ParentID { get; set; }
         public string Text { get; set; } = String.Empty;
         public DateTime DateTime { get; set; }
+        public int NumOFLikes { get; set; }
     }
 }
