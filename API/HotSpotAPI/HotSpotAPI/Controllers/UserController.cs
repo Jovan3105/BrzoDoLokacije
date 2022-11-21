@@ -181,5 +181,16 @@ namespace HotSpotAPI.Controllers
                 return Ok(f);
             return BadRequest();
         }
+        [HttpGet("specialInfo")]
+        public async Task<ActionResult<string>> GetSpecialInfo()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            specialInfo infos = userService.getSpecialInfo(id);
+
+            return Ok(infos);
+        }
     }
 }
