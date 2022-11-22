@@ -75,6 +75,8 @@ namespace HotSpotAPI.Servisi
         public List<getPosts> getAllPosts(int id)
         {
             List<Post> posts = context.Postovi.Where(x => x.UserID == id).ToList();
+            if (posts == null)
+                return null;
             var kor = context.Korisnici.Find(id);
             List<getPosts> postsList = new List<getPosts>();
 
