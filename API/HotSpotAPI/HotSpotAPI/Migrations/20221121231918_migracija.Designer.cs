@@ -11,13 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotSpotAPI.Migrations
 {
     [DbContext(typeof(MySqlDbContext))]
-<<<<<<<< HEAD:API/HotSpotAPI/HotSpotAPI/Migrations/20221118190357_InitialCreate.Designer.cs
-    [Migration("20221118190357_InitialCreate")]
-    partial class InitialCreate
-========
-    [Migration("20221119001917_migracija")]
+    [Migration("20221121231918_migracija")]
     partial class migracija
->>>>>>>> follow:API/HotSpotAPI/HotSpotAPI/Migrations/20221119001917_migracija.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

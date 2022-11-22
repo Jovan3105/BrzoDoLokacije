@@ -4,6 +4,7 @@ import imi.projekat.hotspot.ModeliZaZahteve.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.Part
 
 class Repository(){

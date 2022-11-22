@@ -107,14 +107,11 @@ class MyProfileFragment : Fragment() {
         val ltrAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.left_to_right)
         val rtlAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.rigth_to_left)
         val btpAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.bot_to_top)
-<<<<<<< HEAD
 
-=======
         binding.followingButton.setOnClickListener {
             Log.d("brzi","kocka")
             findNavController().navigate(R.id.action_myProfileFragment_to_followingProfilesFragment)
         }
->>>>>>> follow
 
         binding.imageView2.setOnClickListener{
             findNavController().navigate(R.id.action_myProfileFragment_to_editProfileFragment)
