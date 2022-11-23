@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.HomePage.PostClickHandler
 
-class ImageAdapterHomePage(private val imageList:ArrayList<Bitmap>, private val viewPager2: ViewPager2)
+class ImageAdapterHomePage(private val imageList:ArrayList<String>, private val viewPager2: ViewPager2,private val clickHandler: PostClickHandler)
     :RecyclerView.Adapter<ImageAdapterHomePage.ImageViewHolder>()
 {
     class ImageViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
@@ -24,8 +27,7 @@ class ImageAdapterHomePage(private val imageList:ArrayList<Bitmap>, private val 
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-
-        holder.imageView.setImageBitmap(imageList[position])
+        clickHandler.getPicture(holder.imageView,"PostsFolder/"+imageList[position])
     }
 
     override fun getItemCount(): Int {

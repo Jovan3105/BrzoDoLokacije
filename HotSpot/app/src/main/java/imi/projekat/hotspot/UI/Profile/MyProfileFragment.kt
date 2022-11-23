@@ -19,6 +19,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.auth0.android.jwt.JWT
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import imi.projekat.hotspot.LoginActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
@@ -38,6 +40,7 @@ class MyProfileFragment : Fragment() {
     private lateinit var username:TextView
     private lateinit var email:TextView
     private lateinit var jwt: JWT
+    private lateinit var slikaPom:ImageView
     private var Photobitmap:Bitmap?=null
     private var followingNumber:Int = 0
     private val viewModel: MainActivityViewModel by activityViewModels()
@@ -125,6 +128,9 @@ class MyProfileFragment : Fragment() {
             startActivity(intent)
             activity?.finish()
         }
+
+
+
     }
 
 

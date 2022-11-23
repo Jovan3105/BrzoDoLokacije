@@ -62,7 +62,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.math.abs
 
-
+private const val kraciOpis="kraciOpis"
 class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var binding:FragmentCreatePostBinding
     private val viewModel: MainActivityViewModel by activityViewModels()
@@ -73,7 +73,6 @@ class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var partovi:ArrayList<MultipartBody.Part>
     private lateinit var adapter:ImageAdapter
     private lateinit var circleIndicator:CircleIndicator3
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

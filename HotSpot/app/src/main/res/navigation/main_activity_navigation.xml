@@ -69,7 +69,13 @@
         android:id="@+id/mapaFragment"
         android:name="imi.projekat.hotspot.UI.Post.MapaFragment"
         android:label="fragment_mapa"
-        tools:layout="@layout/fragment_mapa" />
+        tools:layout="@layout/fragment_mapa" >
+        <action
+            android:id="@+id/action_mapaFragment_to_createPostFragment"
+            app:destination="@id/createPostFragment"
+            app:popUpTo="@id/createPostFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/singlePostFragment"
         android:name="imi.projekat.hotspot.UI.HomePage.SinglePost.SinglePostFragment"

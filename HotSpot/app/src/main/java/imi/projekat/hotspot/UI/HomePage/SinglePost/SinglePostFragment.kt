@@ -28,11 +28,16 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import imi.projekat.hotspot.ModeliZaZahteve.commentDTS
+import imi.projekat.hotspot.ModeliZaZahteve.likeDTS
 import imi.projekat.hotspot.ModeliZaZahteve.singleComment
+import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.HomePage.PostClickHandler
 import imi.projekat.hotspot.UI.HomePage.RecyclerAdapter
 import imi.projekat.hotspot.UI.LoginRegister.ConfirmEmailArgs
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
@@ -52,12 +57,12 @@ import kotlin.math.abs
 import kotlin.math.log
 
 
-class SinglePostFragment : Fragment() {
+class SinglePostFragment : Fragment(), PostClickHandler {
     private lateinit var binding:FragmentSinglePostBinding
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var viewPager2: ViewPager2
     private lateinit var handler: Handler
-    private lateinit var imageList:ArrayList<Bitmap>
+    private lateinit var imageList:ArrayList<String>
     private lateinit var adapter: ImageAdapterHomePage
     private lateinit var circleIndicator: CircleIndicator3
     private lateinit var opisTekstView: TextView
@@ -109,6 +114,9 @@ class SinglePostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        circleIndicator=view.findViewById<CircleIndicator3>(R.id.circleIndikator)
+        imageList= ArrayList()
+
         viewModel.GetPostWithIdResponse.observe(viewLifecycleOwner){
             when(it){
                 is BaseResponse.Loading->{
@@ -119,11 +127,7 @@ class SinglePostFragment : Fragment() {
                         return@observe
 
                     imageList.clear()
-                    for (i in 0 until  array.size){
-                        var byte=Base64.decode(array.get(i),Base64.DEFAULT)
-                        var bitmapa=BitmapFactory.decodeByteArray(byte,0,byte.size)
-                        imageList.add(bitmapa)
-                    }
+                    imageList=array as ArrayList<String>
                     initImageCarousel(0)
                     setupTransformer()
                     opisTekstView.text=it.data?.description
@@ -181,7 +185,17 @@ class SinglePostFragment : Fragment() {
                         output = formatter.format(parser.parse(it.data?.dateTime))
                     }
                     vremeTextView.text=output
+                    initImageCarousel(0)
+                    setupTransformer()
 
+                    viewPager2.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
+                        override fun onPageSelected(position: Int) {
+                            super.onPageSelected(position)
+                            handler.removeCallbacks(runnable)
+                            handler.postDelayed(runnable,5000)
+                        }
+                    })
+                    circleIndicator.setViewPager(viewPager2)
 
                 }
                 is BaseResponse.Error->{
@@ -189,12 +203,10 @@ class SinglePostFragment : Fragment() {
             }
         }
 
-        circleIndicator=view.findViewById<CircleIndicator3>(R.id.circleIndikator)
-        imageList= ArrayList()
-        val myimage = (ResourcesCompat.getDrawable(this.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
-        imageList.add(myimage)
-        initImageCarousel(0)
-        setupTransformer()
+
+//        val myimage = (ResourcesCompat.getDrawable(this.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
+//        imageList.add(myimage)
+
 
 
 
@@ -224,14 +236,7 @@ class SinglePostFragment : Fragment() {
             }
         }
 
-        viewPager2.registerOnPageChangeCallback(object :ViewPager2.OnPageChangeCallback(){
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                handler.removeCallbacks(runnable)
-                handler.postDelayed(runnable,5000)
-            }
-        })
-        circleIndicator.setViewPager(viewPager2)
+
 
         viewModel.getPostWithID(args.idPosta)
 
@@ -257,7 +262,7 @@ class SinglePostFragment : Fragment() {
 
         viewPager2=requireView().findViewById(binding.viewPager2.id)
         handler= Handler(Looper.myLooper()!!)
-        adapter= ImageAdapterHomePage(imageList,viewPager2)
+        adapter= ImageAdapterHomePage(imageList,viewPager2,this)
         viewPager2.adapter = adapter
         viewPager2.offscreenPageLimit = 3
         viewPager2.clipToPadding = false
@@ -321,4 +326,26 @@ class SinglePostFragment : Fragment() {
         recyclerAdapter = RecyclerAdapter(nizKomentara)
         recycler_view_comments.adapter = recyclerAdapter
     }
+
+    override fun clickedPostItem(post: singlePost) {
+        TODO("Not yet implemented")
+    }
+
+    override fun likePost(like: likeDTS) {
+        TODO("Not yet implemented")
+    }
+
+    override fun dislikePost(like: likeDTS) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getPicture(imageView: ImageView, slika: String) {
+        Glide.with(this)
+            .load("http://10.0.2.2:5140/Storage/$slika")
+            .fitCenter()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .placeholder(R.drawable.image_holder)
+            .into(imageView)
+    }
+
 }
