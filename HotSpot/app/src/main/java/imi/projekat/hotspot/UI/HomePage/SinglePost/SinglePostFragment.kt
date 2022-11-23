@@ -30,6 +30,7 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.textfield.TextInputLayout
 import imi.projekat.hotspot.ModeliZaZahteve.commentDTS
 import imi.projekat.hotspot.ModeliZaZahteve.likeDTS
 import imi.projekat.hotspot.ModeliZaZahteve.singleComment
@@ -75,6 +76,9 @@ class SinglePostFragment : Fragment(), PostClickHandler {
     private val args: SinglePostFragmentArgs by navArgs()
     private lateinit var likeDugme:ImageButton
     private lateinit var vremeTextView:TextView
+    private var lajkovano:Boolean = false
+    private lateinit var NoCommentsYetView:LinearLayout
+    private lateinit var sortCommentsButton:TextInputLayout
 
     override fun onResume() {
         super.onResume()
@@ -108,6 +112,8 @@ class SinglePostFragment : Fragment(), PostClickHandler {
         kratakOpisView=binding.root.findViewById(binding.KratakOpis.id)
         likeDugme=binding.root.findViewById(binding.likeButton.id)
         vremeTextView=binding.root.findViewById(binding.vremeTextView.id)
+        NoCommentsYetView = binding.root.findViewById(binding.NoCommentsYetView.id)
+        sortCommentsButton = binding.root.findViewById(binding.textInputLayout.id)
         return binding.root
     }
 
@@ -132,12 +138,12 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                     setupTransformer()
                     opisTekstView.text=it.data?.description
                     kratakOpisView.text=it.data?.shortDescription
+                    lajkovano= it.data?.likedByMe!!
                     if(it.data?.likedByMe == true)
                         likeDugme.setImageResource(R.drawable.puno_srce)
                     else{
                         likeDugme.setImageResource(R.drawable.prazno_srce)
                     }
-
                     var output="ERROR"
                     val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         var curentDate: LocalDateTime = LocalDateTime.now()
@@ -231,7 +237,36 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                 }
                 if(it is BaseResponse.Success){
                     nizKomentara= it.data!!
+                    if(nizKomentara.isNullOrEmpty()){
+                        NoCommentsYetView.visibility=View.VISIBLE
+                        sortCommentsButton.visibility=View.GONE
+                    }
+
                     showComments(nizKomentara)
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.LikePostResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
+                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                }
+                if(it is BaseResponse.Success){
+                    lajkovano=true
+                    likeDugme.setImageResource(R.drawable.puno_srce)
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.DislikePostResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
+                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                }
+                if(it is BaseResponse.Success){
+                    lajkovano=false
+                    likeDugme.setImageResource(R.drawable.prazno_srce)
                 }
             }
         }
@@ -246,7 +281,13 @@ class SinglePostFragment : Fragment(), PostClickHandler {
         }
         viewModel.getCommentsById(args.idPosta)
 
-
+        likeDugme.setOnClickListener{
+            if(lajkovano){
+                viewModel.dislikePost(likeDTS(args.idPosta))
+                return@setOnClickListener
+            }
+            viewModel.likePost(likeDTS(args.idPosta))
+        }
     }
 
     private val runnable= Runnable {

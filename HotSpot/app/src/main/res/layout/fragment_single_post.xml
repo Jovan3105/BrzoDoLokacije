@@ -182,8 +182,25 @@
                         android:layout_height="wrap_content">
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+                            <LinearLayout
+                                android:id="@+id/NoCommentsYetView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:visibility="gone">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="No Commets Yet"
+                                    android:textSize="35sp"
+                                    android:gravity="center"
+                                    android:layout_marginTop="55dp"
+                                    >
+                                </TextView>
+                            </LinearLayout>
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/recycler_view_comments"
                                 android:layout_width="match_parent"
