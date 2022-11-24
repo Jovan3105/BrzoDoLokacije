@@ -6,6 +6,7 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 class Repository(){
     suspend fun login(loginDATA:loginDTS): Response<LoginResponse> {
@@ -59,5 +60,13 @@ class Repository(){
 
     suspend fun dislikePost(@Body dislike: likeDTS):Response<ResponseBody>{
         return APIservis.Servis.dislikePost(dislike);
+    }
+
+    suspend fun UnfollowUser(userid: Int):Response<ResponseBody>{
+        return APIservis.Servis.UnfollowUser(userid)
+    }
+
+    suspend fun FollowUser(userid: Int):Response<ResponseBody>{
+        return APIservis.Servis.FollowUser(userid)
     }
 }

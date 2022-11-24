@@ -50,6 +50,12 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _DislikePostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val DislikePostResponse=_DislikePostResponse.asSharedFlow()
 
+    private var _UnfollowUserResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val UnfollowUserResponse=_UnfollowUserResponse.asSharedFlow()
+
+    private var _FollowUserResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val FollowUserResponse=_FollowUserResponse.asSharedFlow()
+
     var handleJob: Job?=null
 
     val exceptionHandler=CoroutineExceptionHandler{_,throwable->onError(
@@ -252,6 +258,36 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     _DislikePostResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun followUser(UserId:Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.FollowUser(UserId)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _FollowUserResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _FollowUserResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun unfollowUser(UserId: Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.UnfollowUser(UserId)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _UnfollowUserResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _UnfollowUserResponse.emit(BaseResponse.Error(content))
                 }
             }
         }

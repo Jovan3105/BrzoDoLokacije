@@ -53,6 +53,7 @@ class FollowingProfilesFragment : Fragment(),AdapterFollowingProfiles.OnItemClic
     ): View? {
         // Inflate the layout for this fragment
         viewModel.GetAllFollowingByUser()
+
         binding=FragmentFollowingProfilesBinding.inflate(inflater)
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.liveAllFollowingByUser.collectLatest{
@@ -98,9 +99,45 @@ class FollowingProfilesFragment : Fragment(),AdapterFollowingProfiles.OnItemClic
     override fun onItemClick(position: Int) {
         Log.d("adapter",adapter.toString())
        val clickedItem=korisnici[position]
+        if(clickedItem.buttonName=="Unfollow")
+        {
+            //anfollow zahtev
+            Log.d("Anfollow uslov","Usao sam")
+            viewLifecycleOwner.lifecycleScope.launch{
+                viewModel.UnfollowUserResponse.collectLatest{
+                    if(it is BaseResponse.Error){
+                        Log.d("greska","Nije dobar zahtev za follow korisnika")
+                    }
+                    if(it is BaseResponse.Success){
+                        Log.d("Zahtev za foolow","Uspesan")
+                        clickedItem.buttonName="Follow"
+                        adapter!!.notifyItemChanged(position)
+                    }
+                }
+            }
+            viewModel.unfollowUser(clickedItem.id)
+
+
+        }
+        else
+        {
+            viewModel.followUser(clickedItem.id)
+            viewLifecycleOwner.lifecycleScope.launch{
+                viewModel.FollowUserResponse.collectLatest{
+                    if(it is BaseResponse.Error){
+                        Log.d("greska","Nije dobar zahtev za follow korisnika")
+                    }
+                    if(it is BaseResponse.Success){
+                        Log.d("Zahtev za foolow","Uspesan")
+                        clickedItem.buttonName="Unfollow"
+                        adapter!!.notifyItemChanged(position)
+                    }
+                }
+            }
+
+        }
         Log.d("usernamekliknutog",clickedItem.username)
-        clickedItem.buttonName="Follow"
-        adapter!!.notifyItemChanged(position)
+
     }
 
 

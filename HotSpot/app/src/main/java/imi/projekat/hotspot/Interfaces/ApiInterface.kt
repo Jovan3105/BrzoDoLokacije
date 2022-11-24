@@ -67,6 +67,11 @@ interface ApiInterface {
     @GET("/api/User/GetAllFollowingByUser")
     suspend fun getAllFollowingByUSer():Response<getuser>
 
+    @POST("/api/User/unfollow/{userid}")
+    suspend fun UnfollowUser(@Path("userid") userid: Int):Response<ResponseBody>
+
+    @POST("/api/User/follow/{userid}")
+    suspend fun FollowUser(@Path("userid") userid: Int):Response<ResponseBody>
 
 
 }
