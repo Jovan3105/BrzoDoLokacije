@@ -68,7 +68,7 @@ class SinglePostFragment : Fragment(), PostClickHandler {
     private lateinit var circleIndicator: CircleIndicator3
     private lateinit var opisTekstView: TextView
     private lateinit var kratakOpisView: TextView
-    private var currentSort=0
+    private var currentSort=-1
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var recyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>
     private lateinit var nizKomentara: List<singleComment>
@@ -87,10 +87,7 @@ class SinglePostFragment : Fragment(), PostClickHandler {
         binding.commentsSelector.setAdapter(arrayAdapter)
         (textInputLayout.getEditText() as AutoCompleteTextView).onItemClickListener =
             OnItemClickListener { adapterView, view, position, id ->
-                if(position!=currentSort){
-                    //pozovi back api
-                }
-                currentSort=position
+                sortirajKomentare(position)
             }
 
         binding.commentsSelector.setText(CommentDropdownSort[0],false)
@@ -149,7 +146,6 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                         var curentDate: LocalDateTime = LocalDateTime.now()
                         val postDate = LocalDateTime.parse(it.data?.dateTime)
                         var pom= Duration.between(postDate,curentDate).toDays()
-                        Log.d("SES",pom.toString())
                         when {
 
                             pom >=27->{
@@ -160,7 +156,7 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                             pom in 2..26 -> {
                                 output=pom.toString()+" days ago"
                             }
-                            pom.toInt() ==1->{
+                            pom in 1 until 2->{
                                 output=pom.toString()+" day ago"
                             }
                             pom < 1-> {
@@ -240,8 +236,9 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                     if(nizKomentara.isNullOrEmpty()){
                         NoCommentsYetView.visibility=View.VISIBLE
                         sortCommentsButton.visibility=View.GONE
+                        return@collectLatest
                     }
-
+                    sortirajKomentare(0)
                     showComments(nizKomentara)
                 }
             }
@@ -310,21 +307,21 @@ class SinglePostFragment : Fragment(), PostClickHandler {
         viewPager2.clipChildren = false
         viewPager2.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
 
-        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
-            override fun onPageSelected(position: Int) {
-                if (position == 0) {
-
-                }
-                else if (position == 1) {
-
-                }
-                else if (position == 2){
-
-                }
-
-                super.onPageSelected(position)
-            }
-        })
+//        viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
+//            override fun onPageSelected(position: Int) {
+//                if (position == 0) {
+//
+//                }
+//                else if (position == 1) {
+//
+//                }
+//                else if (position == 2){
+//
+//                }
+//
+//                super.onPageSelected(position)
+//            }
+//        })
 
 
 
@@ -367,6 +364,46 @@ class SinglePostFragment : Fragment(), PostClickHandler {
         recyclerAdapter = RecyclerAdapter(nizKomentara)
         recycler_view_comments.adapter = recyclerAdapter
     }
+
+    private fun sortirajKomentare(position:Int){
+        if(position!=currentSort){
+            if (position==0){
+                nizKomentara=nizKomentara.sortedWith( object : Comparator<singleComment> {
+                    override fun compare(o1: singleComment, o2: singleComment): Int {
+                        val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                        val formatter = SimpleDateFormat("yyyyMMddHHmm")
+                        val output1 = formatter.format(parser.parse(o1.time)!!)
+                        val output2 = formatter.format(parser.parse(o2.time)!!)
+
+                        if(output2>output1)
+                            return 1
+                        return -1
+                    }
+                })
+            }
+
+            else{
+                nizKomentara=nizKomentara.sortedWith( object : Comparator<singleComment> {
+                    override fun compare(o1: singleComment, o2: singleComment): Int {
+                        val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                        val formatter = SimpleDateFormat("yyyyMMddHHmm")
+                        val output1 = formatter.format(parser.parse(o1.time)!!)
+                        val output2 = formatter.format(parser.parse(o2.time)!!)
+                        if(output1>output2)
+                            return 1
+                        return -1
+                    }
+                })
+
+            }
+            for (i in 0 until  nizKomentara.size){
+                Log.d("KOM",nizKomentara[i].time)
+            }
+            showComments(nizKomentara)
+        }
+        currentSort=position
+    }
+
 
     override fun clickedPostItem(post: singlePost) {
         TODO("Not yet implemented")

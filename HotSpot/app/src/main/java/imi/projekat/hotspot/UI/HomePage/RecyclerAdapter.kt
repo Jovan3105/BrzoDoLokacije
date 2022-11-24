@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import imi.projekat.hotspot.ModeliZaZahteve.singleComment
+import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import java.text.SimpleDateFormat
@@ -40,15 +41,19 @@ class RecyclerAdapter(private var nizKomentara: List<singleComment>):RecyclerVie
             val postDate = LocalDateTime.parse(nizKomentara[position].time)
             var pom= Duration.between(postDate,curentDate).toDays()
             when {
+
                 pom >=27->{
                     val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                     val formatter = SimpleDateFormat("dd.MM.yyyy")
                     output = formatter.format(parser.parse(nizKomentara[position].time))
                 }
-                pom > 1 -> {
+                pom in 2..26 -> {
                     output=pom.toString()+" days ago"
                 }
-                pom <= 1-> {
+                pom in 1 until 2->{
+                    output=pom.toString()+" day ago"
+                }
+                pom < 1-> {
                     var sati= Duration.between(postDate,curentDate).toHours()
                     when{
                         sati.toInt()==0->{
@@ -62,6 +67,7 @@ class RecyclerAdapter(private var nizKomentara: List<singleComment>):RecyclerVie
                         }
                     }
                 }
+
                 else -> {
                     output="ERROR"
                 }
@@ -89,6 +95,11 @@ class RecyclerAdapter(private var nizKomentara: List<singleComment>):RecyclerVie
             commentPhoto = itemView.findViewById(R.id.item_comment_photo)
             commentTime = itemView.findViewById(R.id.item_comment_time)
         }
+    }
+
+    fun update(nizKomentara: List<singleComment>){
+        this.nizKomentara=nizKomentara
+        notifyDataSetChanged()
     }
 
 }

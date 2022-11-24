@@ -37,6 +37,7 @@ xmlns:tools="http://schemas.android.com/tools"
     </provider>
     <activity
         android:name=".LoginActivity"
+        android:configChanges="orientation|screenSize"
         android:exported="true">
         <meta-data
             android:name="android.app.lib_name"
@@ -49,6 +50,7 @@ xmlns:tools="http://schemas.android.com/tools"
     </activity>
     <activity
         android:name="imi.projekat.hotspot.SetupActivity"
+        android:configChanges="orientation|screenSize"
         android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
@@ -64,6 +66,7 @@ xmlns:tools="http://schemas.android.com/tools"
         android:exported="false"
         android:windowSoftInputMode="adjustPan"
         android:theme="@style/Theme.HotSpot"
+        android:configChanges="orientation|screenSize"
         >
         <meta-data
             android:name="android.app.lib_name"
