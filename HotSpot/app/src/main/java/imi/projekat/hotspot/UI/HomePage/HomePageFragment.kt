@@ -1,5 +1,6 @@
 package imi.projekat.hotspot.UI.HomePage
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import imi.projekat.hotspot.MainActivity
+import imi.projekat.hotspot.MapsActivity
 import imi.projekat.hotspot.ModeliZaZahteve.likeDTS
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
@@ -64,6 +67,10 @@ class HomePageFragment : Fragment(),PostClickHandler {
         recyclerView.setAdapter(listaPostovaAdapter)
 
 
+        binding.mapaDugme.setOnClickListener{
+            val intent = Intent(requireContext(), MapsActivity::class.java)
+            startActivity(intent)
+        }
 
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.GetPostsWithUserId.collectLatest{

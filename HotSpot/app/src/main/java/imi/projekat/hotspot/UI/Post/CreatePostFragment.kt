@@ -43,6 +43,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
 import imi.projekat.hotspot.BuildConfig
+import imi.projekat.hotspot.MapsActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
@@ -112,7 +113,8 @@ class CreatePostFragment : Fragment(),addImageInterface {
             addImage()
         }
         binding.button4.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_createPostFragment_to_mapaFragment)
+            val intent = Intent(requireContext(), MapsActivity::class.java)
+            startActivity(intent)
         }
 
         binding.button3.setOnClickListener{

@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-android-extensions'
     id 'androidx.navigation.safeargs'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -96,8 +97,7 @@ dependencies {
     implementation 'me.relex:circleindicator:2.1.6'
 
     //Mapa
-    implementation 'org.osmdroid:osmdroid-android:6.1.14'
-    //implementation 'com.github.MKergall:osmbonuspack:6.9.0'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
 
     implementation "androidx.compose.material3:material3:1.0.1"
     implementation "androidx.compose.material3:material3-window-size-class:1.0.1"
@@ -125,4 +125,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
 
+
+    //Zahtev za persimisije
+    implementation 'com.vmadalin:easypermissions-ktx:1.0.0'
 }
