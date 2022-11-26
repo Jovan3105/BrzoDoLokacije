@@ -82,7 +82,7 @@ xmlns:tools="http://schemas.android.com/tools">
 
     <meta-data
         android:name="com.google.android.geo.API_KEY"
-        android:value="${MAPS_API_KEY}" />
+        android:value="AIzaSyCyhc2jb7rBAx6csjd6yn26hKSKr4wSQr8" />
     <uses-library
         android:name="org.apache.http.legacy"
         android:required="false" />
