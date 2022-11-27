@@ -3,13 +3,19 @@ package imi.projekat.hotspot
 import android.Manifest
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.pm.PackageManager
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiActivity
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -21,28 +27,32 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import imi.projekat.hotspot.databinding.ActivityMapsBinding
+import kotlinx.android.synthetic.main.activity_maps.view.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.PermissionCallbacks {
-    private lateinit var mapView: MapView
+
     private lateinit var binding: ActivityMapsBinding
     private var grantedPermission=false
+    private lateinit var googleMap:GoogleMap
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var currentLocation: Location
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        mapView=findViewById(binding.mapView.id)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        fusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(this@MapsActivity)
 
 
         requestLocPermission()
+    }
 
-        if(grantedPermission){
-            mapView.getMapAsync(this)
-            mapView.onCreate(savedInstanceState)
-        }
-
+    private fun dozvoljenPristupMapi(){
+        var supMapFragment:SupportMapFragment= SupportMapFragment()
+        supportFragmentManager.beginTransaction().add(binding.mapView.id,supMapFragment).commit()
+        supMapFragment.getMapAsync(this)
     }
 
     private fun hasLocationPersimision()=EasyPermissions.hasPermissions(
@@ -82,6 +92,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         if(checkGooglePlayServices()==false)
             return
         grantedPermission=true
+        dozvoljenPristupMapi()
     }
 
     private fun checkGooglePlayServices(): Boolean {
@@ -109,47 +120,53 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
      * installed Google Play services and returned to the app.
      */
     override fun onMapReady(googleMap: GoogleMap) {
-//        mMap = googleMap
-//
-//        // Add a marker in Sydney and move the camera
-//        val sydney = LatLng(-34.0, 151.0)
-//        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        this.googleMap=googleMap
+
+
+
+        fetchLocation()
+
     }
 
-    override fun onStart() {
-        super.onStart()
-        mapView.onStart()
+    private fun setMyLocationMarker(location:LatLng,title:String){
+        var markerOptions:MarkerOptions= MarkerOptions()
+        markerOptions.title(title)
+        markerOptions.position(location)
+        this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(location))
+        this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,7f))
+        this.googleMap.addMarker(markerOptions)
     }
 
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
+
+    private fun fetchLocation() {
+
+
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+            PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+            PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 101)
+            return
+        }
+        val task = fusedLocationProviderClient.lastLocation.addOnSuccessListener {
+                location ->
+            if(location!=null){
+                currentLocation = location
+                Log.d("Nova lokacija","Nova lokacija")
+                Toast.makeText(applicationContext, currentLocation.latitude.toString() + "" +
+                        currentLocation.longitude, Toast.LENGTH_SHORT).show()
+
+                setMyLocationMarker(LatLng(currentLocation.latitude,currentLocation.longitude),"My location")
+
+            }
+        }
+        task.addOnFailureListener {
+            Log.d("Greska","Nije nadjena lokacija")
+        }
+
     }
 
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView.onDestroy()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-        mapView.onSaveInstanceState(outState)
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView.onLowMemory()
-    }
 
 }

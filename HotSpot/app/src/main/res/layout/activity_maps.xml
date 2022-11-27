@@ -7,16 +7,14 @@
     android:layout_width="match_parent"
     tools:context=".MapsActivity">
 
-    <com.google.android.gms.maps.MapView
+
+    <FrameLayout
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
         map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SpeakableTextPresentCheck">
-
-    </com.google.android.gms.maps.MapView>
+        map:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
