@@ -93,6 +93,7 @@
     <string name="new_comment">New comment</string>
     <string name="comment">Comment</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="maps_api_key">AIzaSyCyhc2jb7rBAx6csjd6yn26hKSKr4wSQr8</string>
 
 
 </resources>

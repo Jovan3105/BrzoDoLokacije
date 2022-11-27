@@ -2,32 +2,36 @@ package imi.projekat.hotspot
 
 import android.Manifest
 import android.app.Dialog
-import android.content.DialogInterface
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
+import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.os.Parcelable
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.gms.common.api.GoogleApiActivity
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import imi.projekat.hotspot.databinding.ActivityMapsBinding
-import kotlinx.android.synthetic.main.activity_maps.view.*
+import kotlinx.android.parcel.Parcelize
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.PermissionCallbacks {
 
@@ -36,17 +40,49 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
     private lateinit var googleMap:GoogleMap
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var currentLocation: Location
+    private var cameraPosition: CameraPosition? = null
+    private lateinit var placesClient: PlacesClient
+    private var lastKnownLocation: Location? = null
+    private val defaultLocation = LatLng(44.01772088671875, 20.90731628415956)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Retrieve location and camera position from saved instance state.
+        if (savedInstanceState != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                var saveData: SaveData? = savedInstanceState.getParcelable("saveData",SaveData::class.java)
+                if (saveData != null) {
+
+                    lastKnownLocation=saveData.KEY_LOCATION
+                    cameraPosition=saveData.KEY_CAMERA_POSITION
+                }
+
+            }
+
+        }
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         fusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(this@MapsActivity)
 
+        // Construct a PlacesClient
+        Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
+        placesClient = Places.createClient(this)
 
         requestLocPermission()
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        googleMap?.let { map ->
+
+            var SAVEdata=SaveData(map.cameraPosition,lastKnownLocation)
+            outState.putParcelable("saveData", SAVEdata)
+        }
+        super.onSaveInstanceState(outState)
     }
 
     private fun dozvoljenPristupMapi(){
@@ -92,6 +128,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         if(checkGooglePlayServices()==false)
             return
         grantedPermission=true
+        if(!isLocationEnabled()){
+            Toast.makeText(this, "Please turn on location", Toast.LENGTH_LONG).show()
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(intent)
+            finish()
+        }
         dozvoljenPristupMapi()
     }
 
@@ -109,6 +151,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         return false
     }
 
+    private fun isLocationEnabled(): Boolean {
+        val locationManager: LocationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+
 
     /**
      * Manipulates the map once available.
@@ -122,8 +172,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap=googleMap
 
+        if(lastKnownLocation!=null)
+            setMyLocationMarker(LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude),"My location")
 
+        this.googleMap.uiSettings.isZoomControlsEnabled = true
+        this.googleMap.uiSettings.isCompassEnabled = true
+        this.googleMap.uiSettings.isZoomGesturesEnabled=true
+        //this.googleMap.uiSettings.isScrollGesturesEnabled=true
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        this.googleMap.isMyLocationEnabled=true
         fetchLocation()
 
     }
@@ -133,7 +207,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         markerOptions.title(title)
         markerOptions.position(location)
         this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(location))
-        this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,7f))
+        this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,10f))
         this.googleMap.addMarker(markerOptions)
     }
 
@@ -150,11 +224,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 101)
             return
         }
+
+
+
         val task = fusedLocationProviderClient.lastLocation.addOnSuccessListener {
                 location ->
             if(location!=null){
                 currentLocation = location
-                Log.d("Nova lokacija","Nova lokacija")
                 Toast.makeText(applicationContext, currentLocation.latitude.toString() + "" +
                         currentLocation.longitude, Toast.LENGTH_SHORT).show()
 
@@ -164,9 +240,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         }
         task.addOnFailureListener {
             Log.d("Greska","Nije nadjena lokacija")
+            setMyLocationMarker(LatLng(defaultLocation.latitude,defaultLocation.longitude),"Default app location")
+
         }
 
     }
 
+    companion object {
+        private const val DEFAULT_ZOOM = 15
+        private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
+
+        // Keys for storing activity state.
+        private val saveData: SaveData? = null
+
+        // Used for selecting the current place.
+        private const val M_MAX_ENTRIES = 5
+    }
+
+    @Parcelize
+    private data class SaveData(var KEY_CAMERA_POSITION: CameraPosition?, var KEY_LOCATION: Location?):Parcelable
 
 }
