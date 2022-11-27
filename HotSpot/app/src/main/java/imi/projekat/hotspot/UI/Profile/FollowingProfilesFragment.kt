@@ -8,11 +8,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import imi.projekat.hotspot.LoginActivity
 import imi.projekat.hotspot.ModeliZaZahteve.FollowingUserAdapter
 import imi.projekat.hotspot.Ostalo.BaseResponse
@@ -33,7 +36,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [FollowingProfilesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FollowingProfilesFragment : Fragment(),AdapterFollowingProfiles.OnItemClickListener {
+class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingProfiles.OnItemClickListener{
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding:FragmentFollowingProfilesBinding
     private lateinit var korisnici:ArrayList<FollowingUserAdapter>
@@ -69,18 +72,22 @@ class FollowingProfilesFragment : Fragment(),AdapterFollowingProfiles.OnItemClic
                     else
                     {
                         for (i in 0 until  it.data!!.followers.size){
-                            val content = it.data!!.followers[i].userPhoto
-                            Log.d("slika",content)
-                            Log.d("username",it.data!!.followers[i].username)
-                            val imageBytes = Base64.decode(content, Base64.DEFAULT)
-                            val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                            val korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,decodedImage,"Unfollow")
-                           // Log.d("id",it.data!!.followers[i].id.toString())
+                            var korisnik:FollowingUserAdapter
+                            if(it.data!!.followers[i].userPhoto.isNullOrEmpty())
+                            {
+                                korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,"","Unfollow")
+                            }
+                            else
+                            {
+                                val pom=it.data!!.followers[i].userPhoto.split("\\")
+                                 korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,pom[2],"Unfollow")
+                            }
+
                             korisnici.add(korisnik)
                         }
 
                         layoutManager=LinearLayoutManager(requireContext())
-                        adapter=AdapterFollowingProfiles(korisnici,this@FollowingProfilesFragment)
+                        adapter=AdapterFollowingProfiles(this@FollowingProfilesFragment,korisnici,this@FollowingProfilesFragment)
                         recycler.layoutManager=layoutManager
                         recycler.adapter=adapter
 
@@ -138,6 +145,15 @@ class FollowingProfilesFragment : Fragment(),AdapterFollowingProfiles.OnItemClic
         }
         Log.d("usernamekliknutog",clickedItem.username)
 
+    }
+
+    override fun getPicture(imageView: ImageView, slika: String) {
+        Glide.with(this)
+            .load("http://10.0.2.2:5140/Storage/ProfileImages/$slika")
+            .fitCenter()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .placeholder(R.drawable.image_holder)
+            .into(imageView)
     }
 
 

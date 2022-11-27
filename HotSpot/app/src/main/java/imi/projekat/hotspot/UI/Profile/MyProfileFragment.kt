@@ -69,8 +69,7 @@ class MyProfileFragment : Fragment() {
 
                 }
                 if(it is BaseResponse.Success){
-                    Log.d("SES","SESESSE")
-                    if(it.data!=null)// da se istestira
+                    if(it.data!=null)
                     {
                         val content = it.data!!.charStream().readText()
                         val imageBytes = Base64.decode(content, Base64.DEFAULT)
@@ -112,7 +111,6 @@ class MyProfileFragment : Fragment() {
         val btpAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.bot_to_top)
 
         binding.followingButton.setOnClickListener {
-            Log.d("brzi","kocka")
             findNavController().navigate(R.id.action_myProfileFragment_to_followingProfilesFragment)
         }
 

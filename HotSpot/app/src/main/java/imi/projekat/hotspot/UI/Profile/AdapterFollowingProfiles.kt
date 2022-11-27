@@ -11,11 +11,14 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import imi.projekat.hotspot.ModeliZaZahteve.FollowingUserAdapter
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.HomePage.PostClickHandler
 
-class AdapterFollowingProfiles(private var users:ArrayList<FollowingUserAdapter>,
+class AdapterFollowingProfiles(private val clickHandler: FollowersImages
+                               ,private var users:ArrayList<FollowingUserAdapter>,
 private val listener:OnItemClickListener
                                ):RecyclerView.Adapter<AdapterFollowingProfiles.ViewHolder>()
 {
+
     inner class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView),
             OnClickListener
     {
@@ -45,11 +48,13 @@ private val listener:OnItemClickListener
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.username.text=users[position].username
-        holder.photoview.setImageBitmap(users[position].photo)
        holder.dugme.text=users[position].buttonName
-//        holder.dugme.setOnClickListener{
-//
-//        }OPCIONO
+        if(!users[position].photo.isNullOrEmpty())
+        {
+            Log.d("slikaFOllowera",users[position].photo)
+            clickHandler.getPicture(holder.photoview,users[position].photo)
+        }
+
     }
 
     override fun getItemCount(): Int {

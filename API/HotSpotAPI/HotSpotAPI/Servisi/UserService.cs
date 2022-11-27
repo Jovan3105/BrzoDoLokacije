@@ -308,20 +308,16 @@ namespace HotSpotAPI.Servisi
                 return null;
 
             List<follower> fols = new List<follower>();
-            string pom;
+            //string pom;
             foreach(Followers f in fol)
             {
                 follower f1 = new follower();
                 f1.username = getUsernameById(f.followID);
                 if (f1.username == "" || f1.username == null)
                     return null;
-                pom = getUserPhoto(f.followID);
-                if (pom.Equals("0"))
-                    return null;
-                if(pom.Equals("1"))
-                    f1.userPhoto = "";
-                if (!pom.Equals("1"))
-                    f1.userPhoto = pom;
+                var pom = context.Korisnici.FirstOrDefault(x => x.ID == f.followID);
+
+                f1.userPhoto = pom.ProfileImage;
                 f1.ID = f.followID;
                 fols.Add(f1);
             }
