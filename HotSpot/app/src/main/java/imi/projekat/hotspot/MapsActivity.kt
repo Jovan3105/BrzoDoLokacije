@@ -71,7 +71,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         fusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(this@MapsActivity)
 
         // Construct a PlacesClient
-        Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY)
+        Places.initialize(applicationContext, KonfigAplikacije.instanca.AppSettings.MAPS_API_KEY)
         placesClient = Places.createClient(this)
 
         requestLocPermission()

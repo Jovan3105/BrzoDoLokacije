@@ -11,22 +11,21 @@ import java.io.InputStream
 import kotlin.coroutines.coroutineContext
 
 object KonfigAplikacije{
-    private var instanca:ModelConfigAplikacije?=null
-    fun getInstanca(kontekst:Context): ModelConfigAplikacije?= synchronized(this){
+    val instanca: ModelConfigAplikacije by lazy {
+        getInstanca(SetupActivity.Companion.getContext()) as ModelConfigAplikacije
+    }
+    private fun getInstanca(kontekst:Context): ModelConfigAplikacije?= synchronized(this){
 
         val jsonString: String
-        if(instanca==null){
-            try {
-                jsonString = kontekst.assets.open("ConfigAplikacije.json").bufferedReader().use { it.readText() }
-                val gson = Gson()
-                val type = object : TypeToken<ModelConfigAplikacije>() {}.type
-                instanca = gson.fromJson(jsonString, type)
-            } catch (ioException: IOException) {
-                ioException.printStackTrace()
-            }
-
+        try {
+            jsonString = kontekst.assets.open("ConfigAplikacije.json").bufferedReader().use { it.readText() }
+            val gson = Gson()
+            val type = object : TypeToken<ModelConfigAplikacije>() {}.type
+            return gson.fromJson(jsonString, type)
+        } catch (ioException: IOException) {
+            ioException.printStackTrace()
         }
-        return instanca
+        return null
     }
 }
 
@@ -36,5 +35,6 @@ data class ModelConfigAplikacije(
 )
 
 data class AppSettings(
-    val baseURL: String
+    val baseURL: String,
+    val MAPS_API_KEY:String
 )

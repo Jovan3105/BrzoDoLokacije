@@ -1,6 +1,20 @@
 package imi.projekat.hotspot.Ostalo
 
+import android.app.Activity
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.BitmapImageViewTarget
+import imi.projekat.hotspot.KonfigAplikacije
+import imi.projekat.hotspot.ModelConfigAplikacije
 import imi.projekat.hotspot.ModeliZaZahteve.*
+import imi.projekat.hotspot.R
+import imi.projekat.hotspot.SetupActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -9,6 +23,7 @@ import retrofit2.http.Part
 import retrofit2.http.Path
 
 class Repository(){
+
     suspend fun login(loginDATA:loginDTS): Response<LoginResponse> {
         return APIservis.Servis.loginCall(loginDATA)
     }
@@ -68,5 +83,22 @@ class Repository(){
 
     suspend fun FollowUser(userid: Int):Response<ResponseBody>{
         return APIservis.Servis.FollowUser(userid)
+    }
+
+    fun dajSliku(imageView: ImageView, slikaPath:String,context:Context){
+
+        val baseUrl=KonfigAplikacije.instanca.AppSettings.baseURL
+
+        Glide.with(context)
+                .asBitmap()
+                .load(baseUrl + "Storage/$slikaPath")
+                .fitCenter()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.image_holder)
+                .into(BitmapImageViewTarget(imageView))
+
+
+
+
     }
 }

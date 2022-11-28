@@ -1,6 +1,8 @@
 package imi.projekat.hotspot.ViewModeli
 
+import android.content.Context
 import android.util.Log
+import android.widget.ImageView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
@@ -64,12 +66,25 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         Log.d("ExceptionInMainView",throwable.localizedMessage.toString())
     }
 
+    val exceptionHandlerZaSlike=CoroutineExceptionHandler{_,throwable->onError2(
+        throwable.localizedMessage?.toString() ?: "Nisam uspeo da procitam gresku onError2"
+    )
+
+    }
 
 
     private fun onError(greska: String){
         runBlocking{
             launch {
                 _GreskaHendler.emit(BaseResponse.Error(greska))
+            }
+        }
+    }
+
+    private fun onError2(greska: String){
+        runBlocking{
+            launch {
+                Log.d("PreuzimanjeSlike",greska)
             }
         }
     }
@@ -107,7 +122,6 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
             val response=repository.addPost(photos,description,location,shortDescription)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
-                    Log.d("Brzi1",response.toString())
                     _DodajPostResposne.emit(BaseResponse.Success(response.body()))
 
                 }
@@ -291,5 +305,9 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 }
             }
         }
+    }
+
+    fun dajSliku(imageView: ImageView, slikaPath:String,context: Context){
+        repository.dajSliku(imageView,slikaPath,context)
     }
 }

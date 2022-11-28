@@ -1,7 +1,6 @@
 package imi.projekat.hotspot.UI.HomePage
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,13 +14,13 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.gms.tasks.Task
 import imi.projekat.hotspot.MainActivity
 import imi.projekat.hotspot.MapsActivity
 import imi.projekat.hotspot.ModeliZaZahteve.likeDTS
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
+import imi.projekat.hotspot.Ostalo.Repository
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
@@ -159,13 +158,8 @@ class HomePageFragment : Fragment(),PostClickHandler {
         viewModel.dislikePost(like)
     }
 
-    override fun getPicture(imageView: ImageView,slika:String) {
-        Glide.with(this)
-            .load("http://10.0.2.2:5140/Storage/$slika")
-            .fitCenter()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .placeholder(R.drawable.image_holder)
-            .into(imageView)
+    override fun getPicture(imageView: ImageView, slikaPath:String) {
+        viewModel.dajSliku(imageView,slikaPath,requireContext())
     }
 
 
