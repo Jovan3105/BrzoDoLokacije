@@ -21,6 +21,7 @@ namespace HotSpotAPI.Servisi
         public List<follower> getfollowUser(int id);
         public bool unfollowUser(int userid, int followid);
         public specialInfo getSpecialInfo(int id);
+        public List<follower> getPageFollowers(int id, int brojstrane, int brojkorisnika);
     }
     public class UserService : IUserService
     {
@@ -315,6 +316,29 @@ namespace HotSpotAPI.Servisi
             }
             return fols;
             
+        }
+        public List<follower> getPageFollowers(int id, int brojstrane, int brojkorisnika)
+        {
+            var fol = context.Followers.Where(x => x.userID == id).ToList();
+            Debug.WriteLine(fol);
+            if (fol == null)
+                return null;
+
+            List<follower> fols = new List<follower>();
+            //string pom;
+            for (int i = (brojstrane - 1) * brojkorisnika; i < (brojstrane * brojkorisnika); i++)
+            {
+                follower f1 = new follower();
+                f1.username = getUsernameById(fol[i].followID);
+                if (f1.username == "" || f1.username == null)
+                    return null;
+                var pom = context.Korisnici.FirstOrDefault(x => x.ID == fol[i].followID);
+
+                f1.userPhoto = pom.ProfileImage;
+                f1.ID = fol[i].followID;
+                fols.Add(f1);
+            }
+            return fols;
         }
         public specialInfo getSpecialInfo(int id)
         {

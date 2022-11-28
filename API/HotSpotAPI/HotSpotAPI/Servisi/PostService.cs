@@ -23,6 +23,7 @@ namespace HotSpotAPI.Servisi
         public List<comments> GetReplies(int postId, int commid);
         public bool addCommLike(int id, int postid, int commid);
         public bool dislikeComm(int id, int postid, int commid);
+        public List<getPosts> getPostsPage(int brojstrane, int brojpostova);
     }
     public class PostService : IPostService
     {
@@ -399,6 +400,45 @@ namespace HotSpotAPI.Servisi
             kom.NumOFLikes--;
             context.SaveChanges();
             return true;
+        }
+        public List<getPosts> getPostsPage(int brojstrane, int brojpostova)
+        {
+            List<Post> posts = context.Postovi.Where(x => x.UserID > 0).ToList();
+            List<getPosts> postsList = new List<getPosts>();
+
+            for(int i = (brojstrane-1)*brojpostova; i<(brojstrane*brojpostova); i++)
+            {
+                var kor = context.Korisnici.Find(posts[i].UserID);
+                if (kor == null)
+                    return null;
+                getPosts p = new getPosts();
+                p.username = kor.Username;
+                p.ownerID = kor.ID;
+                string basepath1 = storageService.CreatePhoto();
+                if (kor.ProfileImage == "" || kor.ProfileImage == null)
+                    p.profilephoto = "";
+                else
+                {
+                    p.profilephoto = Directory.GetFiles(basepath1, "user" + kor.ID + ".jpg")
+                                     .Select(Path.GetFileName)
+                                     .ToList().First();
+                }
+                p.description = posts[i].Description;
+                p.location = posts[i].Location;
+                p.DateTime = posts[i].DateTime;
+                p.photos = new List<string>();
+                p.brojslika = posts[i].NumOfPhotos;
+                p.shortDescription = posts[i].shortDescription;
+                p.brojlajkova = posts[i].NumOfLikes;
+                p.postID = posts[i].ID;
+                string basepath = storageService.CreatePost();
+                p.photos = Directory.GetFiles(basepath, "user" + kor.ID + "post" + posts[i].ID + "*")
+                                     .Select(Path.GetFileName)
+                                     .ToList();
+
+                postsList.Add(p);
+            }
+            return postsList;
         }
     }
 }
