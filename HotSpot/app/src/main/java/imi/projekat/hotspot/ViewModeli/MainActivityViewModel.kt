@@ -1,6 +1,8 @@
 package imi.projekat.hotspot.ViewModeli
 
+import android.content.Context
 import android.util.Log
+import android.widget.ImageView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
@@ -19,8 +21,7 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _liveEditProfileResponse=MutableSharedFlow<BaseResponse<changeAccDataResponse>>()
     val liveEditProfileResponse=_liveEditProfileResponse.asSharedFlow()
 
-    private var _liveProfilePhotoResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
-    val liveProfilePhotoResponse=_liveProfilePhotoResponse.asSharedFlow()
+
 
     private var _DodajPostResposne= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val DodajPostResposne=_DodajPostResposne.asSharedFlow()
@@ -50,6 +51,12 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _DislikePostResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val DislikePostResponse=_DislikePostResponse.asSharedFlow()
 
+    private var _UnfollowUserResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val UnfollowUserResponse=_UnfollowUserResponse.asSharedFlow()
+
+    private var _FollowUserResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val FollowUserResponse=_FollowUserResponse.asSharedFlow()
+
     var handleJob: Job?=null
 
     val exceptionHandler=CoroutineExceptionHandler{_,throwable->onError(
@@ -58,12 +65,25 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         Log.d("ExceptionInMainView",throwable.localizedMessage.toString())
     }
 
+    val exceptionHandlerZaSlike=CoroutineExceptionHandler{_,throwable->onError2(
+        throwable.localizedMessage?.toString() ?: "Nisam uspeo da procitam gresku onError2"
+    )
+
+    }
 
 
     private fun onError(greska: String){
         runBlocking{
             launch {
                 _GreskaHendler.emit(BaseResponse.Error(greska))
+            }
+        }
+    }
+
+    private fun onError2(greska: String){
+        runBlocking{
+            launch {
+                Log.d("PreuzimanjeSlike",greska)
             }
         }
     }
@@ -101,7 +121,6 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
             val response=repository.addPost(photos,description,location,shortDescription)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
-                    Log.d("Brzi1",response.toString())
                     _DodajPostResposne.emit(BaseResponse.Success(response.body()))
 
                 }
@@ -114,27 +133,7 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
-    fun getPhoto(){
-        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
 
-            val response=repository.getProfilePhoto()
-            withContext(Dispatchers.Main){
-                if(response.isSuccessful){
-                    _liveProfilePhotoResponse.emit(BaseResponse.Success(response.body()))
-
-                }
-                else{
-
-//                    val gson = Gson()
-//                    val type = object : TypeToken<ResponseBody>() {}.type
-//                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
-
-//                    val content = response.errorBody()!!.charStream().readText()
-//                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
-                }
-            }
-        }
-    }
 
     fun GetAllFollowingByUser(){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
@@ -255,5 +254,39 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 }
             }
         }
+    }
+
+    fun followUser(UserId:Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.FollowUser(UserId)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _FollowUserResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _FollowUserResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun unfollowUser(UserId: Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.UnfollowUser(UserId)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _UnfollowUserResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _UnfollowUserResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun dajSliku(imageView: ImageView, slikaPath:String,context: Context){
+        repository.dajSliku(imageView,slikaPath,context)
     }
 }

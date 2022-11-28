@@ -22,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object APIservis {
 
     private val BASE_URL:String by lazy {
-        KonfigAplikacije.getInstanca(SetupActivity.Companion.getContext())!!.AppSettings.baseURL
+        KonfigAplikacije.instanca.AppSettings.baseURL
     }
 
     private val retrofitBuilder: Retrofit.Builder by lazy {
@@ -73,7 +73,7 @@ object APIservis {
 object RefreshTokenAPICALL {
 
     private val BASE_URL:String by lazy {
-        KonfigAplikacije.getInstanca(SetupActivity.Companion.getContext())!!.AppSettings.baseURL
+        KonfigAplikacije.instanca.AppSettings.baseURL
     }
 
     private val retrofitBuilder: Retrofit.Builder by lazy {

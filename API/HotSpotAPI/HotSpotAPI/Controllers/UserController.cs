@@ -109,23 +109,6 @@ namespace HotSpotAPI.Controllers
                 return Ok();
             return BadRequest();
         }
-        [HttpGet("GetPhoto")]
-        public async Task<ActionResult<String>> GetUserinfo()
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-            string slika = userService.getPhoto(id);
-            if (slika != "" && slika != null)
-            {
-                string pom;
-                Byte[] b = System.IO.File.ReadAllBytes(slika);
-                pom = Convert.ToBase64String(b, 0, b.Length);
-                return Ok(pom);
-            }
-            return BadRequest();
-            
-        }
 
         [HttpGet("GetAllFollowingByUser")]
         public async Task<ActionResult<getuser>> GetAllFollowingByUser()
@@ -177,6 +160,18 @@ namespace HotSpotAPI.Controllers
                 return Unauthorized();
 
             List<follower> f = userService.getfollowUser(id);
+            if (f != null)
+                return Ok(f);
+            return BadRequest();
+        }
+        [HttpGet("follow/{brojstrane}/{brojkorisnika}")]
+        public async Task<ActionResult<string>> GetFollowers(int brojstrane, int brojkorisnika)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<follower> f = userService.getPageFollowers(id, brojstrane, brojkorisnika);
             if (f != null)
                 return Ok(f);
             return BadRequest();

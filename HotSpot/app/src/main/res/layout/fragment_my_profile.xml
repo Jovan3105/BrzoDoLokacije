@@ -113,7 +113,7 @@
         android:layout_marginStart="166dp"
         android:layout_marginTop="28dp"
         android:layout_marginEnd="157dp"
-        android:text="Button"
+        android:text="Following"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"

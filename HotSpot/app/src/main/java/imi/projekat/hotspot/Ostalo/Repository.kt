@@ -1,13 +1,29 @@
 package imi.projekat.hotspot.Ostalo
 
+import android.app.Activity
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.BitmapImageViewTarget
+import imi.projekat.hotspot.KonfigAplikacije
+import imi.projekat.hotspot.ModelConfigAplikacije
 import imi.projekat.hotspot.ModeliZaZahteve.*
+import imi.projekat.hotspot.R
+import imi.projekat.hotspot.SetupActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 class Repository(){
+
     suspend fun login(loginDATA:loginDTS): Response<LoginResponse> {
         return APIservis.Servis.loginCall(loginDATA)
     }
@@ -28,9 +44,7 @@ class Repository(){
         return RefreshTokenAPICALL.Servis.resetujToken(refreshTokenDATA)
     }
 
-    suspend fun getProfilePhoto():Response<ResponseBody>{
-        return APIservis.Servis.getPhoto()
-    }
+
 
     suspend fun addPost(@Part photos:List<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part,@Part shortDescription:MultipartBody.Part):Response<ResponseBody>{
         return APIservis.Servis.addPost(photos,description,location,shortDescription)
@@ -59,5 +73,26 @@ class Repository(){
 
     suspend fun dislikePost(@Body dislike: likeDTS):Response<ResponseBody>{
         return APIservis.Servis.dislikePost(dislike);
+    }
+
+    suspend fun UnfollowUser(userid: Int):Response<ResponseBody>{
+        return APIservis.Servis.UnfollowUser(userid)
+    }
+
+    suspend fun FollowUser(userid: Int):Response<ResponseBody>{
+        return APIservis.Servis.FollowUser(userid)
+    }
+
+    fun dajSliku(imageView: ImageView, slikaPath:String,context:Context){
+
+        val baseUrl=KonfigAplikacije.instanca.AppSettings.baseURL
+
+        Glide.with(context)
+            .asBitmap()
+            .load(baseUrl + "Storage/$slikaPath")
+            .fitCenter()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(BitmapImageViewTarget(imageView))
+
     }
 }

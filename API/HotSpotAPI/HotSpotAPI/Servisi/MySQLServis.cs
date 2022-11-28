@@ -174,7 +174,8 @@ namespace HotSpotAPI.Servisi
             {
                 new Claim("username",korisnik.Username),
                 new Claim("email",korisnik.Email),
-                new Claim("id", uid)
+                new Claim("id", uid),
+                new Claim("photo",korisnik.ProfileImage)
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(

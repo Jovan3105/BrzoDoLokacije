@@ -21,15 +21,15 @@ namespace HotSpotAPI.ModeliZaZahteve
     }
     public class EditUser
     {
-        
+
         [StringLength(maximumLength: 20, ErrorMessage = "Maksimalna duzina username-a je 20")]
         public string Username { get; set; } = string.Empty;
-        
+
         [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "Nije uneta validna Email adresa")]
         public string Email { get; set; } = string.Empty;
         [Required(ErrorMessage = "Nije uneta sifra")]
         public string OldPassword { get; set; } = string.Empty;
-        
+
         public string? NewPassword { get; set; } = string.Empty;
         public IFormFile? slika { get; set; }
     }
@@ -40,14 +40,14 @@ namespace HotSpotAPI.ModeliZaZahteve
 
     public class changeAccDataResponse
     {
-        public string message { get;set; } = string.Empty;
+        public string message { get; set; } = string.Empty;
         public string token { get; set; } = string.Empty;
         public int Id { get; set; } = 0;
     }
 
     public class password
     {
-        public string username { get; set; }= string.Empty;
+        public string username { get; set; } = string.Empty;
         public string newpassword { get; set; } = string.Empty;
     }
 
@@ -80,7 +80,7 @@ namespace HotSpotAPI.ModeliZaZahteve
         public int postID { get; set; }
         public bool likedByMe { get; set; }
     }
-    
+
     public class Photo
     {
         public string username { get; set; } = string.Empty;
@@ -98,7 +98,7 @@ namespace HotSpotAPI.ModeliZaZahteve
     {
         public int OwnerID { get; set; }
         public string text { get; set; } = string.Empty;
-        public dynamic userPhoto { get; set; }
+        public string userPhoto { get; set; }
         public string username { set; get; } = string.Empty;
         public DateTime time { get; set; }
         public int NumOfLikes { get; set; }

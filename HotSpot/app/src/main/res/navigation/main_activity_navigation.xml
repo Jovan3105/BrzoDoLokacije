@@ -19,9 +19,6 @@
         <action
             android:id="@+id/action_homePageFragment_to_singlePostFragment"
             app:destination="@id/singlePostFragment" />
-        <action
-            android:id="@+id/action_homePageFragment_to_homePageMap"
-            app:destination="@id/homePageMap" />
     </fragment>
     <fragment
         android:id="@+id/createPostFragment"
@@ -34,9 +31,6 @@
         <action
             android:id="@+id/action_createPostFragment_to_myProfileFragment"
             app:destination="@id/myProfileFragment" />
-        <action
-            android:id="@+id/action_createPostFragment_to_mapaFragment"
-            app:destination="@id/mapaFragment" />
     </fragment>
     <fragment
         android:id="@+id/myProfileFragment"
@@ -66,11 +60,6 @@
             app:destination="@id/myProfileFragment" />
     </fragment>
     <fragment
-        android:id="@+id/mapaFragment"
-        android:name="imi.projekat.hotspot.UI.Post.MapaFragment"
-        android:label="fragment_mapa"
-        tools:layout="@layout/fragment_mapa" />
-    <fragment
         android:id="@+id/singlePostFragment"
         android:name="imi.projekat.hotspot.UI.HomePage.SinglePost.SinglePostFragment"
         android:label="fragment_single_post"
@@ -82,11 +71,6 @@
             android:name="idPosta"
             app:argType="integer" />
     </fragment>
-    <fragment
-        android:id="@+id/homePageMap"
-        android:name="imi.projekat.hotspot.UI.HomePage.HomePageMap"
-        android:label="fragment_home_page_map"
-        tools:layout="@layout/fragment_home_page_map" />
     <fragment
         android:id="@+id/followingProfilesFragment"
         android:name="imi.projekat.hotspot.UI.Profile.FollowingProfilesFragment"

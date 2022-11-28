@@ -1,17 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-    >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools">
 
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.CAMERA" />
+
+<uses-feature android:name="android.hardware.camera" />
+
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
 <application
     android:allowBackup="true"
     android:dataExtractionRules="@xml/data_extraction_rules"
@@ -28,15 +30,17 @@ xmlns:tools="http://schemas.android.com/tools"
         android:authorities="${applicationId}.provider"
         android:name="androidx.core.content.FileProvider"
         android:exported="false"
-        android:grantUriPermissions="true"
-        >
-        <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
             android:resource="@xml/provider_paths">
 
         </meta-data>
     </provider>
+
     <activity
         android:name=".LoginActivity"
+        android:configChanges="orientation|screenSize"
         android:exported="true">
         <meta-data
             android:name="android.app.lib_name"
@@ -49,6 +53,7 @@ xmlns:tools="http://schemas.android.com/tools"
     </activity>
     <activity
         android:name="imi.projekat.hotspot.SetupActivity"
+        android:configChanges="orientation|screenSize"
         android:exported="true">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
@@ -64,11 +69,24 @@ xmlns:tools="http://schemas.android.com/tools"
         android:exported="false"
         android:windowSoftInputMode="adjustPan"
         android:theme="@style/Theme.HotSpot"
-        >
+        android:configChanges="orientation|screenSize">
         <meta-data
             android:name="android.app.lib_name"
             android:value="" />
     </activity>
+
+    <activity
+        android:name="imi.projekat.hotspot.MapsActivity"
+        android:exported="false"
+        android:theme="@style/Theme.Material3.Light"
+        android:label="@string/title_activity_maps" />
+
+    <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyCyhc2jb7rBAx6csjd6yn26hKSKr4wSQr8" />
+    <uses-library
+        android:name="org.apache.http.legacy"
+        android:required="false" />
 </application>
 
 </manifest>

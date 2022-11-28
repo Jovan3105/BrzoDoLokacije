@@ -14,7 +14,6 @@ namespace HotSpotAPI.Servisi
         public string ConfirmCode(string username, string code, out bool ind);
         public bool checkCode(vercode ver);
         public void verifyUser(string username);
-        public string getPhoto(int id);
         public bool ChangePhoto(int id, IFormFile photo);
         public userinfo getUserInfo(int id);
         public bool deleteAccount(int id);
@@ -22,6 +21,7 @@ namespace HotSpotAPI.Servisi
         public List<follower> getfollowUser(int id);
         public bool unfollowUser(int userid, int followid);
         public specialInfo getSpecialInfo(int id);
+        public List<follower> getPageFollowers(int id, int brojstrane, int brojkorisnika);
     }
     public class UserService : IUserService
     {
@@ -157,14 +157,7 @@ namespace HotSpotAPI.Servisi
             }
         }
         
-        public string getPhoto(int id)
-        {
-            var kor = context.Korisnici.Find(id);
-            if (kor == null)
-                return null;
-
-            return kor.ProfileImage;
-        }
+        
         public bool ChangePhoto(int id, IFormFile photo)
         {
             var user = context.Korisnici.Find(id);
@@ -242,7 +235,7 @@ namespace HotSpotAPI.Servisi
             userinfo u = new userinfo();
             u.username = user.Username;
 
-            string slika = getPhoto(id);
+            string slika = user.ProfileImage;
             if (slika == "" || slika == null)
             {
                 u.photo = "";
@@ -308,25 +301,44 @@ namespace HotSpotAPI.Servisi
                 return null;
 
             List<follower> fols = new List<follower>();
-            string pom;
+            //string pom;
             foreach(Followers f in fol)
             {
                 follower f1 = new follower();
                 f1.username = getUsernameById(f.followID);
                 if (f1.username == "" || f1.username == null)
                     return null;
-                pom = getUserPhoto(f.followID);
-                if (pom.Equals("0"))
-                    return null;
-                if(pom.Equals("1"))
-                    f1.userPhoto = "";
-                if (!pom.Equals("1"))
-                    f1.userPhoto = pom;
+                var pom = context.Korisnici.FirstOrDefault(x => x.ID == f.followID);
+
+                f1.userPhoto = pom.ProfileImage;
                 f1.ID = f.followID;
                 fols.Add(f1);
             }
             return fols;
             
+        }
+        public List<follower> getPageFollowers(int id, int brojstrane, int brojkorisnika)
+        {
+            var fol = context.Followers.Where(x => x.userID == id).ToList();
+            Debug.WriteLine(fol);
+            if (fol == null)
+                return null;
+
+            List<follower> fols = new List<follower>();
+            //string pom;
+            for (int i = (brojstrane - 1) * brojkorisnika; i < (brojstrane * brojkorisnika); i++)
+            {
+                follower f1 = new follower();
+                f1.username = getUsernameById(fol[i].followID);
+                if (f1.username == "" || f1.username == null)
+                    return null;
+                var pom = context.Korisnici.FirstOrDefault(x => x.ID == fol[i].followID);
+
+                f1.userPhoto = pom.ProfileImage;
+                f1.ID = fol[i].followID;
+                fols.Add(f1);
+            }
+            return fols;
         }
         public specialInfo getSpecialInfo(int id)
         {

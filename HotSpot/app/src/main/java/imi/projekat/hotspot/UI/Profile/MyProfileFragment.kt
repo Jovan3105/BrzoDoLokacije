@@ -19,9 +19,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.auth0.android.jwt.JWT
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import imi.projekat.hotspot.LoginActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
+import imi.projekat.hotspot.Ostalo.Repository
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
@@ -38,6 +41,7 @@ class MyProfileFragment : Fragment() {
     private lateinit var username:TextView
     private lateinit var email:TextView
     private lateinit var jwt: JWT
+    private lateinit var slikaPom:ImageView
     private var Photobitmap:Bitmap?=null
     private var followingNumber:Int = 0
     private val viewModel: MainActivityViewModel by activityViewModels()
@@ -56,29 +60,10 @@ class MyProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel.getPhoto()
         binding=FragmentMyProfileBinding.inflate(inflater)
         val view=inflater.inflate(R.layout.fragment_my_profile,container,false)
         profileImage=view.findViewById(binding.profileImage.id)
-        viewLifecycleOwner.lifecycleScope.launch{
-            viewModel.liveProfilePhotoResponse.collectLatest{
-                if(it is BaseResponse.Error){
 
-                }
-                if(it is BaseResponse.Success){
-                    Log.d("SES","SESESSE")
-                    if(it.data!=null)// da se istestira
-                    {
-                        val content = it.data!!.charStream().readText()
-                        val imageBytes = Base64.decode(content, Base64.DEFAULT)
-                        val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                        profileImage.setImageBitmap(decodedImage)
-                    }
-
-
-                }
-            }
-        }
         val token=MenadzerSesije.getToken(requireContext())
         if(token != null)
         {
@@ -89,7 +74,11 @@ class MyProfileFragment : Fragment() {
             email=view.findViewById(binding.emailText.id)
             username.text=usernameToken
             email.text=emailToken
-
+            var photoPath = jwt.getClaim("photo").asString()!!
+            if(!photoPath.isNullOrEmpty()){
+                val pom2=photoPath.split("\\")
+                viewModel.dajSliku(profileImage,"ProfileImages/"+pom2[2],this.requireContext())
+            }
 
 
         }
@@ -109,7 +98,6 @@ class MyProfileFragment : Fragment() {
         val btpAnimacija= AnimationUtils.loadAnimation(this.requireContext(),R.anim.bot_to_top)
 
         binding.followingButton.setOnClickListener {
-            Log.d("brzi","kocka")
             findNavController().navigate(R.id.action_myProfileFragment_to_followingProfilesFragment)
         }
 
@@ -125,6 +113,9 @@ class MyProfileFragment : Fragment() {
             startActivity(intent)
             activity?.finish()
         }
+
+
+
     }
 
 

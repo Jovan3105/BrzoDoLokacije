@@ -1,5 +1,6 @@
 {
   "AppSettings": {
-    "baseURL": "http://10.0.2.2:5140/"
+    "baseURL": "http://10.0.2.2:5140/",
+    "MAPS_API_KEY": "AIzaSyCyhc2jb7rBAx6csjd6yn26hKSKr4wSQr8"
   }
 }

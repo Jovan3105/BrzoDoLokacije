@@ -47,22 +47,22 @@ class ListaPostovaAdapter(
 
 
             binding.likeButton.setOnClickListener{
-                if(ListaPostova[adapterPosition].likedByMe==false){
-                    clickHandler.likePost(likeDTS(ListaPostova[adapterPosition].postID))
+                if(ListaPostova[bindingAdapterPosition].likedByMe==false){
+                    clickHandler.likePost(likeDTS(ListaPostova[bindingAdapterPosition].postID))
                     return@setOnClickListener
                 }
-                clickHandler.dislikePost(likeDTS(ListaPostova[adapterPosition].postID))
+                clickHandler.dislikePost(likeDTS(ListaPostova[bindingAdapterPosition].postID))
 
             }
         }
         override fun onClick(v: View?) {
-            val trenutniPost=ListaPostova[adapterPosition]
+            val trenutniPost=ListaPostova[bindingAdapterPosition]
             clickHandler.clickedPostItem(trenutniPost)
         }
 
-        public fun initImageCarousel(listaSlika: ArrayList<Bitmap>){
+        public fun initImageCarousel(listaSlika: ArrayList<String>){
             var handler= Handler(Looper.myLooper()!!)
-            var adapter= ImageAdapterHomePage(listaSlika,viewPager)
+            var adapter= ImageAdapterHomePage(listaSlika,viewPager,clickHandler)
             viewPager.adapter = adapter
             viewPager.offscreenPageLimit = 3
             viewPager.clipToPadding = false
@@ -118,9 +118,7 @@ class ListaPostovaAdapter(
         val post=ListaPostova[position]
 
         if(!post.profilephoto.isNullOrEmpty()){
-            var byte= Base64.decode(post.profilephoto, Base64.DEFAULT)
-            var bitmapa= BitmapFactory.decodeByteArray(byte,0,byte.size)
-            holder.SlikaKorisnika.setImageBitmap(bitmapa)
+            clickHandler.getPicture(holder.SlikaKorisnika,"ProfileImages/"+post.profilephoto)
         }
         holder.ImeKorisnika.text=post.username
         var output: String=""
@@ -178,14 +176,8 @@ class ListaPostovaAdapter(
             holder.likeDugme.setImageResource(R.drawable.prazno_srce)
         }
 
-        var imageList=ArrayList<Bitmap>()
-        for (i in 0 until  post.photos.size){
-            var byte=Base64.decode(post.photos.get(i),Base64.DEFAULT)
-            var bitmapa=BitmapFactory.decodeByteArray(byte,0,byte.size)
-            imageList.add(bitmapa)
-        }
 
-        holder.initImageCarousel(imageList)
+        holder.initImageCarousel(post.photos as ArrayList<String>)
         holder.setupTransformer()
 
     }

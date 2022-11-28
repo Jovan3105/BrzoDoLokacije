@@ -43,6 +43,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
 import imi.projekat.hotspot.BuildConfig
+import imi.projekat.hotspot.MapsActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
@@ -62,7 +63,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.math.abs
 
-
+private const val kraciOpis="kraciOpis"
 class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var binding:FragmentCreatePostBinding
     private val viewModel: MainActivityViewModel by activityViewModels()
@@ -73,7 +74,6 @@ class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var partovi:ArrayList<MultipartBody.Part>
     private lateinit var adapter:ImageAdapter
     private lateinit var circleIndicator:CircleIndicator3
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,7 +113,8 @@ class CreatePostFragment : Fragment(),addImageInterface {
             addImage()
         }
         binding.button4.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_createPostFragment_to_mapaFragment)
+            val intent = Intent(requireContext(), MapsActivity::class.java)
+            startActivity(intent)
         }
 
         binding.button3.setOnClickListener{

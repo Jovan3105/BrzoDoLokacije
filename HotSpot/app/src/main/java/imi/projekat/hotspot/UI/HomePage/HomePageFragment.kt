@@ -1,13 +1,11 @@
 package imi.projekat.hotspot.UI.HomePage
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,16 +14,21 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.Task
+import imi.projekat.hotspot.MainActivity
+import imi.projekat.hotspot.MapsActivity
 import imi.projekat.hotspot.ModeliZaZahteve.likeDTS
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
+import imi.projekat.hotspot.Ostalo.Repository
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
-import imi.projekat.hotspot.UI.HomePage.SinglePost.SinglePostFragment
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentHomePageBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.net.URL
+
 
 class HomePageFragment : Fragment(),PostClickHandler {
 
@@ -63,6 +66,10 @@ class HomePageFragment : Fragment(),PostClickHandler {
         recyclerView.setAdapter(listaPostovaAdapter)
 
 
+        binding.mapaDugme.setOnClickListener{
+            val intent = Intent(requireContext(), MapsActivity::class.java)
+            startActivity(intent)
+        }
 
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.GetPostsWithUserId.collectLatest{
@@ -124,6 +131,7 @@ class HomePageFragment : Fragment(),PostClickHandler {
 
 
 
+
 //        binding.button6.setOnClickListener {
 //            viewModel.getPostsByUserId(1)
 //            //findNavController().navigate(R.id.action_homePageFragment_to_singlePostFragment)
@@ -148,6 +156,10 @@ class HomePageFragment : Fragment(),PostClickHandler {
 
     override fun dislikePost(like: likeDTS) {
         viewModel.dislikePost(like)
+    }
+
+    override fun getPicture(imageView: ImageView, slikaPath:String) {
+        viewModel.dajSliku(imageView,slikaPath,requireContext())
     }
 
 

@@ -39,8 +39,7 @@ interface ApiInterface {
     @POST("KontrolerAutentikacije/ResetujToken")
     suspend fun resetujToken(@Body dts: refreshTokenDTS):Response<refreshTokenResponse>
 
-    @GET("/api/User/GetPhoto")
-    suspend fun getPhoto():Response<ResponseBody>
+
 
     @Multipart
     @POST("/api/Post/addpost")
@@ -67,6 +66,11 @@ interface ApiInterface {
     @GET("/api/User/GetAllFollowingByUser")
     suspend fun getAllFollowingByUSer():Response<getuser>
 
+    @POST("/api/User/unfollow/{userid}")
+    suspend fun UnfollowUser(@Path("userid") userid: Int):Response<ResponseBody>
+
+    @POST("/api/User/follow/{userid}")
+    suspend fun FollowUser(@Path("userid") userid: Int):Response<ResponseBody>
 
 
 }
