@@ -18,7 +18,7 @@ namespace HotSpotAPI.Controllers
         private readonly ImailService mail;
         private readonly IStorageService storageService;
         private readonly IPostService postService;
-        public PostController(IPostService postService,IConfiguration configuration, IMySQLServis mySQLServis, IUserService userService, ImailService mail, IStorageService storageService)
+        public PostController(IPostService postService, IConfiguration configuration, IMySQLServis mySQLServis, IUserService userService, ImailService mail, IStorageService storageService)
         {
             this.configuration = configuration;
             this.mySQLServis = mySQLServis;
@@ -39,7 +39,7 @@ namespace HotSpotAPI.Controllers
                 return Ok("SuccesCreatingPost");
             return BadRequest("FailedCreatingPost");
         }
-        
+
         //VRACA SVE POSTOVE ULOGOVANOG KORISNIKA
         [HttpGet("getposts")]
         public async Task<ActionResult<string>> GetPosts()
@@ -54,10 +54,10 @@ namespace HotSpotAPI.Controllers
 
             List<likes> lajkovi = postService.getLikes(id);
 
-            if(res==null)
+            if (res == null)
                 return BadRequest("ErrorWhileGettingPosts");
-            if (lajkovi!=null)
-                for (int i=0; i < res.Count; i++)
+            if (lajkovi != null)
+                for (int i = 0; i < res.Count; i++)
                 {
                     for (int j = 0; j < lajkovi.Count; j++)
                     {
@@ -70,7 +70,7 @@ namespace HotSpotAPI.Controllers
                 }
 
             return Ok(res);
-            
+
         }
         //KADA KORISNIK HOCE DA VIDI PROFIL DRUGOG KORISNIKA
         [HttpGet("getpostsbyid/{userid}")]
@@ -99,7 +99,7 @@ namespace HotSpotAPI.Controllers
                     }
                 }
             return Ok(res);
-            
+
         }
         //PRIKAZUJE KONKRETAN POST, POST CIJI JE ID PROSLEDJEN
         [HttpGet("getpost/{postid}")]
@@ -159,9 +159,9 @@ namespace HotSpotAPI.Controllers
                 sortedlist = res.OrderBy(x => x.DateTime).ToList();
             }
             //OD MANJE LAJKOVA KA VISE
-            else if(sort == 1)
+            else if (sort == 1)
             {
-                sortedlist = res.OrderBy(x =>x.brojlajkova).ToList();
+                sortedlist = res.OrderBy(x => x.brojlajkova).ToList();
             }
             //OD NOVIJEG KA STARIJEM
             else if (sort == 2)
@@ -186,6 +186,18 @@ namespace HotSpotAPI.Controllers
 
             List<getPosts> res = postService.getAllPostsByLocaton(location);
             if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpGet("getposts/{brojstrane}/{brojpostova}")]//broj postova je broj koliko postova se salje
+        public async Task<ActionResult<string>> GetPostsPage(int brojstrane, int brojpostova)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<getPosts> res = postService.getPostsPage(brojstrane, brojpostova);
+            if(res!=null)
                 return Ok(res);
             return BadRequest();
         }
