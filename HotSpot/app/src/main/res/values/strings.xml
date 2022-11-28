@@ -94,6 +94,11 @@
     <string name="comment">Comment</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="maps_api_key">AIzaSyCyhc2jb7rBAx6csjd6yn26hKSKr4wSQr8</string>
+    <string name="none">None</string>
+    <string name="normal_map">Normal map</string>
+    <string name="satellite_map">Satellite map</string>
+    <string name="maphybrid_map">MapHybrid map</string>
+    <string name="terrain_map">Terrain map</string>
 
 
 </resources>

@@ -12,6 +12,8 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.provider.Settings
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -178,6 +180,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         this.googleMap.uiSettings.isZoomControlsEnabled = true
         this.googleMap.uiSettings.isCompassEnabled = true
         this.googleMap.uiSettings.isZoomGesturesEnabled=true
+        this.googleMap.uiSettings.isMapToolbarEnabled=true
         //this.googleMap.uiSettings.isScrollGesturesEnabled=true
 
         if (ActivityCompat.checkSelfPermission(
@@ -245,6 +248,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         }
 
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.meni_za_izbor_terena_mape,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.noneMap -> googleMap.mapType=GoogleMap.MAP_TYPE_NONE
+            R.id.NormalMap -> googleMap.mapType=GoogleMap.MAP_TYPE_NORMAL
+            R.id.SatelliteMap -> googleMap.mapType=GoogleMap.MAP_TYPE_SATELLITE
+            R.id.MapHybrid -> googleMap.mapType=GoogleMap.MAP_TYPE_HYBRID
+            else -> {
+                googleMap.mapType=GoogleMap.MAP_TYPE_TERRAIN
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
 
     companion object {
         private const val DEFAULT_ZOOM = 15
