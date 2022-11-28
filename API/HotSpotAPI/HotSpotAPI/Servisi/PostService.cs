@@ -103,7 +103,7 @@ namespace HotSpotAPI.Servisi
                 p.postID = post.ID;
                 string basepath = storageService.CreatePost();
 
-                List<string> imenaSLika = Directory.GetFiles(basepath, "user" + id + "post" + post.ID+"*")
+                List<string> imenaSLika = Directory.GetFiles(basepath, "user" + id + "post" + post.ID + "*")
                                      .Select(Path.GetFileName)
                                      .ToList();
 
@@ -116,7 +116,7 @@ namespace HotSpotAPI.Servisi
         }
         public List<getPosts> getAllPosts()
         {
-            List<Post> posts = context.Postovi.Where(x => x.UserID>0).ToList();
+            List<Post> posts = context.Postovi.Where(x => x.UserID > 0).ToList();
             List<getPosts> postsList = new List<getPosts>();
 
             foreach (Post post in posts)
@@ -148,7 +148,7 @@ namespace HotSpotAPI.Servisi
                 p.photos = Directory.GetFiles(basepath, "user" + kor.ID + "post" + post.ID + "*")
                                      .Select(Path.GetFileName)
                                      .ToList();
-                
+
                 postsList.Add(p);
             }
 
@@ -256,15 +256,7 @@ namespace HotSpotAPI.Servisi
                 var user = context.Korisnici.FirstOrDefault(x => x.ID == c.UserID);
                 if (user == null)
                     return null;
-                string photopath = user.ProfileImage;
-                if (photopath == "" || photopath == null)
-                    kom.userPhoto = "";
-                else
-                {
-                    byte[] b = System.IO.File.ReadAllBytes(photopath);
-                    string slika = Convert.ToBase64String(b, 0, b.Length);
-                    kom.userPhoto = slika;
-                }
+                kom.userPhoto = user.ProfileImage;
                 kom.username = user.Username;
                 kom.text = c.Text;
                 kom.time = c.DateTime;

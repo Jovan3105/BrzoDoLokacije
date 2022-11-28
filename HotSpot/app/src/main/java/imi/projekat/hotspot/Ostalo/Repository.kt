@@ -90,15 +90,11 @@ class Repository(){
         val baseUrl=KonfigAplikacije.instanca.AppSettings.baseURL
 
         Glide.with(context)
-                .asBitmap()
-                .load(baseUrl + "Storage/$slikaPath")
-                .fitCenter()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.image_holder)
-                .into(BitmapImageViewTarget(imageView))
-
-
-
+            .asBitmap()
+            .load(baseUrl + "Storage/$slikaPath")
+            .fitCenter()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(BitmapImageViewTarget(imageView))
 
     }
 }

@@ -3,6 +3,7 @@ package imi.projekat.hotspot.UI.HomePage
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
+import imi.projekat.hotspot.ModeliZaZahteve.FollowingUserAdapter
 import imi.projekat.hotspot.ModeliZaZahteve.singleComment
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.R
@@ -18,7 +20,10 @@ import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
 
-class RecyclerAdapter(private var nizKomentara: List<singleComment>):RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter(
+    private var nizKomentara: List<singleComment>,
+    private val clickHandler: PostClickHandler
+):RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerAdapter.ViewHolder {
@@ -31,14 +36,26 @@ class RecyclerAdapter(private var nizKomentara: List<singleComment>):RecyclerVie
 
         holder.commentText.text = nizKomentara[position].text
 
-        var byte = Base64.decode(nizKomentara[position].userPhoto, Base64.DEFAULT)
-        var bitmapa = BitmapFactory.decodeByteArray(byte,0,byte.size)
-        holder.commentPhoto.setImageBitmap(bitmapa)
+
+
+        if(!nizKomentara[position].userPhoto.isNullOrEmpty()){
+            val pom2=nizKomentara[position].userPhoto.split("\\")
+            clickHandler.getPicture(holder.commentPhoto,"ProfileImages/"+pom2[2])
+        }
+
+
 
         var output: String=""
         val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
             var curentDate: LocalDateTime = LocalDateTime.now()
-            val postDate = LocalDateTime.parse(nizKomentara[position].time)
+            var postDate=curentDate
+            if(!nizKomentara[position].time.equals("-1"))
+            {
+                postDate = LocalDateTime.parse(nizKomentara[position].time)
+            }
+
+
             var pom= Duration.between(postDate,curentDate).toDays()
             when {
 

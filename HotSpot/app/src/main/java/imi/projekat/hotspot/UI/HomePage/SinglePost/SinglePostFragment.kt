@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.auth0.android.jwt.JWT
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.textfield.TextInputLayout
@@ -36,6 +37,7 @@ import imi.projekat.hotspot.ModeliZaZahteve.likeDTS
 import imi.projekat.hotspot.ModeliZaZahteve.singleComment
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
+import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.UI.HomePage.PostClickHandler
@@ -71,14 +73,15 @@ class SinglePostFragment : Fragment(), PostClickHandler {
     private var currentSort=-1
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var recyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>
-    private lateinit var nizKomentara: List<singleComment>
-    private lateinit var comment:String
+    private lateinit var nizKomentara: ArrayList<singleComment>
+
     private val args: SinglePostFragmentArgs by navArgs()
     private lateinit var likeDugme:ImageButton
     private lateinit var vremeTextView:TextView
     private var lajkovano:Boolean = false
     private lateinit var NoCommentsYetView:LinearLayout
     private lateinit var sortCommentsButton:TextInputLayout
+
 
     override fun onResume() {
         super.onResume()
@@ -222,6 +225,8 @@ class SinglePostFragment : Fragment(), PostClickHandler {
 //                    val content = it.data!!.charStream().readText()
 //                    val id = UpravljanjeResursima.getResourceString(content,requireContext())
 //                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                    nizKomentara.add(singleComment(0,idUser,commentText,"-1","",userName))
+                    showComments(nizKomentara)
                 }
             }
         }
@@ -232,7 +237,7 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                     Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
                 }
                 if(it is BaseResponse.Success){
-                    nizKomentara= it.data!!
+                    nizKomentara=convertListToArraylist(it.data!!)
                     if(nizKomentara.isNullOrEmpty()){
                         NoCommentsYetView.visibility=View.VISIBLE
                         sortCommentsButton.visibility=View.GONE
@@ -340,6 +345,9 @@ class SinglePostFragment : Fragment(), PostClickHandler {
         circleIndicator.setViewPager(viewPager2)
     }
 
+    private var idUser:Int=-1
+    private lateinit var commentText:String
+    private lateinit var userName:String
     private fun addComment() {
         val dialog= Dialog(requireContext(),R.style.WrapEverythingDialog)
         dialog.setCancelable(false)
@@ -350,8 +358,17 @@ class SinglePostFragment : Fragment(), PostClickHandler {
             dialog.dismiss()
         }
         dialog.findViewById<Button>(R.id.addCommentButton).setOnClickListener{
-            comment=dialog.findViewById<EditText>(R.id.CommentTextBox).text.toString()
-            viewModel.PostComment(commentDTS(0,args.idPosta,comment))
+            commentText=dialog.findViewById<EditText>(R.id.CommentTextBox).text.toString()
+            val token= MenadzerSesije.getToken(requireContext())
+            if(token == null)
+            {
+                Log.d("Greska","(addComment)Prilikom dodavanja tokena")
+                return@setOnClickListener
+            }
+            val jwt= JWT(token)
+            idUser= jwt.getClaim("id").asInt()!!
+            userName=jwt.getClaim("username").asString()!!
+            viewModel.PostComment(commentDTS(idUser!!,args.idPosta,commentText))
             dialog.dismiss()
         }
 
@@ -361,14 +378,14 @@ class SinglePostFragment : Fragment(), PostClickHandler {
     private fun showComments(nizKomentara: List<singleComment>){
         layoutManager = LinearLayoutManager(requireContext())
         recycler_view_comments.layoutManager = layoutManager
-        recyclerAdapter = RecyclerAdapter(nizKomentara)
+        recyclerAdapter = RecyclerAdapter(nizKomentara,this)
         recycler_view_comments.adapter = recyclerAdapter
     }
 
     private fun sortirajKomentare(position:Int){
         if(position!=currentSort){
             if (position==0){
-                nizKomentara=nizKomentara.sortedWith( object : Comparator<singleComment> {
+                var pom= nizKomentara.sortedWith( object : Comparator<singleComment> {
                     override fun compare(o1: singleComment, o2: singleComment): Int {
                         val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                         val formatter = SimpleDateFormat("yyyyMMddHHmm")
@@ -380,10 +397,11 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                         return -1
                     }
                 })
+                nizKomentara=convertListToArraylist(pom)
             }
 
             else{
-                nizKomentara=nizKomentara.sortedWith( object : Comparator<singleComment> {
+                var pom= nizKomentara.sortedWith( object : Comparator<singleComment> {
                     override fun compare(o1: singleComment, o2: singleComment): Int {
                         val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                         val formatter = SimpleDateFormat("yyyyMMddHHmm")
@@ -394,16 +412,21 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                         return -1
                     }
                 })
+                nizKomentara=convertListToArraylist(pom)
+            }
 
-            }
-            for (i in 0 until  nizKomentara.size){
-                Log.d("KOM",nizKomentara[i].time)
-            }
             showComments(nizKomentara)
         }
         currentSort=position
     }
 
+    private fun convertListToArraylist(lista:List<singleComment>):ArrayList<singleComment>{
+        var pom=ArrayList<singleComment>()
+        for (i in 0 until  lista.size){
+            pom.add(lista[i])
+        }
+        return pom
+    }
 
     override fun clickedPostItem(post: singlePost) {
         TODO("Not yet implemented")
@@ -417,13 +440,7 @@ class SinglePostFragment : Fragment(), PostClickHandler {
         TODO("Not yet implemented")
     }
 
-    override fun getPicture(imageView: ImageView, slika: String) {
-        Glide.with(this)
-            .load("http://10.0.2.2:5140/Storage/$slika")
-            .fitCenter()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .placeholder(R.drawable.image_holder)
-            .into(imageView)
+    override fun getPicture(imageView: ImageView, slikaPath: String) {
+        viewModel.dajSliku(imageView,slikaPath,requireContext())
     }
-
 }
