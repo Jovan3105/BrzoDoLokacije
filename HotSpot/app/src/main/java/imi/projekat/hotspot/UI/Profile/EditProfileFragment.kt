@@ -137,31 +137,10 @@ class EditProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel.getPhoto()
         binding=FragmentEditProfileBinding.inflate(inflater)
         val view=inflater.inflate(R.layout.fragment_edit_profile,container,false)
         imageView=view.findViewById(binding.profileImage1.id)
-        viewLifecycleOwner.lifecycleScope.launch{
-            viewModel.liveProfilePhotoResponse.collectLatest{
-                if(it is BaseResponse.Error){
 
-                }
-                if(it is BaseResponse.Success){
-                    Log.d("SES","SESESSE")
-                    if(it.data!=null)
-                    {
-                        val content = it.data!!.charStream().readText()
-                        Log.d("slika",content)
-                        val imageBytes = Base64.decode(content, Base64.DEFAULT)
-                        val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                        imageView.setImageBitmap(decodedImage)
-
-                    }
-
-
-                }
-            }
-        }
         val token= MenadzerSesije.getToken(requireContext())
         if(token != null)
         {
@@ -172,6 +151,12 @@ class EditProfileFragment : Fragment() {
             email=view.findViewById(binding.EditEmail.id)
             username.text=usernameToken
             email.text=emailToken
+            var photoPath = jwt.getClaim("photo").asString()!!
+            if(!photoPath.isNullOrEmpty()){
+                val pom2=photoPath.split("\\")
+                viewModel.dajSliku(imageView,"ProfileImages/"+pom2[2],this.requireContext())
+            }
+
 
         }
 

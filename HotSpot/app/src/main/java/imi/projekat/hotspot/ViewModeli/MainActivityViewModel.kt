@@ -21,8 +21,7 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _liveEditProfileResponse=MutableSharedFlow<BaseResponse<changeAccDataResponse>>()
     val liveEditProfileResponse=_liveEditProfileResponse.asSharedFlow()
 
-    private var _liveProfilePhotoResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
-    val liveProfilePhotoResponse=_liveProfilePhotoResponse.asSharedFlow()
+
 
     private var _DodajPostResposne= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val DodajPostResposne=_DodajPostResposne.asSharedFlow()
@@ -134,27 +133,7 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
-    fun getPhoto(){
-        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
 
-            val response=repository.getProfilePhoto()
-            withContext(Dispatchers.Main){
-                if(response.isSuccessful){
-                    _liveProfilePhotoResponse.emit(BaseResponse.Success(response.body()))
-
-                }
-                else{
-
-//                    val gson = Gson()
-//                    val type = object : TypeToken<ResponseBody>() {}.type
-//                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
-
-//                    val content = response.errorBody()!!.charStream().readText()
-//                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
-                }
-            }
-        }
-    }
 
     fun GetAllFollowingByUser(){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {

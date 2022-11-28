@@ -14,7 +14,6 @@ namespace HotSpotAPI.Servisi
         public string ConfirmCode(string username, string code, out bool ind);
         public bool checkCode(vercode ver);
         public void verifyUser(string username);
-        public string getPhoto(int id);
         public bool ChangePhoto(int id, IFormFile photo);
         public userinfo getUserInfo(int id);
         public bool deleteAccount(int id);
@@ -157,14 +156,7 @@ namespace HotSpotAPI.Servisi
             }
         }
         
-        public string getPhoto(int id)
-        {
-            var kor = context.Korisnici.Find(id);
-            if (kor == null)
-                return null;
-
-            return kor.ProfileImage;
-        }
+        
         public bool ChangePhoto(int id, IFormFile photo)
         {
             var user = context.Korisnici.Find(id);
@@ -242,7 +234,7 @@ namespace HotSpotAPI.Servisi
             userinfo u = new userinfo();
             u.username = user.Username;
 
-            string slika = getPhoto(id);
+            string slika = user.ProfileImage;
             if (slika == "" || slika == null)
             {
                 u.photo = "";

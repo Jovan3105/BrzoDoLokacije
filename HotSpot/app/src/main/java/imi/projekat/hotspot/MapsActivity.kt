@@ -203,9 +203,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         this.googleMap.isMyLocationEnabled=true
         fetchLocation()
 
+
+        googleMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
+            override fun onMapClick(latlng :LatLng) {
+                setMyLocationMarker(latlng,"Selected location")
+            }
+        })
+
     }
 
     private fun setMyLocationMarker(location:LatLng,title:String){
+        googleMap.clear();
         var markerOptions:MarkerOptions= MarkerOptions()
         markerOptions.title(title)
         markerOptions.position(location)

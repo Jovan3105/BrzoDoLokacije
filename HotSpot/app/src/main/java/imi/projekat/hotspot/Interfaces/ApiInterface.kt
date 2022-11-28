@@ -39,8 +39,7 @@ interface ApiInterface {
     @POST("KontrolerAutentikacije/ResetujToken")
     suspend fun resetujToken(@Body dts: refreshTokenDTS):Response<refreshTokenResponse>
 
-    @GET("/api/User/GetPhoto")
-    suspend fun getPhoto():Response<ResponseBody>
+
 
     @Multipart
     @POST("/api/Post/addpost")

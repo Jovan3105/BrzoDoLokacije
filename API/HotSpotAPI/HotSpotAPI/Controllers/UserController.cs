@@ -109,23 +109,6 @@ namespace HotSpotAPI.Controllers
                 return Ok();
             return BadRequest();
         }
-        [HttpGet("GetPhoto")]
-        public async Task<ActionResult<String>> GetUserinfo()
-        {
-            int id = userService.GetUserId();
-            if (id == -1)
-                return Unauthorized();
-            string slika = userService.getPhoto(id);
-            if (slika != "" && slika != null)
-            {
-                string pom;
-                Byte[] b = System.IO.File.ReadAllBytes(slika);
-                pom = Convert.ToBase64String(b, 0, b.Length);
-                return Ok(pom);
-            }
-            return BadRequest();
-            
-        }
 
         [HttpGet("GetAllFollowingByUser")]
         public async Task<ActionResult<getuser>> GetAllFollowingByUser()
