@@ -91,7 +91,7 @@ class Repository(){
             .asBitmap()
             .load(baseUrl + "Storage/$slikaPath")
             .fitCenter()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
             .into(BitmapImageViewTarget(imageView))
 
     }

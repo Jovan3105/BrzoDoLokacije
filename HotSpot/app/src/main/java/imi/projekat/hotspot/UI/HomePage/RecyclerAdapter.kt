@@ -39,7 +39,9 @@ class RecyclerAdapter(
 
 
         if(!nizKomentara[position].userPhoto.isNullOrEmpty()){
-            val pom2=nizKomentara[position].userPhoto.split("\\")
+            var pom2=nizKomentara[position].userPhoto.split("\\")
+            if(pom2.size==1)
+                pom2=nizKomentara[position].userPhoto.split("/")
             clickHandler.getPicture(holder.commentPhoto,"ProfileImages/"+pom2[2])
         }
 
