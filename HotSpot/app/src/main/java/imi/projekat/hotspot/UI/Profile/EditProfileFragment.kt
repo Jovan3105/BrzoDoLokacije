@@ -153,7 +153,9 @@ class EditProfileFragment : Fragment() {
             email.text=emailToken
             var photoPath = jwt.getClaim("photo").asString()!!
             if(!photoPath.isNullOrEmpty()){
-                val pom2=photoPath.split("\\")
+                var pom2=photoPath.split("\\")
+                if(pom2.size==1)
+                    pom2=photoPath.split("/")
                 viewModel.dajSliku(imageView,"ProfileImages/"+pom2[2],this.requireContext())
             }
 
