@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import imi.projekat.hotspot.ModeliZaZahteve.*
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.Part
+import java.util.concurrent.Executors
 
 class MainActivityViewModel(private val repository:Repository=Repository()) :ViewModel(){
     private var _liveEditProfileResponse=MutableSharedFlow<BaseResponse<changeAccDataResponse>>()
@@ -103,7 +105,6 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     _liveEditProfileResponse.emit(BaseResponse.Success(response.body()))
-
                 }
                 else{
                     val gson = Gson()

@@ -79,6 +79,7 @@ class MyProfileFragment : Fragment() {
                 var pom2=photoPath.split("\\")
                 if(pom2.size==1)
                     pom2=photoPath.split("/")
+
                 viewModel.dajSliku(profileImage,"ProfileImages/"+pom2[2],this.requireContext())
             }
 

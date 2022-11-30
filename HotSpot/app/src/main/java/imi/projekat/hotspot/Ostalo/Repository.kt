@@ -8,6 +8,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.BitmapImageViewTarget
+import com.bumptech.glide.signature.ObjectKey
 import imi.projekat.hotspot.KonfigAplikacije
 import imi.projekat.hotspot.ModelConfigAplikacije
 import imi.projekat.hotspot.ModeliZaZahteve.*
@@ -87,11 +88,16 @@ class Repository(){
 
         val baseUrl=KonfigAplikacije.instanca.AppSettings.baseURL
 
+
+
         Glide.with(context)
             .asBitmap()
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .load(baseUrl + "Storage/$slikaPath")
             .fitCenter()
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            //.skipMemoryCache(true)
+            .signature(ObjectKey(MenadzerSesije.refreshProfilneSlike))
+            .error(R.drawable.image_holder)
             .into(BitmapImageViewTarget(imageView))
 
     }

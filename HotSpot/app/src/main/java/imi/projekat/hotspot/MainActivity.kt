@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.bumptech.glide.Glide
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -29,6 +30,7 @@ import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.ActivityMainBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -42,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         binding=ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
 
         val navHostFragment=supportFragmentManager.findFragmentById(R.id.fragmentContainerViewMainActivity) as NavHostFragment
         navKontroler=navHostFragment.navController
@@ -101,7 +102,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    fun clearImageCache(){
+        val executor = Executors.newSingleThreadExecutor()
+        executor.execute(kotlinx.coroutines.Runnable {
+            Glide.get(this).clearDiskCache()
+        })
+        Glide.get(this).clearMemory()
+    }
 
-
+    fun restartActivity(){
+        finish();
+        startActivity(getIntent());
+    }
 
 }

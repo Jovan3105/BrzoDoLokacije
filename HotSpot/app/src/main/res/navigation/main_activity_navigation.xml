@@ -57,7 +57,8 @@
         tools:layout="@layout/fragment_edit_profile" >
         <action
             android:id="@+id/action_editProfileFragment_to_myProfileFragment"
-            app:destination="@id/myProfileFragment" />
+            app:destination="@id/myProfileFragment"
+            app:launchSingleTop="false" />
     </fragment>
     <fragment
         android:id="@+id/singlePostFragment"

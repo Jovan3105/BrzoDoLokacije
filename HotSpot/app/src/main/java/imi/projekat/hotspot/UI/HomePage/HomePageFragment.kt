@@ -126,7 +126,7 @@ class HomePageFragment : Fragment(),PostClickHandler {
                 }
             }
         }
-        viewModel.getPostsByUserId(19)
+        viewModel.getPostsByUserId(1)
 
 
 
