@@ -63,6 +63,8 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string location { get; set; } = string.Empty;
         public List<IFormFile> photos { get; set; }
         public string shortDescription { get; set; } = string.Empty;
+        public double Xosa { get; set; } = 0;
+        public double Yosa { get; set; } = 0;
     }
 
     public class getPosts
@@ -72,6 +74,8 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string profilephoto { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
         public string location { get; set; } = string.Empty;
+        public double Xosa { get; set; } = 0;
+        public double Yosa { get; set; } = 0;
         public DateTime DateTime { get; set; }
         public List<string> photos { get; set; }
         public int brojslika { get; set; }
@@ -148,5 +152,10 @@ namespace HotSpotAPI.ModeliZaZahteve
         public double prosecanbrojlajkova { get; set; }
         public int brojlokacija { get; set; }
         public int brojpratilaca { get; set; }
+    }
+    public class coordinates
+    {
+        public double xosa { get; set; }
+        public double yosa { get; set; }
     }
 }

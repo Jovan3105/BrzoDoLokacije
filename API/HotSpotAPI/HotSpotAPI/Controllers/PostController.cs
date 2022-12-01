@@ -189,6 +189,32 @@ namespace HotSpotAPI.Controllers
                 return Ok(res);
             return BadRequest();
         }
+        [HttpGet("coordinate/{xosa}/{yosa}")]
+        public async Task<ActionResult<string>> GetPostByCoordinate(string xosa, string yosa)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            double x = double.Parse(xosa);
+            double y = double.Parse(yosa);
+            getPosts res = postService.getPostsByCoordinate(x, y);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpGet("allcoordinates")]
+        public async Task<ActionResult<string>> GetAllCoordinates()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<coordinates> res = postService.getCoordinates();
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
         [HttpGet("getposts/{brojstrane}/{brojpostova}")]//broj postova je broj koliko postova se salje
         public async Task<ActionResult<string>> GetPostsPage(int brojstrane, int brojpostova)
         {

@@ -147,6 +147,8 @@ namespace HotSpotAPI.Migrations
                     DateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Location = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Xosa = table.Column<double>(type: "double", nullable: false),
+                    Yosa = table.Column<double>(type: "double", nullable: false),
                     NumOfLikes = table.Column<int>(type: "int", nullable: false),
                     NumOfPhotos = table.Column<int>(type: "int", nullable: false),
                     shortDescription = table.Column<string>(type: "longtext", nullable: false)

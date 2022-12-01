@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotSpotAPI.Migrations
 {
     [DbContext(typeof(MySqlDbContext))]
-    [Migration("20221121231918_migracija")]
+    [Migration("20221201221630_migracija")]
     partial class migracija
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -214,6 +214,12 @@ namespace HotSpotAPI.Migrations
 
                     b.Property<int>("UserID")
                         .HasColumnType("int");
+
+                    b.Property<double>("Xosa")
+                        .HasColumnType("double");
+
+                    b.Property<double>("Yosa")
+                        .HasColumnType("double");
 
                     b.Property<string>("shortDescription")
                         .IsRequired()
