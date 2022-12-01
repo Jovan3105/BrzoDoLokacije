@@ -213,6 +213,12 @@ namespace HotSpotAPI.Migrations
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
+                    b.Property<double>("Xosa")
+                        .HasColumnType("double");
+
+                    b.Property<double>("Yosa")
+                        .HasColumnType("double");
+
                     b.Property<string>("shortDescription")
                         .IsRequired()
                         .HasColumnType("longtext");

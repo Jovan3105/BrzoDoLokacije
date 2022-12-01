@@ -24,6 +24,8 @@ namespace HotSpotAPI.Servisi
         public bool addCommLike(int id, int postid, int commid);
         public bool dislikeComm(int id, int postid, int commid);
         public List<getPosts> getPostsPage(int brojstrane, int brojpostova);
+        public getPosts getPostsByCoordinate(double x, double y);
+        public List<coordinates> getCoordinates();
     }
     public class PostService : IPostService
     {
@@ -54,6 +56,8 @@ namespace HotSpotAPI.Servisi
             p.DateTime = DateTime.Now;
             p.NumOfPhotos = newPost.photos.Count;
             p.shortDescription = newPost.shortDescription;
+            p.Xosa = newPost.Xosa;
+            p.Yosa = newPost.Yosa;
             context.Postovi.Add(p);
             context.SaveChanges();
 
@@ -96,6 +100,8 @@ namespace HotSpotAPI.Servisi
                                      .Select(Path.GetFileName)
                                      .ToList().First();
                 }
+                p.Xosa = post.Xosa;
+                p.Yosa = post.Yosa;
                 p.description = post.Description;
                 p.location = post.Location;
                 p.DateTime = post.DateTime;
@@ -139,6 +145,8 @@ namespace HotSpotAPI.Servisi
                                      .Select(Path.GetFileName)
                                      .ToList().First();
                 }
+                p.Xosa = post.Xosa;
+                p.Yosa = post.Yosa;
                 p.description = post.Description;
                 p.location = post.Location;
                 p.DateTime = post.DateTime;
@@ -171,6 +179,8 @@ namespace HotSpotAPI.Servisi
                 p.photos = new List<string>();
                 p.brojslika = post.NumOfPhotos;
                 p.shortDescription = post.shortDescription;
+                p.Xosa = post.Xosa;
+                p.Yosa = post.Yosa;
                 p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
@@ -193,12 +203,50 @@ namespace HotSpotAPI.Servisi
             p.photos = new List<string>();
             p.brojslika = post.NumOfPhotos;
             p.shortDescription = post.shortDescription;
+            p.Xosa = post.Xosa;
+            p.Yosa = post.Yosa;
             p.postID = post.ID;
             string basepath = storageService.CreatePost();
             p.photos = Directory.GetFiles(basepath, "user" + id + "post" + post.ID + "*")
                                      .Select(Path.GetFileName)
                                      .ToList();
             return p;
+        }
+        public getPosts getPostsByCoordinate(double x, double y)
+        {
+            Post post = context.Postovi.FirstOrDefault(pom => pom.Xosa == x && pom.Yosa == y);
+            if (post == null)
+                return null;
+            getPosts p = new getPosts();
+            p.description = post.Description;
+            p.location = post.Location;
+            p.DateTime = post.DateTime;
+            p.photos = new List<string>();
+            p.brojslika = post.NumOfPhotos;
+            p.shortDescription = post.shortDescription;
+            p.Xosa = post.Xosa;
+            p.Yosa = post.Yosa;
+            p.postID = post.ID;
+            string basepath = storageService.CreatePost();
+            p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
+                                     .Select(Path.GetFileName)
+                                     .ToList();
+            return p;
+        }
+        public List<coordinates> getCoordinates()
+        {
+            List<Post> postovi = context.Postovi.Where(x=>x.ID>0).ToList();
+            List<coordinates> koordinate = new List<coordinates>();
+
+            foreach (Post post in postovi)
+            {
+                coordinates koordinata = new coordinates();
+                koordinata.xosa = post.Xosa;
+                koordinata.yosa = post.Yosa;
+
+                koordinate.Add(koordinata);
+            }
+            return koordinate;
         }
         public bool deletePost(int id, int postID)
         {
