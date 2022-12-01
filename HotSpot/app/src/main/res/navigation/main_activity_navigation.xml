@@ -12,10 +12,14 @@
         tools:layout="@layout/fragment_home_page" >
         <action
             android:id="@+id/action_homePageFragment_to_createPostFragment"
-            app:destination="@id/createPostFragment" />
+            app:destination="@id/createPostFragment"
+            app:enterAnim="@anim/rigth_enter"
+            app:exitAnim="@anim/left_exit" />
         <action
             android:id="@+id/action_homePageFragment_to_myProfileFragment"
-            app:destination="@id/myProfileFragment" />
+            app:destination="@id/myProfileFragment"
+            app:enterAnim="@anim/rigth_enter"
+            app:exitAnim="@anim/left_exit" />
         <action
             android:id="@+id/action_homePageFragment_to_singlePostFragment"
             app:destination="@id/singlePostFragment" />
@@ -27,10 +31,14 @@
         tools:layout="@layout/fragment_create_post" >
         <action
             android:id="@+id/action_createPostFragment_to_homePageFragment"
-            app:destination="@id/homePageFragment" />
+            app:destination="@id/homePageFragment"
+            app:enterAnim="@anim/left_enter"
+            app:exitAnim="@anim/rigth_exit" />
         <action
             android:id="@+id/action_createPostFragment_to_myProfileFragment"
-            app:destination="@id/myProfileFragment" />
+            app:destination="@id/myProfileFragment"
+            app:enterAnim="@anim/rigth_enter"
+            app:exitAnim="@anim/left_exit" />
     </fragment>
     <fragment
         android:id="@+id/myProfileFragment"
@@ -39,10 +47,14 @@
         tools:layout="@layout/fragment_my_profile" >
         <action
             android:id="@+id/action_myProfileFragment_to_createPostFragment"
-            app:destination="@id/createPostFragment" />
+            app:destination="@id/createPostFragment"
+            app:enterAnim="@anim/left_enter"
+            app:exitAnim="@anim/rigth_exit" />
         <action
             android:id="@+id/action_myProfileFragment_to_homePageFragment"
-            app:destination="@id/homePageFragment" />
+            app:destination="@id/homePageFragment"
+            app:enterAnim="@anim/left_enter"
+            app:exitAnim="@anim/rigth_exit" />
         <action
             android:id="@+id/action_myProfileFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
