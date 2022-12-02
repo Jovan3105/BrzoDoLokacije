@@ -7,8 +7,8 @@
         public string Description { get; set; }
         public DateTime DateTime { get; set; }
         public string Location { get; set; }
-        public double Xosa { get; set; }
-        public double Yosa { get; set; }
+        public double longitude { get; set; }
+        public double latitude { get; set; }
         public int NumOfLikes { get; set; } = 0;
         public int NumOfPhotos { get; set; }
         public string shortDescription { get; set; }

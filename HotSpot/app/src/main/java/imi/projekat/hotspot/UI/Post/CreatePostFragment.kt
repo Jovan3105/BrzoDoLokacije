@@ -1,5 +1,6 @@
 package imi.projekat.hotspot.UI.Post
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ActivityNotFoundException
@@ -21,6 +22,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
@@ -28,7 +30,6 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
@@ -45,7 +46,6 @@ import com.karumi.dexter.listener.single.PermissionListener
 import imi.projekat.hotspot.BuildConfig
 import imi.projekat.hotspot.MapsActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
-import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
@@ -74,7 +74,10 @@ class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var partovi:ArrayList<MultipartBody.Part>
     private lateinit var adapter:ImageAdapter
     private lateinit var circleIndicator:CircleIndicator3
-
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+    private var longitude=""
+    private var latitude=""
+    private var locationSet=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -91,7 +94,15 @@ class CreatePostFragment : Fragment(),addImageInterface {
         super.onViewCreated(view, savedInstanceState)
         binding= FragmentCreatePostBinding.bind(view)
 
-
+        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // There are no request codes
+                val data: Intent? = result.data
+                longitude= data!!.getStringExtra("longitude").toString()
+                latitude= data!!.getStringExtra("latitude").toString()
+                locationSet=true
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.DodajPostResposne.collectLatest{
@@ -114,7 +125,7 @@ class CreatePostFragment : Fragment(),addImageInterface {
         }
         binding.button4.setOnClickListener {
             val intent = Intent(requireContext(), MapsActivity::class.java)
-            startActivity(intent)
+            resultLauncher.launch(intent)
         }
 
         binding.button3.setOnClickListener{
@@ -141,8 +152,6 @@ class CreatePostFragment : Fragment(),addImageInterface {
             }
         })
         circleIndicator.setViewPager(viewPager2)
-
-
 
 
 
@@ -456,7 +465,7 @@ class CreatePostFragment : Fragment(),addImageInterface {
                 inputStream.copyTo(outputStream)
                 val requestBody=file.asRequestBody("photos".toMediaTypeOrNull())
                 partovi.add(MultipartBody.Part.createFormData("photos",file.name,requestBody))
-                Log.d("moji uri:",imageListUri[i].toString())
+
 
 
             }
@@ -467,7 +476,13 @@ class CreatePostFragment : Fragment(),addImageInterface {
             Toast.makeText(requireContext(), "Insert your image", Toast.LENGTH_SHORT).show()
             return
         }
-        viewModel.addPost(partovi,description,location,shortDescription)
+        if(!locationSet){
+            Toast.makeText(requireContext(), "Insert your location", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val longitude1=MultipartBody.Part.createFormData("longitude",longitude)
+        val latitude1=MultipartBody.Part.createFormData("latitude",latitude)
+        viewModel.addPost(partovi,description,longitude1,latitude1,shortDescription)
 
     }
 

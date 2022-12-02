@@ -8,6 +8,13 @@
     tools:context=".MapsActivity">
 
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Potvrdi"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toTopOf="parent" />
+
     <FrameLayout
         android:id="@+id/mapView"
         android:layout_width="match_parent"
@@ -15,6 +22,8 @@
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
         map:layout_constraintStart_toStartOf="parent"
-        map:layout_constraintTop_toTopOf="parent" />
+        map:layout_constraintTop_toTopOf="parent" >
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

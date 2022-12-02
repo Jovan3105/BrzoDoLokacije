@@ -63,8 +63,8 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string location { get; set; } = string.Empty;
         public List<IFormFile> photos { get; set; }
         public string shortDescription { get; set; } = string.Empty;
-        public double Xosa { get; set; } = 0;
-        public double Yosa { get; set; } = 0;
+        public string longitude { get; set; } = string.Empty;
+        public string latitude { get; set; } = string.Empty;
     }
 
     public class getPosts
@@ -74,8 +74,8 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string profilephoto { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
         public string location { get; set; } = string.Empty;
-        public double Xosa { get; set; } = 0;
-        public double Yosa { get; set; } = 0;
+        public double longitude { get; set; } = 0;
+        public double latitude { get; set; } = 0;
         public DateTime DateTime { get; set; }
         public List<string> photos { get; set; }
         public int brojslika { get; set; }
@@ -155,7 +155,7 @@ namespace HotSpotAPI.ModeliZaZahteve
     }
     public class coordinates
     {
-        public double xosa { get; set; }
-        public double yosa { get; set; }
+        public double longitude { get; set; }
+        public double latitude { get; set; }
     }
 }

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -207,6 +208,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         googleMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
             override fun onMapClick(latlng :LatLng) {
                 setMyLocationMarker(latlng,"Selected location")
+
+                var data:Intent =Intent()
+                data.putExtra("longitude",latlng.longitude.toString())
+                data.putExtra("latitude",latlng.latitude.toString())
+                setResult(RESULT_OK, data);
+                finish();
             }
         })
 
@@ -242,8 +249,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
                 location ->
             if(location!=null){
                 currentLocation = location
-                Toast.makeText(applicationContext, currentLocation.latitude.toString() + "" +
-                        currentLocation.longitude, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(applicationContext, currentLocation.latitude.toString() + "" +
+//                        currentLocation.longitude, Toast.LENGTH_SHORT).show()
 
                 setMyLocationMarker(LatLng(currentLocation.latitude,currentLocation.longitude),"My location")
 

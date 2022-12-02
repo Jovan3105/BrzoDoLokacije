@@ -1,27 +1,19 @@
 package imi.projekat.hotspot.Ostalo
 
-import android.app.Activity
 import android.content.Context
-import android.graphics.Bitmap
-import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.signature.ObjectKey
 import imi.projekat.hotspot.KonfigAplikacije
-import imi.projekat.hotspot.ModelConfigAplikacije
 import imi.projekat.hotspot.ModeliZaZahteve.*
 import imi.projekat.hotspot.R
-import imi.projekat.hotspot.SetupActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Part
-import retrofit2.http.Path
 
 class Repository(){
 
@@ -47,8 +39,8 @@ class Repository(){
 
 
 
-    suspend fun addPost(@Part photos:List<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part,@Part shortDescription:MultipartBody.Part):Response<ResponseBody>{
-        return APIservis.Servis.addPost(photos,description,location,shortDescription)
+    suspend fun addPost(@Part photos:List<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part):Response<ResponseBody>{
+        return APIservis.Servis.addPost(photos,description,longitude,latitude,shortDescription)
     }
     suspend fun getAllFollowingByUSer():Response<getuser>{
         return APIservis.Servis.getAllFollowingByUSer()

@@ -5,7 +5,6 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import imi.projekat.hotspot.ModeliZaZahteve.*
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.Part
-import java.util.concurrent.Executors
 
 class MainActivityViewModel(private val repository:Repository=Repository()) :ViewModel(){
     private var _liveEditProfileResponse=MutableSharedFlow<BaseResponse<changeAccDataResponse>>()
@@ -116,19 +114,17 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
-    fun addPost(@Part photos:ArrayList<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part,@Part shortDescription:MultipartBody.Part){
+    fun addPost(@Part photos:ArrayList<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
             _DodajPostResposne.emit(BaseResponse.Loading())
-            val response=repository.addPost(photos,description,location,shortDescription)
+            val response=repository.addPost(photos,description,longitude,latitude,shortDescription)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     _DodajPostResposne.emit(BaseResponse.Success(response.body()))
-
                 }
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     _DodajPostResposne.emit(BaseResponse.Error(content))
-
                 }
             }
         }

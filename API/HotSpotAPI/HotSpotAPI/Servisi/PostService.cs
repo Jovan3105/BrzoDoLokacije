@@ -56,8 +56,8 @@ namespace HotSpotAPI.Servisi
             p.DateTime = DateTime.Now;
             p.NumOfPhotos = newPost.photos.Count;
             p.shortDescription = newPost.shortDescription;
-            p.Xosa = newPost.Xosa;
-            p.Yosa = newPost.Yosa;
+            p.longitude = Convert.ToDouble(newPost.longitude);
+            p.latitude = Convert.ToDouble(newPost.latitude);
             context.Postovi.Add(p);
             context.SaveChanges();
 
@@ -100,8 +100,8 @@ namespace HotSpotAPI.Servisi
                                      .Select(Path.GetFileName)
                                      .ToList().First();
                 }
-                p.Xosa = post.Xosa;
-                p.Yosa = post.Yosa;
+                p.latitude = post.latitude;
+                p.longitude = post.longitude;
                 p.description = post.Description;
                 p.location = post.Location;
                 p.DateTime = post.DateTime;
@@ -145,8 +145,8 @@ namespace HotSpotAPI.Servisi
                                      .Select(Path.GetFileName)
                                      .ToList().First();
                 }
-                p.Xosa = post.Xosa;
-                p.Yosa = post.Yosa;
+                p.longitude = post.longitude;
+                p.latitude = post.latitude;
                 p.description = post.Description;
                 p.location = post.Location;
                 p.DateTime = post.DateTime;
@@ -179,8 +179,8 @@ namespace HotSpotAPI.Servisi
                 p.photos = new List<string>();
                 p.brojslika = post.NumOfPhotos;
                 p.shortDescription = post.shortDescription;
-                p.Xosa = post.Xosa;
-                p.Yosa = post.Yosa;
+                p.longitude = post.longitude;
+                p.latitude = post.latitude;
                 p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
@@ -203,8 +203,8 @@ namespace HotSpotAPI.Servisi
             p.photos = new List<string>();
             p.brojslika = post.NumOfPhotos;
             p.shortDescription = post.shortDescription;
-            p.Xosa = post.Xosa;
-            p.Yosa = post.Yosa;
+            p.latitude = post.latitude;
+            p.longitude = post.longitude;
             p.postID = post.ID;
             string basepath = storageService.CreatePost();
             p.photos = Directory.GetFiles(basepath, "user" + id + "post" + post.ID + "*")
@@ -214,7 +214,7 @@ namespace HotSpotAPI.Servisi
         }
         public getPosts getPostsByCoordinate(double x, double y)
         {
-            Post post = context.Postovi.FirstOrDefault(pom => pom.Xosa == x && pom.Yosa == y);
+            Post post = context.Postovi.FirstOrDefault(pom => pom.latitude == x && pom.longitude == y);
             if (post == null)
                 return null;
             getPosts p = new getPosts();
@@ -224,8 +224,8 @@ namespace HotSpotAPI.Servisi
             p.photos = new List<string>();
             p.brojslika = post.NumOfPhotos;
             p.shortDescription = post.shortDescription;
-            p.Xosa = post.Xosa;
-            p.Yosa = post.Yosa;
+            p.latitude = post.latitude;
+            p.longitude = post.longitude;
             p.postID = post.ID;
             string basepath = storageService.CreatePost();
             p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
@@ -241,8 +241,8 @@ namespace HotSpotAPI.Servisi
             foreach (Post post in postovi)
             {
                 coordinates koordinata = new coordinates();
-                koordinata.xosa = post.Xosa;
-                koordinata.yosa = post.Yosa;
+                koordinata.longitude = post.longitude;
+                koordinata.latitude = post.latitude;
 
                 koordinate.Add(koordinata);
             }
