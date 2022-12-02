@@ -2,6 +2,8 @@ package imi.projekat.hotspot.UI.HomePage
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,29 +16,32 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.tasks.Task
-import imi.projekat.hotspot.MainActivity
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.MarginPageTransformer
+import androidx.viewpager2.widget.ViewPager2
 import imi.projekat.hotspot.MapsActivity
 import imi.projekat.hotspot.ModeliZaZahteve.likeDTS
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
-import imi.projekat.hotspot.Ostalo.Repository
+import imi.projekat.hotspot.Ostalo.SnapToBlock
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.HomePage.SinglePost.ImageAdapterHomePage
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentHomePageBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.net.URL
+import kotlin.math.abs
 
 
 class HomePageFragment : Fragment(),PostClickHandler {
 
     private lateinit var binding: FragmentHomePageBinding
     private val viewModel: MainActivityViewModel by activityViewModels()
-    private lateinit var listaPostova:List<singlePost>
+    private lateinit var listaPostova:ArrayList<singlePost>
     private lateinit var listaPostovaAdapter: ListaPostovaAdapter
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: ViewPager2
+    private lateinit var handler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,16 +59,9 @@ class HomePageFragment : Fragment(),PostClickHandler {
         super.onViewCreated(view, savedInstanceState)
 
         listaPostovaInit()
-        val layoutManager=LinearLayoutManager(context)
 
-        recyclerView=view.findViewById(R.id.ListaPostovaRecyclerView)
-        recyclerView.setHasFixedSize(true)
-        listaPostovaAdapter= ListaPostovaAdapter(listaPostova,this)
 
-        val llm = LinearLayoutManager(requireContext())
-        llm.orientation = LinearLayoutManager.VERTICAL
-        recyclerView.setLayoutManager(llm)
-        recyclerView.setAdapter(listaPostovaAdapter)
+
 
 
         binding.mapaDugme.setOnClickListener{
@@ -79,8 +77,11 @@ class HomePageFragment : Fragment(),PostClickHandler {
                 }
                 if(it is BaseResponse.Success){
                     if(it.data!=null){
-                        listaPostova=it.data
-                        listaPostovaAdapter.update(listaPostova)
+                        listaPostova.clear()
+                        listaPostova= it.data as ArrayList<singlePost>
+
+                        initPostsCarousel(0)
+                        setupTransformer()
                     }
                 }
             }
@@ -139,6 +140,23 @@ class HomePageFragment : Fragment(),PostClickHandler {
 
 
 
+    }
+
+    private fun initPostsCarousel(position:Int){
+        recyclerView=requireView().findViewById(binding.ListaPostovaRecyclerView.id)
+        handler= Handler(Looper.myLooper()!!)
+        listaPostovaAdapter= ListaPostovaAdapter(listaPostova,this)
+        recyclerView.adapter = listaPostovaAdapter
+        recyclerView.orientation=ViewPager2.ORIENTATION_VERTICAL
+    }
+
+    private fun setupTransformer(){
+        val transformer = CompositePageTransformer()
+        transformer.addTransformer(MarginPageTransformer(10))
+        transformer.addTransformer { page, position ->
+            val r = 1 - abs(position)
+        }
+        recyclerView.setPageTransformer(transformer)
     }
 
     private fun listaPostovaInit(){

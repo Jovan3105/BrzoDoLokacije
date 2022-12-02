@@ -45,7 +45,6 @@ class ListaPostovaAdapter(
             binding.root.setOnClickListener(this)
 
 
-
             binding.likeButton.setOnClickListener{
                 if(ListaPostova[bindingAdapterPosition].likedByMe==false){
                     clickHandler.likePost(likeDTS(ListaPostova[bindingAdapterPosition].postID))
@@ -69,6 +68,7 @@ class ListaPostovaAdapter(
             viewPager.clipChildren = false
             viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
 
+
 //            viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
 //                override fun onPageSelected(position: Int) {
 //                    if (position == 0) {
@@ -87,21 +87,18 @@ class ListaPostovaAdapter(
 
         }
 
-        public fun setupTransformer(){
+        fun setupTransformer(){
             val transformer = CompositePageTransformer()
             transformer.addTransformer(MarginPageTransformer(40))
             transformer.addTransformer { page, position ->
                 val r = 1 - abs(position)
-                page.scaleY = 0.85f + r * 0.14f
+                page.scaleX = 0.85f + r * 0.14f
                 page.setOnClickListener{
                     this.onClick(it)
                 }
             }
-
             viewPager.setPageTransformer(transformer)
             circleIndicator3.setViewPager(viewPager)
-
-
         }
 
 
