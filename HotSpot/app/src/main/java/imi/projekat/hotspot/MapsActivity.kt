@@ -15,6 +15,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -46,7 +47,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
     private var cameraPosition: CameraPosition? = null
     private lateinit var placesClient: PlacesClient
     private var lastKnownLocation: Location? = null
-    private val defaultLocation = LatLng(44.01772088671875, 20.90731628415956)
+    private var defaultLocation = LatLng(44.01772088671875, 20.90731628415956)
+    private lateinit var selectedLocation: LatLng
+    private lateinit var confirmLocationButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,19 +212,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
             override fun onMapClick(latlng :LatLng) {
                 setMyLocationMarker(latlng,"Selected location")
 
-                var data:Intent =Intent()
-                data.putExtra("longitude",latlng.longitude.toString())
-                data.putExtra("latitude",latlng.latitude.toString())
-                setResult(RESULT_OK, data);
-                finish();
             }
         })
+        binding.confirmLocationButton.setOnClickListener {
+            var data:Intent =Intent()
+            data.putExtra("longitude",selectedLocation.longitude.toString())
+            data.putExtra("latitude",selectedLocation.latitude.toString())
+            setResult(RESULT_OK, data);
+            finish();
+        }
 
     }
 
     private fun setMyLocationMarker(location:LatLng,title:String){
         googleMap.clear();
         var markerOptions:MarkerOptions= MarkerOptions()
+        selectedLocation = location
         markerOptions.title(title)
         markerOptions.position(location)
         this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(location))
