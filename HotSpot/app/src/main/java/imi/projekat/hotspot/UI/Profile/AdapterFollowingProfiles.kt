@@ -27,6 +27,7 @@ private val listener:OnItemClickListener
         val dugme:Button=itemView.findViewById(R.id.unfollowButton)
         init {
             dugme.setOnClickListener(this)
+            //photoview.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {

@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -126,7 +127,7 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
 
 
         }
-        else
+        else if(clickedItem.buttonName=="Follow")
         {
             viewModel.followUser(clickedItem.id)
             viewLifecycleOwner.lifecycleScope.launch{
@@ -142,6 +143,10 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
                 }
             }
 
+        }
+        else
+        {
+            findNavController().navigate(R.id.action_followingProfilesFragment_to_drugi_korisnik)
         }
         Log.d("usernamekliknutog",clickedItem.username)
 

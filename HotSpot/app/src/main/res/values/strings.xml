@@ -43,7 +43,6 @@
     <string name="Confirm">Confirm</string>
 
 
-
     <string-array name="CommentDropdownSort">
         <item>Date up</item>
         <item>Date down</item>
