@@ -15,6 +15,8 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -50,13 +52,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
     private var defaultLocation = LatLng(44.01772088671875, 20.90731628415956)
     private lateinit var selectedLocation: LatLng
     private lateinit var confirmLocationButton: Button
-
+    private lateinit var bttAnimacija:Animation
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        bttAnimacija= AnimationUtils.loadAnimation(this,R.anim.bot_to_top)
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -221,7 +223,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
             setResult(RESULT_OK, data);
             finish();
         }
-
+        binding.confirmLocationButton.startAnimation(bttAnimacija)
     }
 
     private fun setMyLocationMarker(location:LatLng,title:String){
