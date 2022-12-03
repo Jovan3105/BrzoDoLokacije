@@ -5,6 +5,8 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
@@ -15,9 +17,13 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -37,6 +43,8 @@ import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import imi.projekat.hotspot.databinding.ActivityMapsBinding
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.synthetic.main.activity_maps.view.*
+import java.util.*
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.PermissionCallbacks {
@@ -53,12 +61,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
     private lateinit var selectedLocation: LatLng
     private lateinit var confirmLocationButton: Button
     private lateinit var bttAnimacija:Animation
+    private lateinit var top_exitAnimacija:Animation
+    private lateinit var top_enterAnimacija:Animation
+    private lateinit var searchTextDugme: ImageButton
+    private lateinit var searchTextTekst: EditText
+    private lateinit var izborTerenaDugme:ImageButton
+    private lateinit var searchDugmeActionBar:ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         bttAnimacija= AnimationUtils.loadAnimation(this,R.anim.bot_to_top)
+        top_exitAnimacija=AnimationUtils.loadAnimation(this,R.anim.top_exit)
+        top_enterAnimacija=AnimationUtils.loadAnimation(this,R.anim.top_enter)
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -73,6 +90,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
 
         }
 
+        searchTextDugme=binding.root.findViewById(binding.searchTextDugme.id)
+        searchTextTekst=binding.root.findViewById(binding.searchTextView.id)
+        izborTerenaDugme=binding.root.findViewById(binding.izborTerenaDugme.id)
+        searchDugmeActionBar=binding.root.findViewById(binding.searchDugmeActionBar.id)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         fusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(this@MapsActivity)
 
@@ -82,6 +103,73 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
 
         requestLocPermission()
 
+        searchTextDugme.setOnClickListener{
+            var unetaLokacija:String=searchTextTekst.text.toString()
+            if(!unetaLokacija.isNullOrEmpty()){
+                var geoCoder:Geocoder= Geocoder(this, Locale.getDefault())
+
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    geoCoder.getFromLocationName(unetaLokacija,1,object : Geocoder.GeocodeListener{
+                        override fun onGeocode(addresses: MutableList<Address>) {
+                            var listaAdresa=addresses
+                            if(listaAdresa!=null && listaAdresa.size>0){
+                                val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
+                                setMyLocationMarker(latLng,unetaLokacija,null)
+                            }
+                        }
+                        override fun onError(errorMessage: String?) {
+                            super.onError(errorMessage)
+
+                        }
+
+                    })
+                } else {
+                    var listaAdresa: MutableList<Address>?
+                    @Suppress("DEPRECATION")
+                    listaAdresa= geoCoder.getFromLocationName(unetaLokacija,1)
+                    if(listaAdresa!=null && listaAdresa.size>0){
+                        val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
+                        setMyLocationMarker(latLng,unetaLokacija,null)
+                    }
+                }
+            }
+        }
+
+        izborTerenaDugme.setOnClickListener{
+            val popupMenu = PopupMenu(this,izborTerenaDugme)
+            popupMenu.menuInflater.inflate(R.menu.meni_za_izbor_terena_mape,popupMenu.menu)
+
+            popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener()  { item ->
+                when (item.itemId) {
+                    R.id.noneMap -> googleMap.mapType=GoogleMap.MAP_TYPE_NONE
+                    R.id.NormalMap -> googleMap.mapType=GoogleMap.MAP_TYPE_NORMAL
+                    R.id.SatelliteMap -> googleMap.mapType=GoogleMap.MAP_TYPE_SATELLITE
+                    R.id.MapHybrid -> googleMap.mapType=GoogleMap.MAP_TYPE_HYBRID
+                    else -> {
+                        googleMap.mapType=GoogleMap.MAP_TYPE_TERRAIN
+                    }
+                }
+                true
+            })
+
+            popupMenu.show()
+        }
+
+        searchDugmeActionBar.setOnClickListener{
+            showSearch()
+        }
+
+    }
+
+    private fun showSearch(){
+        if(binding.linearLayoutMaps.visibility== View.VISIBLE){
+            binding.linearLayoutMaps.startAnimation(top_exitAnimacija)
+            binding.linearLayoutMaps.visibility=View.GONE
+            return
+        }
+        binding.linearLayoutMaps.startAnimation(top_enterAnimacija)
+        binding.linearLayoutMaps.visibility=View.VISIBLE
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -181,7 +269,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         this.googleMap=googleMap
 
         if(lastKnownLocation!=null)
-            setMyLocationMarker(LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude),"My location")
+            setMyLocationMarker(LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude),"My location",10f)
 
         this.googleMap.uiSettings.isZoomControlsEnabled = true
         this.googleMap.uiSettings.isCompassEnabled = true
@@ -212,7 +300,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
 
         googleMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
             override fun onMapClick(latlng :LatLng) {
-                setMyLocationMarker(latlng,"Selected location")
+                setMyLocationMarker(latlng,"Selected location",null)
 
             }
         })
@@ -226,14 +314,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         binding.confirmLocationButton.startAnimation(bttAnimacija)
     }
 
-    private fun setMyLocationMarker(location:LatLng,title:String){
+    private fun setMyLocationMarker(location:LatLng,title:String,zoom:Float?){
         googleMap.clear();
         var markerOptions:MarkerOptions= MarkerOptions()
         selectedLocation = location
         markerOptions.title(title)
         markerOptions.position(location)
         this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(location))
-        this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,10f))
+        if(zoom!=null){
+            this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,zoom))
+        }
+
         this.googleMap.addMarker(markerOptions)
     }
 
@@ -260,13 +351,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
 //                Toast.makeText(applicationContext, currentLocation.latitude.toString() + "" +
 //                        currentLocation.longitude, Toast.LENGTH_SHORT).show()
 
-                setMyLocationMarker(LatLng(currentLocation.latitude,currentLocation.longitude),"My location")
+                setMyLocationMarker(LatLng(currentLocation.latitude,currentLocation.longitude),"My location",10f)
 
             }
         }
         task.addOnFailureListener {
             Log.d("Greska","Nije nadjena lokacija")
-            setMyLocationMarker(LatLng(defaultLocation.latitude,defaultLocation.longitude),"Default app location")
+            setMyLocationMarker(LatLng(defaultLocation.latitude,defaultLocation.longitude),"Default app location",10f)
 
         }
 

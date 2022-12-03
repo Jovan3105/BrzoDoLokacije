@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.Window
 import android.view.WindowManager
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -50,7 +51,6 @@ class MainActivity : AppCompatActivity() {
     val dijalog= LoadingDialog(this)
     private lateinit var navKontroler: NavController
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityMainBinding.inflate(layoutInflater)
@@ -63,7 +63,6 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment=supportFragmentManager.findFragmentById(R.id.fragmentContainerViewMainActivity) as NavHostFragment
         navKontroler=navHostFragment.navController
-
         binding.bottomNavigationView2.setOnItemSelectedListener {
             val fragmentInstance = (supportFragmentManager.findFragmentById(R.id.fragmentContainerViewMainActivity) as NavHostFragment).childFragmentManager.primaryNavigationFragment
 
@@ -74,18 +73,24 @@ class MainActivity : AppCompatActivity() {
                         navKontroler.navigate(CreatePostFragmentDirections.actionCreatePostFragmentToHomePageFragment())
                     if(fragmentInstance is MyProfileFragment)
                         navKontroler.navigate(MyProfileFragmentDirections.actionMyProfileFragmentToHomePageFragment())
+                    if(fragmentInstance !is HomePageFragment)
+                        navKontroler.navigate(R.id.homePageFragment)
                 }
                 R.id.add -> {
                     if(fragmentInstance is HomePageFragment)
                         navKontroler.navigate(HomePageFragmentDirections.actionHomePageFragmentToCreatePostFragment())
                     if(fragmentInstance is MyProfileFragment)
                         navKontroler.navigate(MyProfileFragmentDirections.actionMyProfileFragmentToCreatePostFragment())
+                    if(fragmentInstance !is CreatePostFragment)
+                        navKontroler.navigate(R.id.createPostFragment)
                 }
                 R.id.profile -> {
                     if(fragmentInstance is HomePageFragment)
                         navKontroler.navigate(HomePageFragmentDirections.actionHomePageFragmentToMyProfileFragment())
                     if(fragmentInstance is CreatePostFragment)
                         navKontroler.navigate(CreatePostFragmentDirections.actionCreatePostFragmentToMyProfileFragment())
+                    if(fragmentInstance !is MyProfileFragment)
+                        navKontroler.navigate(R.id.myProfileFragment)
                 }
             }
             true
