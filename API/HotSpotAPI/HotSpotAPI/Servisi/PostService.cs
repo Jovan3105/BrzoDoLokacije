@@ -26,6 +26,8 @@ namespace HotSpotAPI.Servisi
         public List<getPosts> getPostsPage(int brojstrane, int brojpostova);
         public getPosts getPostsByCoordinate(double x, double y);
         public List<coordinates> getCoordinates();
+        public List<getPosts> getPostsNear(double x, double y);
+        public List<coordinates> getMyCoordinates(int id);
     }
     public class PostService : IPostService
     {
@@ -191,6 +193,32 @@ namespace HotSpotAPI.Servisi
 
             return postsList;
         }
+        public List<getPosts> getPostsNear(double x, double y)
+        {
+            List<Post> posts = context.Postovi.Where(pom => (pom.latitude > x-0.2 && pom.latitude < x+0.2) && (pom.longitude > x - 0.2 && pom.longitude < x + 0.2)).ToList();
+            List<getPosts> postsList = new List<getPosts>();
+
+            foreach (Post post in posts)
+            {
+                getPosts p = new getPosts();
+                p.description = post.Description;
+                p.location = post.Location;
+                p.DateTime = post.DateTime;
+                p.photos = new List<string>();
+                p.brojslika = post.NumOfPhotos;
+                p.shortDescription = post.shortDescription;
+                p.longitude = post.longitude;
+                p.latitude = post.latitude;
+                p.postID = post.ID;
+                string basepath = storageService.CreatePost();
+                p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
+                                     .Select(Path.GetFileName)
+                                     .ToList();
+                postsList.Add(p);
+            }
+
+            return postsList;
+        }
         public getPosts getPost(int id, int postID)
         {
             Post post = context.Postovi.FirstOrDefault(x => x.UserID == id && x.ID == postID);
@@ -248,6 +276,22 @@ namespace HotSpotAPI.Servisi
             }
             return koordinate;
         }
+        public List<coordinates> getMyCoordinates(int id)
+        {
+            List<Post> postovi = context.Postovi.Where(x => x.UserID == id).ToList();
+            List<coordinates> koordinate = new List<coordinates>();
+
+            foreach (Post post in postovi)
+            {
+                coordinates koordinata = new coordinates();
+                koordinata.longitude = post.longitude;
+                koordinata.latitude = post.latitude;
+
+                koordinate.Add(koordinata);
+            }
+            return koordinate;
+        }
+
         public bool deletePost(int id, int postID)
         {
             Post post = context.Postovi.FirstOrDefault(x => x.UserID == id && x.ID == postID);
