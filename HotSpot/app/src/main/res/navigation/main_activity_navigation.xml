@@ -97,5 +97,9 @@
         android:id="@+id/drugi_korisnik"
         android:name="imi.projekat.hotspot.UI.Profile.Drugi_korisnik"
         android:label="fragment_drugi_korisnik"
-        tools:layout="@layout/fragment_drugi_korisnik" />
+        tools:layout="@layout/fragment_drugi_korisnik" >
+        <argument
+            android:name="userID"
+            app:argType="integer" />
+    </fragment>
 </navigation>

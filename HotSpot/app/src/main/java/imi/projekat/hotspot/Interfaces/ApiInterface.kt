@@ -72,5 +72,7 @@ interface ApiInterface {
     @POST("/api/User/follow/{userid}")
     suspend fun FollowUser(@Path("userid") userid: Int):Response<ResponseBody>
 
+    @GET("/api/Post/getUserByID/{idusera}")
+    suspend fun getUserWithID(@Path("idusera") idusera :Int):Response<UserInfoResponse>
 
 }

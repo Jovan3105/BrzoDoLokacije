@@ -234,17 +234,8 @@ namespace HotSpotAPI.Servisi
                 return null;
             userinfo u = new userinfo();
             u.username = user.Username;
-
-            string slika = user.ProfileImage;
-            if (slika == "" || slika == null)
-            {
-                u.photo = "";
-            }
-            else
-            {
-                Byte[] b = System.IO.File.ReadAllBytes(slika);
-                u.photo = Convert.ToBase64String(b, 0, b.Length);
-            }
+            u.email=user.Email;
+            u.photo = user.ProfileImage;
             return u;
         }
         public string getUsernameById(int id)

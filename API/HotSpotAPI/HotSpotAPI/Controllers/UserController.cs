@@ -176,6 +176,7 @@ namespace HotSpotAPI.Controllers
                 return Ok(f);
             return BadRequest();
         }
+
         [HttpGet("specialInfo")]
         public async Task<ActionResult<string>> GetSpecialInfo()
         {

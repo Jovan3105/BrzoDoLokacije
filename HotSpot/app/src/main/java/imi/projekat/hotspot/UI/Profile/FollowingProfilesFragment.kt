@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -104,20 +105,74 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
         return inflater.inflate(R.layout.fragment_following_profiles,container,false)
     }
 
-    override fun onItemClick(position: Int) {
-        Log.d("adapter",adapter.toString())
+//    override fun onItemClick(position: Int) {
+//        Log.d("adapter",adapter.toString())
+//       val clickedItem=korisnici[position]
+//        Log.d("kliknuto",clickedItem.toString())
+//        if(clickedItem.buttonName=="Unfollow")
+//        {
+//            //anfollow zahtev
+//            Log.d("Anfollow uslov","Usao sam")
+//            viewLifecycleOwner.lifecycleScope.launch{
+//                viewModel.UnfollowUserResponse.collectLatest{
+//                    if(it is BaseResponse.Error){
+//                        Log.d("greska","Nije dobar zahtev za follow korisnika")
+//                    }
+//                    if(it is BaseResponse.Success){
+//                        Log.d("Zahtev za foolow","Uspesan")
+//                        clickedItem.buttonName="Follow"
+//                        adapter!!.notifyItemChanged(position)
+//                    }
+//                }
+//            }
+//            viewModel.unfollowUser(clickedItem.id)
+//
+//
+//        }
+//        else if(clickedItem.buttonName=="Follow")
+//        {
+//            viewModel.followUser(clickedItem.id)
+//            viewLifecycleOwner.lifecycleScope.launch{
+//                viewModel.FollowUserResponse.collectLatest{
+//                    if(it is BaseResponse.Error){
+//                        Log.d("greska","Nije dobar zahtev za follow korisnika")
+//                    }
+//                    if(it is BaseResponse.Success){
+//                        Log.d("Zahtev za foolow","Uspesan")
+//                        clickedItem.buttonName="Unfollow"
+//                        adapter!!.notifyItemChanged(position)
+//                    }
+//                }
+//            }
+//
+//        }
+//        else
+//        {
+//            findNavController().navigate(R.id.action_followingProfilesFragment_to_drugi_korisnik)
+//        }
+//        Log.d("usernamekliknutog",clickedItem.username)
+//
+//    }
+
+    override fun getPicture(imageView: ImageView, slika: String) {
+        Glide.with(this)
+            .load("http://10.0.2.2:5140/Storage/ProfileImages/$slika")
+            .fitCenter()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .placeholder(R.drawable.image_holder)
+            .into(imageView)
+    }
+
+    override fun onItemClickFollow(position: Int) {
        val clickedItem=korisnici[position]
         if(clickedItem.buttonName=="Unfollow")
         {
-            //anfollow zahtev
-            Log.d("Anfollow uslov","Usao sam")
             viewLifecycleOwner.lifecycleScope.launch{
                 viewModel.UnfollowUserResponse.collectLatest{
                     if(it is BaseResponse.Error){
                         Log.d("greska","Nije dobar zahtev za follow korisnika")
                     }
                     if(it is BaseResponse.Success){
-                        Log.d("Zahtev za foolow","Uspesan")
                         clickedItem.buttonName="Follow"
                         adapter!!.notifyItemChanged(position)
                     }
@@ -127,7 +182,7 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
 
 
         }
-        else if(clickedItem.buttonName=="Follow")
+        else
         {
             viewModel.followUser(clickedItem.id)
             viewLifecycleOwner.lifecycleScope.launch{
@@ -136,7 +191,6 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
                         Log.d("greska","Nije dobar zahtev za follow korisnika")
                     }
                     if(it is BaseResponse.Success){
-                        Log.d("Zahtev za foolow","Uspesan")
                         clickedItem.buttonName="Unfollow"
                         adapter!!.notifyItemChanged(position)
                     }
@@ -144,21 +198,14 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
             }
 
         }
-        else
-        {
-            findNavController().navigate(R.id.action_followingProfilesFragment_to_drugi_korisnik)
-        }
-        Log.d("usernamekliknutog",clickedItem.username)
 
     }
 
-    override fun getPicture(imageView: ImageView, slika: String) {
-        Glide.with(this)
-            .load("http://10.0.2.2:5140/Storage/ProfileImages/$slika")
-            .fitCenter()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .placeholder(R.drawable.image_holder)
-            .into(imageView)
+    override fun onItemClickProfile(position: Int) {
+        val clickedItem=korisnici[position]
+        Log.d("profile Funkcija",korisnici[position].toString())
+        val action: NavDirections =FollowingProfilesFragmentDirections.actionFollowingProfilesFragmentToDrugiKorisnik(clickedItem.id)
+        findNavController().navigate(action)
     }
 
 

@@ -57,6 +57,9 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _FollowUserResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val FollowUserResponse=_FollowUserResponse.asSharedFlow()
 
+    private var _UserInfoResponsee= MutableSharedFlow<BaseResponse<UserInfoResponse>>()
+    val UserInfoResponsee=_UserInfoResponsee.asSharedFlow()
+
     var handleJob: Job?=null
 
     val exceptionHandler=CoroutineExceptionHandler{_,throwable->onError(
@@ -285,5 +288,20 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 
     fun dajSliku(imageView: ImageView, slikaPath:String,context: Context){
         repository.dajSliku(imageView,slikaPath,context)
+    }
+
+    fun getUserWithID(idusera :Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.getUserWithID(idusera)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _UserInfoResponsee.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _UserInfoResponsee.emit(BaseResponse.Error(content))
+                }
+            }
+        }
     }
 }

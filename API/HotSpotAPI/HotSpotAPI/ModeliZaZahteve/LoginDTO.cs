@@ -122,6 +122,7 @@ namespace HotSpotAPI.ModeliZaZahteve
     public class userinfo
     {
         public string username { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
         public string photo { get; set; } = string.Empty;
     }
     public class likes

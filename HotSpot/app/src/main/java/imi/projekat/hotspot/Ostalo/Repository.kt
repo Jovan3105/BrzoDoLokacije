@@ -14,6 +14,7 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 class Repository(){
 
@@ -74,6 +75,9 @@ class Repository(){
 
     suspend fun FollowUser(userid: Int):Response<ResponseBody>{
         return APIservis.Servis.FollowUser(userid)
+    }
+    suspend fun getUserWithID(idusera :Int):Response<UserInfoResponse>{
+        return APIservis.Servis.getUserWithID(idusera)
     }
 
     fun dajSliku(imageView: ImageView, slikaPath:String,context:Context){

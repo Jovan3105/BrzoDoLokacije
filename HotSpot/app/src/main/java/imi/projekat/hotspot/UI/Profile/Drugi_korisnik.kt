@@ -1,60 +1,97 @@
 package imi.projekat.hotspot.UI.Profile
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
+import com.auth0.android.jwt.JWT
+import imi.projekat.hotspot.Ostalo.BaseResponse
+import imi.projekat.hotspot.Ostalo.MenadzerSesije
+import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.HomePage.SinglePost.SinglePostFragmentArgs
+import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
+import imi.projekat.hotspot.databinding.FragmentDrugiKorisnikBinding
+import imi.projekat.hotspot.databinding.FragmentMyProfileBinding
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [Drugi_korisnik.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Drugi_korisnik : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
+    private lateinit var binding: FragmentDrugiKorisnikBinding
+    private val viewModel: MainActivityViewModel by activityViewModels()
+    private lateinit var profileImage: ImageView
+    private lateinit var username: TextView
+    private lateinit var email: TextView
+    private lateinit var jwt: JWT
+    private val args: Drugi_korisnikArgs by navArgs()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_drugi_korisnik, container, false)
-    }
+        binding= FragmentDrugiKorisnikBinding.inflate(inflater)
+        val view=inflater.inflate(R.layout.fragment_drugi_korisnik,container,false)
+        profileImage=view.findViewById(binding.profileImage.id)
+        viewModel.getUserWithID(args.userID)
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Drugi_korisnik.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Drugi_korisnik().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.UserInfoResponsee.collectLatest{
+                if(it is BaseResponse.Error){
+                    val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
+                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                }
+                if(it is BaseResponse.Success){
+                    username=view.findViewById(binding.usernameText.id)
+                    email=view.findViewById(binding.emailText.id)
+                    username.text=it.data!!.username
+                    email.text=it.data!!.email
+                    var photoPath = it.data!!.photo
+                    if(!photoPath.isNullOrEmpty()){
+                        var pom2=photoPath.split("\\")
+                        if(pom2.size==1)
+                            pom2=photoPath.split("/")
+
+                        viewModel.dajSliku(profileImage,"ProfileImages/"+pom2[2],requireContext())
+                    }
                 }
             }
+        }
+
+
+//        val token= MenadzerSesije.getToken(requireContext())
+//        if(token != null)
+//        {
+//            jwt= JWT(token)
+//            val usernameToken=jwt.getClaim("username").asString()
+//            val emailToken=jwt.getClaim("email").asString()
+//            username=view.findViewById(binding.usernameText.id)
+//            email=view.findViewById(binding.emailText.id)
+//            username.text=usernameToken
+//            email.text=emailToken
+//            var photoPath = jwt.getClaim("photo").asString()!!
+//            if(!photoPath.isNullOrEmpty()){
+//                var pom2=photoPath.split("\\")
+//                if(pom2.size==1)
+//                    pom2=photoPath.split("/")
+//
+//                viewModel.dajSliku(profileImage,"ProfileImages/"+pom2[2],this.requireContext())
+//            }
+//
+//
+//        }
+        return view
     }
+
 }
