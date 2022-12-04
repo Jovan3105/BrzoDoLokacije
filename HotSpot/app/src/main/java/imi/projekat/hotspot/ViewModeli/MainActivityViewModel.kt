@@ -152,12 +152,9 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 }
                 else{
 
-//                    val gson = Gson()
-//                    val type = object : TypeToken<ResponseBody>() {}.type
-//                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
-
-//                    val content = response.errorBody()!!.charStream().readText()
-//                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
+                   val content = response.errorBody()!!.charStream().readText()
+                    Log.d("GRES",response.toString())
+                    _liveAllFollowingByUser.emit(BaseResponse.Error(content))
                 }
             }
         }

@@ -22,7 +22,7 @@ data class ProfileDTR(
 
 data class MyProfileResponse(val photo:String?,val followers:List<ProfileDTR>)
 
-data class UserInfoResponse(val username: String,val email:String,val photo: String)
+data class UserInfoResponse(val username: String,val email:String,val photo: String,val following:Boolean)
 
 data class getuser (
     val followers:ArrayList<FollowingUserPom>

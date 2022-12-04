@@ -15,7 +15,7 @@ namespace HotSpotAPI.Servisi
         public bool checkCode(vercode ver);
         public void verifyUser(string username);
         public bool ChangePhoto(int id, IFormFile photo);
-        public userinfo getUserInfo(int id);
+        public userinfo getUserInfo(int idFollow,int idUser);
         public bool deleteAccount(int id);
         public bool followUser(int userid, int followid);
         public List<follower> getfollowUser(int id);
@@ -227,12 +227,17 @@ namespace HotSpotAPI.Servisi
             }
             return true;
         }
-        public userinfo getUserInfo(int id)
+        public userinfo getUserInfo(int idFollow, int idUser)
         {
-            var user = context.Korisnici.Find(id);
+            var user = context.Korisnici.Find(idFollow);
             if (user == null)
                 return null;
             userinfo u = new userinfo();
+            var pom = context.Followers.FirstOrDefault(x => x.userID == idUser && x.followID == idFollow);
+            if (pom != null)
+                u.following = true;
+            else
+                u.following=false;
             u.username = user.Username;
             u.email=user.Email;
             u.photo = user.ProfileImage;

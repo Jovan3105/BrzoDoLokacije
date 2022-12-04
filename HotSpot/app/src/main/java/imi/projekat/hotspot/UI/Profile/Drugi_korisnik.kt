@@ -1,18 +1,23 @@
 package imi.projekat.hotspot.UI.Profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.auth0.android.jwt.JWT
+import imi.projekat.hotspot.LoginActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
@@ -31,6 +36,7 @@ class Drugi_korisnik : Fragment() {
     private lateinit var username: TextView
     private lateinit var email: TextView
     private lateinit var jwt: JWT
+    private lateinit var dugme:Button
     private val args: Drugi_korisnikArgs by navArgs()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +53,28 @@ class Drugi_korisnik : Fragment() {
         viewModel.getUserWithID(args.userID)
 
         viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.UnfollowUserResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                    Log.d("greska","Nije dobar zahtev za follow korisnika")
+                }
+                if(it is BaseResponse.Success){
+                    dugme.text="Follow"
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.FollowUserResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                    Log.d("greska","Nije dobar zahtev za follow korisnika")
+                }
+                if(it is BaseResponse.Success){
+                    dugme.text="Unfollow"
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch{
             viewModel.UserInfoResponsee.collectLatest{
                 if(it is BaseResponse.Error){
                     val id = UpravljanjeResursima.getResourceString(it.poruka.toString(),requireContext())
@@ -55,6 +83,15 @@ class Drugi_korisnik : Fragment() {
                 if(it is BaseResponse.Success){
                     username=view.findViewById(binding.usernameText.id)
                     email=view.findViewById(binding.emailText.id)
+                    dugme=view.findViewById(binding.followingButton.id)
+                    if(it.data!!.following)
+                    {
+                        dugme.text="Unfollow"
+                    }
+                    else
+                    {
+                        dugme.text="Follow"
+                    }
                     username.text=it.data!!.username
                     email.text=it.data!!.email
                     var photoPath = it.data!!.photo
@@ -70,28 +107,28 @@ class Drugi_korisnik : Fragment() {
         }
 
 
-//        val token= MenadzerSesije.getToken(requireContext())
-//        if(token != null)
-//        {
-//            jwt= JWT(token)
-//            val usernameToken=jwt.getClaim("username").asString()
-//            val emailToken=jwt.getClaim("email").asString()
-//            username=view.findViewById(binding.usernameText.id)
-//            email=view.findViewById(binding.emailText.id)
-//            username.text=usernameToken
-//            email.text=emailToken
-//            var photoPath = jwt.getClaim("photo").asString()!!
-//            if(!photoPath.isNullOrEmpty()){
-//                var pom2=photoPath.split("\\")
-//                if(pom2.size==1)
-//                    pom2=photoPath.split("/")
-//
-//                viewModel.dajSliku(profileImage,"ProfileImages/"+pom2[2],this.requireContext())
-//            }
-//
-//
-//        }
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding= FragmentDrugiKorisnikBinding.bind(view)
+
+        binding.followingButton.setOnClickListener{
+            FollowOrUnfollow()
+        }
+
+    }
+
+    private fun FollowOrUnfollow(){
+        if(dugme.text.toString()=="Follow")
+        {
+            viewModel.followUser(args.userID)
+        }
+        else
+        {
+            viewModel.unfollowUser(args.userID)
+        }
     }
 
 }
