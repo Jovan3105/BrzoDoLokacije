@@ -149,6 +149,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        this.lifecycleScope.launch{
+            viewModel.GetPostsWithUserId.collectLatest{
+                dijalog.isDismiss()
+                if(it is BaseResponse.Loading){
+                    dijalog.startLoading()
+                }
+            }
+        }
+
     }
 
     fun clearImageCache(){
@@ -162,6 +171,14 @@ class MainActivity : AppCompatActivity() {
     fun restartActivity(){
         finish();
         startActivity(getIntent());
+    }
+
+
+    fun startLoadingDialog(){
+        dijalog.startLoading()
+    }
+    fun endLoadingDialog(){
+        dijalog.isDismiss()
     }
 
 }

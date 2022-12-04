@@ -5,9 +5,28 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-android:id="@+id/homePageFragmentView"
+android:id="@+id/homePageFragmentView" android:background="@color/black"
 tools:context=".UI.HomePage.SinglePost.SinglePostFragment">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+
+        app:layout_constraintDimensionRatio="H,1:1.15"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/ListaPostovaRecyclerView"
         android:layout_width="0dp"
@@ -21,17 +40,19 @@ tools:context=".UI.HomePage.SinglePost.SinglePostFragment">
 
     </androidx.viewpager2.widget.ViewPager2>
 
+    
+    
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/mapaDugme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="70dp"
         android:background="@drawable/dugme_pozadina"
         android:drawableStart="@drawable/ic_baseline_location_on_24"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:text="@string/posts_on_map"
+        android:text="@string/explore_the_world"
         android:textColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />

@@ -1,6 +1,7 @@
 package imi.projekat.hotspot.Ostalo
 
 import android.content.Context
+import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -13,6 +14,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -79,6 +81,11 @@ class Repository(){
     suspend fun getUserWithID(idusera :Int):Response<UserInfoResponse>{
         return APIservis.Servis.getUserWithID(idusera)
     }
+
+    suspend fun getMyPosts():Response<List<singlePost>>{
+        return APIservis.Servis.getMyPosts()
+    }
+
 
     fun dajSliku(imageView: ImageView, slikaPath:String,context:Context){
 

@@ -75,4 +75,7 @@ interface ApiInterface {
     @GET("/api/Post/getUserByID/{idusera}")
     suspend fun getUserWithID(@Path("idusera") idusera :Int):Response<UserInfoResponse>
 
+    @GET("/api/Post/getposts")
+    suspend fun getMyPosts():Response<List<singlePost>>
+
 }

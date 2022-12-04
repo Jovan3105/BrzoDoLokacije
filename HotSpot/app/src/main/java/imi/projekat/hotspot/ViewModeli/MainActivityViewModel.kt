@@ -12,7 +12,9 @@ import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.Repository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.Part
@@ -59,6 +61,10 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 
     private var _UserInfoResponsee= MutableSharedFlow<BaseResponse<UserInfoResponse>>()
     val UserInfoResponsee=_UserInfoResponsee.asSharedFlow()
+
+    private val _MyPostsResponse= MutableStateFlow<BaseResponse<List<singlePost>>>(BaseResponse.Success())
+    val MyPostsResponse=_MyPostsResponse.asStateFlow()
+
 
     var handleJob: Job?=null
 
@@ -300,6 +306,22 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     _UserInfoResponsee.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun getMyPosts(){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _MyPostsResponse.emit(BaseResponse.Loading())
+            val response=repository.getMyPosts()
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _MyPostsResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _MyPostsResponse.emit(BaseResponse.Error(content))
                 }
             }
         }
