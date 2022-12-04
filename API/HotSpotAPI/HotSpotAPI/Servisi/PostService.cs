@@ -330,7 +330,7 @@ namespace HotSpotAPI.Servisi
             kom.DateTime = DateTime.Now;
             kom.Text = comm.text;
             kom.UserID = id;
-            kom.ParentID = comm.parentid;
+            kom.ParentID = 0;
             context.Komentari.Add(kom);
             context.SaveChanges();
 

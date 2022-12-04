@@ -3,9 +3,11 @@ package imi.projekat.hotspot.UI.Profile
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
@@ -27,10 +29,8 @@ class MyProfileFragment : Fragment() {
     private lateinit var username:TextView
     private lateinit var email:TextView
     private lateinit var jwt: JWT
-    private lateinit var slikaPom:ImageView
-    private var Photobitmap:Bitmap?=null
-    private var followingNumber:Int = 0
     private val viewModel: MainActivityViewModel by activityViewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +62,7 @@ class MyProfileFragment : Fragment() {
             email.text=emailToken
             var photoPath = jwt.getClaim("photo").asString()!!
             if(!photoPath.isNullOrEmpty()){
+
                 var pom2=photoPath.split("\\")
                 if(pom2.size==1)
                     pom2=photoPath.split("/")
@@ -102,6 +103,7 @@ class MyProfileFragment : Fragment() {
             startActivity(intent)
             activity?.finish()
         }
+
 
 
 

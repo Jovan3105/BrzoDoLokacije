@@ -34,7 +34,7 @@ class RecyclerAdapter(
     override fun onBindViewHolder(holder: RecyclerAdapter.ViewHolder, position: Int) {
         holder.commentUsername.text = nizKomentara[position].username
 
-        holder.commentText.text = nizKomentara[position].text
+        holder.commentText.text = nizKomentara[position].text.trim()
 
 
 

@@ -7,6 +7,8 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -27,6 +29,7 @@ import imi.projekat.hotspot.Ostalo.SnapToBlock
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.UI.HomePage.SinglePost.ImageAdapterHomePage
+import imi.projekat.hotspot.UI.Profile.FollowingProfilesFragmentDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentHomePageBinding
 import kotlinx.coroutines.flow.collectLatest
@@ -42,8 +45,10 @@ class HomePageFragment : Fragment(),PostClickHandler {
     private lateinit var listaPostovaAdapter: ListaPostovaAdapter
     private lateinit var recyclerView: ViewPager2
     private lateinit var handler: Handler
+    private lateinit var bttAnimacija: Animation
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        bttAnimacija= AnimationUtils.loadAnimation(requireContext(),R.anim.bot_to_top)
         super.onCreate(savedInstanceState)
     }
 
@@ -128,7 +133,7 @@ class HomePageFragment : Fragment(),PostClickHandler {
             }
         }
         viewModel.getPostsByUserId(1)
-
+        binding.mapaDugme.startAnimation(bttAnimacija)
 
 
 
@@ -178,6 +183,11 @@ class HomePageFragment : Fragment(),PostClickHandler {
 
     override fun getPicture(imageView: ImageView, slikaPath:String) {
         viewModel.dajSliku(imageView,slikaPath,requireContext())
+    }
+
+    override fun clickOnUser(idKorisnika: Int) {
+        val action: NavDirections = HomePageFragmentDirections.actionHomePageFragmentToDrugiKorisnik(idKorisnika)
+        findNavController().navigate(action)
     }
 
 

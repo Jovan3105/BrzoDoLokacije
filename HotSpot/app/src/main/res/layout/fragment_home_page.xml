@@ -16,6 +16,7 @@ tools:context=".UI.HomePage.SinglePost.SinglePostFragment">
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent">
 
     </androidx.viewpager2.widget.ViewPager2>
@@ -24,11 +25,16 @@ tools:context=".UI.HomePage.SinglePost.SinglePostFragment">
         android:id="@+id/mapaDugme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="17dp"
-        android:text="MAPA"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="70dp"
+        android:background="@drawable/dugme_pozadina"
+        android:drawableStart="@drawable/ic_baseline_location_on_24"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:text="@string/posts_on_map"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

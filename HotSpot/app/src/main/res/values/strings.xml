@@ -104,6 +104,7 @@
     <string name="my_posts_on_map">My posts on map</string>
     <string name="google_maps">Google maps</string>
     <string name="insert_location">Insert location</string>
+    <string name="posts_on_map">Posts on map</string>
 
 
 </resources>

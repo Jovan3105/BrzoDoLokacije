@@ -21,6 +21,8 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,6 +45,7 @@ import imi.projekat.hotspot.R
 import imi.projekat.hotspot.UI.HomePage.PostClickHandler
 import imi.projekat.hotspot.UI.HomePage.RecyclerAdapter
 import imi.projekat.hotspot.UI.LoginRegister.ConfirmEmailArgs
+import imi.projekat.hotspot.UI.Profile.FollowingProfilesFragmentDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentSinglePostBinding
 import kotlinx.android.synthetic.main.dialog_insert_comment.*
@@ -226,6 +229,7 @@ class SinglePostFragment : Fragment(), PostClickHandler {
 //                    val id = UpravljanjeResursima.getResourceString(content,requireContext())
 //                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
                     nizKomentara.add(singleComment(0,idUser,commentText,"-1","",userName))
+                    NoCommentsYetView.visibility=View.GONE
                     showComments(nizKomentara)
                 }
             }
@@ -238,6 +242,7 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                 }
                 if(it is BaseResponse.Success){
                     nizKomentara=convertListToArraylist(it.data!!)
+                    Log.d("SES", it.data!!.size.toString())
                     if(nizKomentara.isNullOrEmpty()){
                         NoCommentsYetView.visibility=View.VISIBLE
                         sortCommentsButton.visibility=View.GONE
@@ -442,5 +447,10 @@ class SinglePostFragment : Fragment(), PostClickHandler {
 
     override fun getPicture(imageView: ImageView, slikaPath: String) {
         viewModel.dajSliku(imageView,slikaPath,requireContext())
+    }
+
+    override fun clickOnUser(idKorisnika: Int) {
+        val action: NavDirections = SinglePostFragmentDirections.actionSinglePostFragmentToDrugiKorisnik(idKorisnika)
+        findNavController().navigate(action)
     }
 }

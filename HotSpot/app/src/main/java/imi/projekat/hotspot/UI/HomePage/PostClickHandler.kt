@@ -9,4 +9,5 @@ interface PostClickHandler {
     fun likePost(like:likeDTS)
     fun dislikePost(like:likeDTS)
     fun getPicture(imageView: ImageView,slika:String)
+    fun clickOnUser(idKorisnika:Int)
 }

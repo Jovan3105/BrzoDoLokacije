@@ -69,28 +69,44 @@ class MainActivity : AppCompatActivity() {
 
             when (it.itemId) {
                 R.id.home -> {
-                    if(fragmentInstance is CreatePostFragment)
-                        navKontroler.navigate(CreatePostFragmentDirections.actionCreatePostFragmentToHomePageFragment())
-                    if(fragmentInstance is MyProfileFragment)
-                        navKontroler.navigate(MyProfileFragmentDirections.actionMyProfileFragmentToHomePageFragment())
-                    if(fragmentInstance !is HomePageFragment)
-                        navKontroler.navigate(R.id.homePageFragment)
+                    when (fragmentInstance) {
+                        is CreatePostFragment ->{
+                            navKontroler.navigate(CreatePostFragmentDirections.actionCreatePostFragmentToHomePageFragment())
+                        }
+                        is MyProfileFragment->{
+                            navKontroler.navigate(MyProfileFragmentDirections.actionMyProfileFragmentToHomePageFragment())
+                        }
+                        !is HomePageFragment->{
+                            navKontroler.navigate(R.id.homePageFragment)
+                        }
+                    }
                 }
                 R.id.add -> {
-                    if(fragmentInstance is HomePageFragment)
-                        navKontroler.navigate(HomePageFragmentDirections.actionHomePageFragmentToCreatePostFragment())
-                    if(fragmentInstance is MyProfileFragment)
-                        navKontroler.navigate(MyProfileFragmentDirections.actionMyProfileFragmentToCreatePostFragment())
-                    if(fragmentInstance !is CreatePostFragment)
-                        navKontroler.navigate(R.id.createPostFragment)
+                    when (fragmentInstance) {
+                        is HomePageFragment ->{
+                            navKontroler.navigate(HomePageFragmentDirections.actionHomePageFragmentToCreatePostFragment())
+                        }
+                        is MyProfileFragment->{
+                            navKontroler.navigate(MyProfileFragmentDirections.actionMyProfileFragmentToCreatePostFragment())
+                        }
+                        !is CreatePostFragment->{
+                            navKontroler.navigate(R.id.createPostFragment)
+                        }
+                    }
                 }
                 R.id.profile -> {
-                    if(fragmentInstance is HomePageFragment)
-                        navKontroler.navigate(HomePageFragmentDirections.actionHomePageFragmentToMyProfileFragment())
-                    if(fragmentInstance is CreatePostFragment)
-                        navKontroler.navigate(CreatePostFragmentDirections.actionCreatePostFragmentToMyProfileFragment())
-                    if(fragmentInstance !is MyProfileFragment)
-                        navKontroler.navigate(R.id.myProfileFragment)
+                    when (fragmentInstance) {
+                        is HomePageFragment ->{
+                            navKontroler.navigate(HomePageFragmentDirections.actionHomePageFragmentToMyProfileFragment())
+                        }
+                        is CreatePostFragment->{
+                            navKontroler.navigate(CreatePostFragmentDirections.actionCreatePostFragmentToMyProfileFragment())
+                        }
+                        !is MyProfileFragment->{
+                            navKontroler.navigate(R.id.myProfileFragment)
+                        }
+                    }
+
                 }
             }
             true

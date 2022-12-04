@@ -37,26 +37,29 @@
                 android:layout_height="wrap_content"
                 android:text="@string/google_maps"
                 android:textColor="@color/pink1"
-                android:textSize="30dp"
+                android:textSize="30sp"
                 android:textStyle="bold"/>
+
             <ImageButton
                 android:id="@+id/izborTerenaDugme"
-                android:layout_gravity="end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/settings"
-                android:paddingRight="10dp"
+                android:layout_gravity="end"
                 android:background="#00E85379"
-                />
+                android:minHeight="48dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/settings" />
+
             <ImageButton
                 android:id="@+id/searchDugmeActionBar"
-                android:layout_gravity="end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_search_24"
-                android:paddingRight="10dp"
+                android:layout_gravity="end"
                 android:background="#00E85379"
-                />
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/ic_baseline_search_24" />
 
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -84,6 +87,7 @@
         android:orientation="horizontal"
         android:background="@color/white"
         android:paddingLeft="10dp"
+        android:visibility="gone"
         map:layout_constraintEnd_toEndOf="parent"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toBottomOf="@+id/app_barLayout">
