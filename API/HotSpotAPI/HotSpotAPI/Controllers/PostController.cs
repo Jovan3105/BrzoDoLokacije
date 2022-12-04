@@ -355,7 +355,7 @@ namespace HotSpotAPI.Controllers
             if (id == -1)
                 return Unauthorized();
 
-            userinfo u = userService.getUserInfo(idusera);
+            userinfo u = userService.getUserInfo(idusera,id);
             if (u != null)
                 return Ok(u);
             return BadRequest(null);
