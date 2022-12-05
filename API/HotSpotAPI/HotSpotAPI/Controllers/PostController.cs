@@ -238,7 +238,7 @@ namespace HotSpotAPI.Controllers
 
             double x = double.Parse(xosa);
             double y = double.Parse(yosa);
-            getPosts res = postService.getPostsByCoordinate(x, y);
+            List<getPosts> res = postService.getPostsByCoordinate(x, y);
             if (res != null)
                 return Ok(res);
             return BadRequest();

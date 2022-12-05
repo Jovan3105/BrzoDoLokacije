@@ -24,7 +24,7 @@ namespace HotSpotAPI.Servisi
         public bool addCommLike(int id, int postid, int commid);
         public bool dislikeComm(int id, int postid, int commid);
         public List<getPosts> getPostsPage(int brojstrane, int brojpostova);
-        public getPosts getPostsByCoordinate(double x, double y);
+        public List<getPosts> getPostsByCoordinate(double x, double y);
         public List<coordinates> getCoordinates();
         public List<getPosts> getPostsNear(double x, double y);
         public List<coordinates> getMyCoordinates(int id);
@@ -240,26 +240,32 @@ namespace HotSpotAPI.Servisi
                                      .ToList();
             return p;
         }
-        public getPosts getPostsByCoordinate(double x, double y)
+        public List<getPosts> getPostsByCoordinate(double x, double y)
         {
-            Post post = context.Postovi.FirstOrDefault(pom => pom.latitude == x && pom.longitude == y);
-            if (post == null)
+            List<Post> postovi = context.Postovi.Where(pom => pom.latitude == x && pom.longitude == y).ToList();
+            if (postovi == null)
                 return null;
-            getPosts p = new getPosts();
-            p.description = post.Description;
-            p.location = post.Location;
-            p.DateTime = post.DateTime;
-            p.photos = new List<string>();
-            p.brojslika = post.NumOfPhotos;
-            p.shortDescription = post.shortDescription;
-            p.latitude = post.latitude;
-            p.longitude = post.longitude;
-            p.postID = post.ID;
-            string basepath = storageService.CreatePost();
-            p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
-                                     .Select(Path.GetFileName)
-                                     .ToList();
-            return p;
+            List<getPosts> lista = new List<getPosts>();
+            foreach (Post post in postovi)
+            {
+                getPosts p = new getPosts();
+                p.description = post.Description;
+                p.location = post.Location;
+                p.DateTime = post.DateTime;
+                p.photos = new List<string>();
+                p.brojslika = post.NumOfPhotos;
+                p.shortDescription = post.shortDescription;
+                p.latitude = post.latitude;
+                p.longitude = post.longitude;
+                p.postID = post.ID;
+                string basepath = storageService.CreatePost();
+                p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
+                                         .Select(Path.GetFileName)
+                                         .ToList();
+
+                lista.Add(p);
+            }
+            return lista;
         }
         public List<coordinates> getCoordinates()
         {
