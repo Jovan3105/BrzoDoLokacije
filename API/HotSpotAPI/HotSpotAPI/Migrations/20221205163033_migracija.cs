@@ -29,6 +29,23 @@ namespace HotSpotAPI.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "History",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    userID = table.Column<int>(type: "int", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Search = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_History", x => x.ID);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Kodovi",
                 columns: table => new
                 {
@@ -193,6 +210,9 @@ namespace HotSpotAPI.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Followers");
+
+            migrationBuilder.DropTable(
+                name: "History");
 
             migrationBuilder.DropTable(
                 name: "Kodovi");

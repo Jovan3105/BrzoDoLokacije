@@ -225,6 +225,14 @@ namespace HotSpotAPI.Servisi
                 context.Followers.Remove(f);
                 context.SaveChanges();
             }
+
+            List<History> history = context.History.Where(x => x.userID == id).ToList();
+            foreach (History h in history)
+            {
+                context.History.Remove(h);
+                context.SaveChanges();
+            }
+
             return true;
         }
         public userinfo getUserInfo(int idFollow, int idUser)
