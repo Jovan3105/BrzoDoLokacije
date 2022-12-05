@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    tools:context=".UI.MapaZaPrikazPostova">
+
+    <FrameLayout
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/app_barLayout">
+
+    </FrameLayout>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_barLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        map:layout_constraintTop_toTopOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        android:background="@color/white"
+        map:layout_constraintEnd_toEndOf="parent">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/google_maps"
+                android:textColor="@color/pink1"
+                android:textSize="30sp"
+                android:textStyle="bold"/>
+
+            <ImageButton
+                android:id="@+id/izborTerenaDugme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:background="#00E85379"
+                android:minHeight="48dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/settings" />
+
+            <ImageButton
+                android:id="@+id/searchDugmeActionBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:background="#00E85379"
+                android:minWidth="48dp"
+                android:minHeight="48dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/ic_baseline_search_24" />
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/confirmLocationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/dugme_pozadina_bela"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="@string/Confirm"
+        android:textColor="@color/pink1"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayoutMaps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:paddingLeft="10dp"
+        android:visibility="gone"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/app_barLayout">
+
+        <EditText
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:id="@+id/searchTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/insert_location"
+            android:textColor="@color/black"
+            android:textColorHint="#8A040404"
+            android:textCursorDrawable="@null"
+            style="@style/InputPolje"
+            android:backgroundTint="@color/pink1"
+            map:layout_constraintEnd_toStartOf="@+id/searchTextDugme"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"/>
+        <ImageButton
+            android:background="@drawable/dugme_pozadina_bela"
+            android:id="@+id/searchTextDugme"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:src="@drawable/ic_baseline_check_24"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

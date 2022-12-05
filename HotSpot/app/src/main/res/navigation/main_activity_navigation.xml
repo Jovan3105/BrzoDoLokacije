@@ -64,6 +64,9 @@
         <action
             android:id="@+id/action_myProfileFragment_to_followingProfilesFragment"
             app:destination="@id/followingProfilesFragment" />
+        <action
+            android:id="@+id/action_myProfileFragment_to_mapaZaPrikazPostova"
+            app:destination="@id/mapaZaPrikazPostova" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -108,4 +111,9 @@
             android:name="userID"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/mapaZaPrikazPostova"
+        android:name="imi.projekat.hotspot.UI.MapaZaPrikazPostova"
+        android:label="fragment_mapa_za_prikaz_postova"
+        tools:layout="@layout/fragment_mapa_za_prikaz_postova" />
 </navigation>

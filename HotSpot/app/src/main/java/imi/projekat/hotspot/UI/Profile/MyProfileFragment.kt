@@ -150,8 +150,7 @@ class MyProfileFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            val intent = Intent(requireContext(), MapsActivity::class.java)
-            startActivity(intent)
+            findNavController().navigate(R.id.action_myProfileFragment_to_mapaZaPrikazPostova)
 
         }
 
