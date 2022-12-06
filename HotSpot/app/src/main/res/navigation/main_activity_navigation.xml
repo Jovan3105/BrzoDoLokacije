@@ -12,13 +12,20 @@
         tools:layout="@layout/fragment_home_page" >
         <action
             android:id="@+id/action_homePageFragment_to_createPostFragment"
-            app:destination="@id/createPostFragment" />
+            app:destination="@id/createPostFragment"
+            app:enterAnim="@anim/rigth_enter"
+            app:exitAnim="@anim/left_exit" />
         <action
             android:id="@+id/action_homePageFragment_to_myProfileFragment"
-            app:destination="@id/myProfileFragment" />
+            app:destination="@id/myProfileFragment"
+            app:enterAnim="@anim/rigth_enter"
+            app:exitAnim="@anim/left_exit" />
         <action
             android:id="@+id/action_homePageFragment_to_singlePostFragment"
             app:destination="@id/singlePostFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_drugi_korisnik"
+            app:destination="@id/drugi_korisnik" />
     </fragment>
     <fragment
         android:id="@+id/createPostFragment"
@@ -27,10 +34,14 @@
         tools:layout="@layout/fragment_create_post" >
         <action
             android:id="@+id/action_createPostFragment_to_homePageFragment"
-            app:destination="@id/homePageFragment" />
+            app:destination="@id/homePageFragment"
+            app:enterAnim="@anim/left_enter"
+            app:exitAnim="@anim/rigth_exit" />
         <action
             android:id="@+id/action_createPostFragment_to_myProfileFragment"
-            app:destination="@id/myProfileFragment" />
+            app:destination="@id/myProfileFragment"
+            app:enterAnim="@anim/rigth_enter"
+            app:exitAnim="@anim/left_exit" />
     </fragment>
     <fragment
         android:id="@+id/myProfileFragment"
@@ -39,16 +50,23 @@
         tools:layout="@layout/fragment_my_profile" >
         <action
             android:id="@+id/action_myProfileFragment_to_createPostFragment"
-            app:destination="@id/createPostFragment" />
+            app:destination="@id/createPostFragment"
+            app:enterAnim="@anim/left_enter"
+            app:exitAnim="@anim/rigth_exit" />
         <action
             android:id="@+id/action_myProfileFragment_to_homePageFragment"
-            app:destination="@id/homePageFragment" />
+            app:destination="@id/homePageFragment"
+            app:enterAnim="@anim/left_enter"
+            app:exitAnim="@anim/rigth_exit" />
         <action
             android:id="@+id/action_myProfileFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
         <action
             android:id="@+id/action_myProfileFragment_to_followingProfilesFragment"
             app:destination="@id/followingProfilesFragment" />
+        <action
+            android:id="@+id/action_myProfileFragment_to_mapaZaPrikazPostova"
+            app:destination="@id/mapaZaPrikazPostova" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -57,7 +75,8 @@
         tools:layout="@layout/fragment_edit_profile" >
         <action
             android:id="@+id/action_editProfileFragment_to_myProfileFragment"
-            app:destination="@id/myProfileFragment" />
+            app:destination="@id/myProfileFragment"
+            app:launchSingleTop="false" />
     </fragment>
     <fragment
         android:id="@+id/singlePostFragment"
@@ -70,10 +89,31 @@
         <argument
             android:name="idPosta"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_singlePostFragment_to_drugi_korisnik"
+            app:destination="@id/drugi_korisnik" />
     </fragment>
     <fragment
         android:id="@+id/followingProfilesFragment"
         android:name="imi.projekat.hotspot.UI.Profile.FollowingProfilesFragment"
         android:label="fragment_following_profiles"
-        tools:layout="@layout/fragment_following_profiles" />
+        tools:layout="@layout/fragment_following_profiles" >
+        <action
+            android:id="@+id/action_followingProfilesFragment_to_drugi_korisnik"
+            app:destination="@id/drugi_korisnik" />
+    </fragment>
+    <fragment
+        android:id="@+id/drugi_korisnik"
+        android:name="imi.projekat.hotspot.UI.Profile.Drugi_korisnik"
+        android:label="fragment_drugi_korisnik"
+        tools:layout="@layout/fragment_drugi_korisnik" >
+        <argument
+            android:name="userID"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapaZaPrikazPostova"
+        android:name="imi.projekat.hotspot.UI.MapaZaPrikazPostova"
+        android:label="fragment_mapa_za_prikaz_postova"
+        tools:layout="@layout/fragment_mapa_za_prikaz_postova" />
 </navigation>

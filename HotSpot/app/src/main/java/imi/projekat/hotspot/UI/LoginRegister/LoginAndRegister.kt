@@ -14,9 +14,6 @@ import imi.projekat.hotspot.ModeliZaZahteve.loginDTS
 import imi.projekat.hotspot.ModeliZaZahteve.signUpDTS
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.databinding.FragmentLoginAndRegisterBinding
-import kotlinx.android.synthetic.main.fragment_login_and_register.*
-import kotlinx.android.synthetic.main.fragment_login_and_register.view.*
-import kotlinx.android.synthetic.main.login_tab_fragment.view.*
 import kotlinx.android.synthetic.main.register_tab_fragment.view.*
 
 

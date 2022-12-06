@@ -284,6 +284,7 @@ namespace HotSpotAPI.Servisi
             bool pom = false;
             Korisnik korisnik = _context.Korisnici.Find(id);
             Boolean indPromeneUsername = false;
+            Boolean indPromeneSlike = false;
             string EmailToken=null;
             if (korisnik == null)
             {
@@ -353,7 +354,7 @@ namespace HotSpotAPI.Servisi
             {
                
                 korisnik.ProfileImage = path;
-
+                indPromeneSlike = true;
                 using (FileStream stream = System.IO.File.Create(path))
                 {
                     user.slika.CopyTo(stream);
@@ -375,11 +376,11 @@ namespace HotSpotAPI.Servisi
                 return EmailToken;
             }
 
-            if(indPromeneUsername)
+            if(indPromeneUsername || indPromeneSlike)
             {
                 ind = true;
                 indPromeneTokena = true;
-                return CreateToken(korisnik, int.Parse(configuration.GetSection("AppSettings:TrajanjeEmailTokenaUMinutima").Value.ToString()));
+                return CreateToken(korisnik, int.Parse(configuration.GetSection("AppSettings:TrajanjeTokenaUMinutima").Value.ToString()));
             }
             ind = true;
             indPromeneTokena = false;

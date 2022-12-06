@@ -1,11 +1,7 @@
 package imi.projekat.hotspot.UI.Profile
 
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,23 +12,22 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.auth0.android.jwt.JWT
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import imi.projekat.hotspot.LoginActivity
+import imi.projekat.hotspot.MainActivity
+import imi.projekat.hotspot.MapsActivity
+import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
-import imi.projekat.hotspot.Ostalo.Repository
-import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentMyProfileBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.io.FileInputStream
-import kotlin.properties.Delegates
 
 
 class MyProfileFragment : Fragment() {
@@ -41,17 +36,44 @@ class MyProfileFragment : Fragment() {
     private lateinit var username:TextView
     private lateinit var email:TextView
     private lateinit var jwt: JWT
-    private lateinit var slikaPom:ImageView
-    private var Photobitmap:Bitmap?=null
-    private var followingNumber:Int = 0
+    private lateinit var listaPostova:ArrayList<singlePost>
     private val viewModel: MainActivityViewModel by activityViewModels()
+    private var klikNaDugmeMyPosts=false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        lifecycleScope.launch{
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.MyPostsResponse.collectLatest {
+                    if(it is BaseResponse.Success){
+                        if(it.data==null){
+                            return@collectLatest
+                        }
+                        listaPostova= arrayListOf<singlePost>()
+                        listaPostova.clear()
+                        listaPostova= it.data as ArrayList<singlePost>
+                        (activity as MainActivity?)!!.endLoadingDialog()
+                        Log.d("BROJ Mojih POSTOVA", listaPostova.size.toString())
 
+                        if(klikNaDugmeMyPosts){
+                            Log.d("IDEM NA","MAPU")
+                            val intent = Intent(requireContext(), MapsActivity::class.java)
+                            startActivity(intent)
+                        }
+                    }
+                    if(it is BaseResponse.Error){
+                        Log.d("MyPostsErr", it.toString())
+                        (activity as MainActivity?)!!.endLoadingDialog()
+                        Toast.makeText(requireContext(), "Error while loading posts", Toast.LENGTH_SHORT).show()
+                    }
+                    if(it is BaseResponse.Loading){
 
-
+                    }
+                }
+            }
+        }
+        viewModel.getMyPosts()
     }
 
 
@@ -76,9 +98,11 @@ class MyProfileFragment : Fragment() {
             email.text=emailToken
             var photoPath = jwt.getClaim("photo").asString()!!
             if(!photoPath.isNullOrEmpty()){
+
                 var pom2=photoPath.split("\\")
                 if(pom2.size==1)
                     pom2=photoPath.split("/")
+
                 viewModel.dajSliku(profileImage,"ProfileImages/"+pom2[2],this.requireContext())
             }
 
@@ -116,6 +140,19 @@ class MyProfileFragment : Fragment() {
             activity?.finish()
         }
 
+        binding.PostsOnMapButton.setOnClickListener{
+            if (!(this::listaPostova.isInitialized)) {
+                (activity as MainActivity?)!!.startLoadingDialog()
+                return@setOnClickListener
+            }
+            if(listaPostova.size==0){
+                Toast.makeText(requireContext(), "You have no posts", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            findNavController().navigate(R.id.action_myProfileFragment_to_mapaZaPrikazPostova)
+
+        }
 
 
     }

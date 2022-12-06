@@ -24,7 +24,7 @@ namespace HotSpotAPI.Modeli
 
         public bool EmailPotvrdjen { get; set; } = false;
         public string refreshToken { get; set; }
-        public string ProfileImage { get; set; }
+        public string ProfileImage { get; set; } = "";
     }
 
 

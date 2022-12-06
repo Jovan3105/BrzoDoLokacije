@@ -1,29 +1,28 @@
 package imi.projekat.hotspot.UI.Profile
 
 import android.content.ContentResolver
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.HandlerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -31,12 +30,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.auth0.android.jwt.JWT
+import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
+import imi.projekat.hotspot.MainActivity
 import imi.projekat.hotspot.Ostalo.*
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentEditProfileBinding
-import kotlinx.android.synthetic.main.fragment_edit_profile.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -45,17 +45,11 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.concurrent.Executors
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [EditProfileFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 
 class MyLifecycleObserver(private val registry : ActivityResultRegistry)
     : DefaultLifecycleObserver {
@@ -77,18 +71,11 @@ class EditProfileFragment : Fragment() {
     private lateinit var binding:FragmentEditProfileBinding
     private lateinit var imageView: ImageView
     private lateinit var file: File
-    private lateinit var uri : Uri
-    private lateinit var camIntent: Intent
-    private lateinit var galIntent:Intent
-    private lateinit var cropIntent:Intent
-    private lateinit var btnImg: Button
     private lateinit var jwt: JWT
-    private lateinit var profileImage:ImageView
     private lateinit var username: TextView
     private lateinit var email: TextView
     private var selectedImageUri: Uri?=null
     private lateinit var observer : MyLifecycleObserver
-    private var photoBitmap:Bitmap?=null
     private var bitmapaSlike:Bitmap?=null
     private val contract= registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         // Handle the returned Uri
@@ -184,14 +171,19 @@ class EditProfileFragment : Fragment() {
                     Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
                 }
                 if(it is BaseResponse.Success){
-                    Log.d("SES","SESESSE")
+                    (activity as MainActivity).clearImageCache()
+                    MenadzerSesije.refreshProfilneSlike++
+
                     val id = UpravljanjeResursima.getResourceString(it.data?.message.toString(),requireContext())
                     Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
                     if(!it.data?.token.isNullOrEmpty())
                     {
                         MenadzerSesije.saveAuthToken(requireContext(),it.data?.token.toString())
                     }
+
                     findNavController().navigate(R.id.action_editProfileFragment_to_myProfileFragment)
+
+
                 }
             }
         }
@@ -228,6 +220,7 @@ class EditProfileFragment : Fragment() {
 
     }
 
+
     //SLIKAAAAAAA
 
     private fun galerija() {
@@ -250,7 +243,8 @@ class EditProfileFragment : Fragment() {
         val pomEmail=binding.EditEmail.text.toString().trim()
         val pomOldPassword=binding.OldPassword.text.toString().trim()
         val pomNewPasswrod=binding.NewPassword.text.toString().trim()
-        Log.d("zicla",pomUsername)
+
+
         if(pomUsername.isBlank())
         {
             binding.EditUsername.setError(getString(R.string.InsertYourUsername))
@@ -363,13 +357,5 @@ class EditProfileFragment : Fragment() {
         const val REQUEST_CODE_PICK_IMAGE = 101
     }
 
+}
 
-
-
-
-
-
-
-
-
-    }

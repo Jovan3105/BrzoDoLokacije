@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
@@ -41,9 +42,9 @@ class ListaPostovaAdapter(
         val VremeView:TextView=itemView.findViewById(binding.VremeView.id)
         val KratakOpis:TextView=itemView.findViewById(binding.KratakOpis.id)
         val likeDugme: ImageButton=itemView.findViewById(binding.likeButton.id)
+        val VlasnikPostaLayout:LinearLayout=itemView.findViewById(binding.VlasnikPostaLayout.id)
         init{
             binding.root.setOnClickListener(this)
-
 
 
             binding.likeButton.setOnClickListener{
@@ -52,8 +53,13 @@ class ListaPostovaAdapter(
                     return@setOnClickListener
                 }
                 clickHandler.dislikePost(likeDTS(ListaPostova[bindingAdapterPosition].postID))
-
             }
+
+            binding.VlasnikPostaLayout.setOnClickListener{
+                clickHandler.clickOnUser(ListaPostova[bindingAdapterPosition].ownerID)
+            }
+
+
         }
         override fun onClick(v: View?) {
             val trenutniPost=ListaPostova[bindingAdapterPosition]
@@ -68,6 +74,7 @@ class ListaPostovaAdapter(
             viewPager.clipToPadding = false
             viewPager.clipChildren = false
             viewPager.getChildAt(0).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+
 
 //            viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
 //                override fun onPageSelected(position: Int) {
@@ -87,21 +94,18 @@ class ListaPostovaAdapter(
 
         }
 
-        public fun setupTransformer(){
+        fun setupTransformer(){
             val transformer = CompositePageTransformer()
             transformer.addTransformer(MarginPageTransformer(40))
             transformer.addTransformer { page, position ->
                 val r = 1 - abs(position)
-                page.scaleY = 0.85f + r * 0.14f
+                page.scaleX = 0.85f + r * 0.14f
                 page.setOnClickListener{
                     this.onClick(it)
                 }
             }
-
             viewPager.setPageTransformer(transformer)
             circleIndicator3.setViewPager(viewPager)
-
-
         }
 
 

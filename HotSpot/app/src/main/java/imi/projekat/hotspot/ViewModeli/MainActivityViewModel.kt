@@ -12,7 +12,9 @@ import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.Repository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.Part
@@ -56,6 +58,13 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 
     private var _FollowUserResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val FollowUserResponse=_FollowUserResponse.asSharedFlow()
+
+    private var _UserInfoResponsee= MutableSharedFlow<BaseResponse<UserInfoResponse>>()
+    val UserInfoResponsee=_UserInfoResponsee.asSharedFlow()
+
+    private val _MyPostsResponse= MutableStateFlow<BaseResponse<List<singlePost>>>(BaseResponse.Success())
+    val MyPostsResponse=_MyPostsResponse.asStateFlow()
+
 
     var handleJob: Job?=null
 
@@ -103,7 +112,6 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     _liveEditProfileResponse.emit(BaseResponse.Success(response.body()))
-
                 }
                 else{
                     val gson = Gson()
@@ -115,19 +123,17 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
-    fun addPost(@Part photos:ArrayList<MultipartBody.Part>,@Part description:MultipartBody.Part,@Part location:MultipartBody.Part,@Part shortDescription:MultipartBody.Part){
+    fun addPost(@Part photos:ArrayList<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
             _DodajPostResposne.emit(BaseResponse.Loading())
-            val response=repository.addPost(photos,description,location,shortDescription)
+            val response=repository.addPost(photos,description,longitude,latitude,shortDescription)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     _DodajPostResposne.emit(BaseResponse.Success(response.body()))
-
                 }
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     _DodajPostResposne.emit(BaseResponse.Error(content))
-
                 }
             }
         }
@@ -146,12 +152,9 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 }
                 else{
 
-//                    val gson = Gson()
-//                    val type = object : TypeToken<ResponseBody>() {}.type
-//                    val errorResponse: ResponseBody = gson.fromJson(response.errorBody()!!.charStream(), type)
-
-//                    val content = response.errorBody()!!.charStream().readText()
-//                    _liveProfilePhotoResponse.emit((BaseResponse.Error(content)))
+                   val content = response.errorBody()!!.charStream().readText()
+                    Log.d("GRES",response.toString())
+                    _liveAllFollowingByUser.emit(BaseResponse.Error(content))
                 }
             }
         }
@@ -288,5 +291,36 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 
     fun dajSliku(imageView: ImageView, slikaPath:String,context: Context){
         repository.dajSliku(imageView,slikaPath,context)
+    }
+
+    fun getUserWithID(idusera :Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.getUserWithID(idusera)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _UserInfoResponsee.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _UserInfoResponsee.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun getMyPosts(){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _MyPostsResponse.emit(BaseResponse.Loading())
+            val response=repository.getMyPosts()
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _MyPostsResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _MyPostsResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
     }
 }

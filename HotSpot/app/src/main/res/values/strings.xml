@@ -40,7 +40,7 @@
     <string name="InsertYourComment">Insert your comment</string>
     <string name="ViewComments">View comments</string>
     <string name="NoCommentsYet">No Commets Yet</string>
-
+    <string name="Confirm">Confirm</string>
 
 
     <string-array name="CommentDropdownSort">
@@ -99,6 +99,13 @@
     <string name="satellite_map">Satellite map</string>
     <string name="maphybrid_map">MapHybrid map</string>
     <string name="terrain_map">Terrain map</string>
+    <string name="following">Following</string>
+    <string name="my_posts">My posts</string>
+    <string name="my_posts_on_map">My posts on map</string>
+    <string name="google_maps">Google maps</string>
+    <string name="insert_location">Insert location</string>
+    <string name="posts_on_map">Posts on map</string>
+    <string name="explore_the_world">Explore the world</string>
 
 
 </resources>

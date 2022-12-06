@@ -24,6 +24,10 @@ namespace HotSpotAPI.Servisi
         public bool addCommLike(int id, int postid, int commid);
         public bool dislikeComm(int id, int postid, int commid);
         public List<getPosts> getPostsPage(int brojstrane, int brojpostova);
+        public List<getPosts> getPostsByCoordinate(double x, double y);
+        public List<coordinates> getCoordinates();
+        public List<getPosts> getPostsNear(double x, double y);
+        public List<coordinates> getMyCoordinates(int id);
     }
     public class PostService : IPostService
     {
@@ -54,6 +58,8 @@ namespace HotSpotAPI.Servisi
             p.DateTime = DateTime.Now;
             p.NumOfPhotos = newPost.photos.Count;
             p.shortDescription = newPost.shortDescription;
+            p.longitude = Convert.ToDouble(newPost.longitude);
+            p.latitude = Convert.ToDouble(newPost.latitude);
             context.Postovi.Add(p);
             context.SaveChanges();
 
@@ -96,6 +102,8 @@ namespace HotSpotAPI.Servisi
                                      .Select(Path.GetFileName)
                                      .ToList().First();
                 }
+                p.latitude = post.latitude;
+                p.longitude = post.longitude;
                 p.description = post.Description;
                 p.location = post.Location;
                 p.DateTime = post.DateTime;
@@ -139,6 +147,8 @@ namespace HotSpotAPI.Servisi
                                      .Select(Path.GetFileName)
                                      .ToList().First();
                 }
+                p.longitude = post.longitude;
+                p.latitude = post.latitude;
                 p.description = post.Description;
                 p.location = post.Location;
                 p.DateTime = post.DateTime;
@@ -171,6 +181,34 @@ namespace HotSpotAPI.Servisi
                 p.photos = new List<string>();
                 p.brojslika = post.NumOfPhotos;
                 p.shortDescription = post.shortDescription;
+                p.longitude = post.longitude;
+                p.latitude = post.latitude;
+                p.postID = post.ID;
+                string basepath = storageService.CreatePost();
+                p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
+                                     .Select(Path.GetFileName)
+                                     .ToList();
+                postsList.Add(p);
+            }
+
+            return postsList;
+        }
+        public List<getPosts> getPostsNear(double x, double y)
+        {
+            List<Post> posts = context.Postovi.Where(pom => (pom.latitude > x-0.2 && pom.latitude < x+0.2) && (pom.longitude > x - 0.2 && pom.longitude < x + 0.2)).ToList();
+            List<getPosts> postsList = new List<getPosts>();
+
+            foreach (Post post in posts)
+            {
+                getPosts p = new getPosts();
+                p.description = post.Description;
+                p.location = post.Location;
+                p.DateTime = post.DateTime;
+                p.photos = new List<string>();
+                p.brojslika = post.NumOfPhotos;
+                p.shortDescription = post.shortDescription;
+                p.longitude = post.longitude;
+                p.latitude = post.latitude;
                 p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
@@ -193,6 +231,8 @@ namespace HotSpotAPI.Servisi
             p.photos = new List<string>();
             p.brojslika = post.NumOfPhotos;
             p.shortDescription = post.shortDescription;
+            p.latitude = post.latitude;
+            p.longitude = post.longitude;
             p.postID = post.ID;
             string basepath = storageService.CreatePost();
             p.photos = Directory.GetFiles(basepath, "user" + id + "post" + post.ID + "*")
@@ -200,6 +240,64 @@ namespace HotSpotAPI.Servisi
                                      .ToList();
             return p;
         }
+        public List<getPosts> getPostsByCoordinate(double x, double y)
+        {
+            List<Post> postovi = context.Postovi.Where(pom => pom.latitude == x && pom.longitude == y).ToList();
+            if (postovi == null)
+                return null;
+            List<getPosts> lista = new List<getPosts>();
+            foreach (Post post in postovi)
+            {
+                getPosts p = new getPosts();
+                p.description = post.Description;
+                p.location = post.Location;
+                p.DateTime = post.DateTime;
+                p.photos = new List<string>();
+                p.brojslika = post.NumOfPhotos;
+                p.shortDescription = post.shortDescription;
+                p.latitude = post.latitude;
+                p.longitude = post.longitude;
+                p.postID = post.ID;
+                string basepath = storageService.CreatePost();
+                p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
+                                         .Select(Path.GetFileName)
+                                         .ToList();
+
+                lista.Add(p);
+            }
+            return lista;
+        }
+        public List<coordinates> getCoordinates()
+        {
+            List<Post> postovi = context.Postovi.Where(x=>x.ID>0).ToList();
+            List<coordinates> koordinate = new List<coordinates>();
+
+            foreach (Post post in postovi)
+            {
+                coordinates koordinata = new coordinates();
+                koordinata.longitude = post.longitude;
+                koordinata.latitude = post.latitude;
+
+                koordinate.Add(koordinata);
+            }
+            return koordinate;
+        }
+        public List<coordinates> getMyCoordinates(int id)
+        {
+            List<Post> postovi = context.Postovi.Where(x => x.UserID == id).ToList();
+            List<coordinates> koordinate = new List<coordinates>();
+
+            foreach (Post post in postovi)
+            {
+                coordinates koordinata = new coordinates();
+                koordinata.longitude = post.longitude;
+                koordinata.latitude = post.latitude;
+
+                koordinate.Add(koordinata);
+            }
+            return koordinate;
+        }
+
         public bool deletePost(int id, int postID)
         {
             Post post = context.Postovi.FirstOrDefault(x => x.UserID == id && x.ID == postID);
@@ -238,7 +336,7 @@ namespace HotSpotAPI.Servisi
             kom.DateTime = DateTime.Now;
             kom.Text = comm.text;
             kom.UserID = id;
-            kom.ParentID = comm.parentid;
+            kom.ParentID = 0;
             context.Komentari.Add(kom);
             context.SaveChanges();
 

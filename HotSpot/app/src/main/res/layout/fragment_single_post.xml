@@ -174,7 +174,28 @@
                     android:background="@color/pink1"/>
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    >
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/InsertCommentButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/white"
+                        android:drawableStart="@drawable/ic_baseline_send_24"
+                        android:background="@drawable/dugme_pozadina"
+                        android:text="Insert your comment">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
                     android:layout_margin="5dp">
 
                     <androidx.core.widget.NestedScrollView
@@ -219,25 +240,6 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    >
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/InsertCommentButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="10dp"
-                        android:layout_marginTop="10dp"
-                        android:textColor="@color/white"
-                        android:background="@drawable/dugme_pozadina"
-                        android:text="Insert your comment">
-
-                    </androidx.appcompat.widget.AppCompatButton>
-                </LinearLayout>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

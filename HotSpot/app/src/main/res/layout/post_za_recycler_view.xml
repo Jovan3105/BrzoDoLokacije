@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -10,59 +10,65 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         app:cardCornerRadius="25dp"
-        app:cardElevation="8dp"
+        app:cardElevation="3dp"
         app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <LinearLayout
                 android:id="@+id/VlasnikPostaLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/dugme_pozadina"
+                android:orientation="horizontal"
+                android:padding="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:padding="10dp"
-                android:background="@drawable/dugme_pozadina"
-                android:orientation="horizontal">
+                app:layout_constraintTop_toTopOf="parent">
+
                 <androidx.cardview.widget.CardView
                     android:layout_width="60dp"
                     android:layout_height="60dp"
-                    app:cardCornerRadius="250dp"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    app:cardCornerRadius="250dp">
+
                     <ImageView
                         android:id="@+id/SlikaKorisnika"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/ic_baseline_person_24"
-                        android:scaleType="centerCrop"/>
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_baseline_person_24" />
 
                 </androidx.cardview.widget.CardView>
+
                 <TextView
                     android:id="@+id/ImeKorisnika"
-                    android:textColor="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:padding="10dp"
                     android:layout_gravity="start|center"
-                    android:text="Ime Korisnika"/>
+                    android:padding="10dp"
+                    android:text="Ime Korisnika"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/opisPostaWraper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:padding="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/VlasnikPostaLayout"
-                android:orientation="vertical">
+                app:layout_constraintTop_toBottomOf="@+id/VlasnikPostaLayout">
+
                 <TextView
                     android:id="@+id/KratakOpis"
                     android:layout_width="wrap_content"
@@ -77,6 +83,7 @@
                     android:layout_height="2dp"
                     android:background="@color/pink1" />
             </LinearLayout>
+
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager2"
                 android:layout_width="match_parent"
@@ -84,6 +91,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/opisPostaWraper">
 
             </androidx.viewpager2.widget.ViewPager2>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/linearLayout3"
                 android:layout_width="match_parent"
@@ -114,8 +122,8 @@
                     app:ci_drawable="@drawable/ic_dot_selected"
                     app:ci_drawable_unselected="@drawable/ic_dot_default"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageButton

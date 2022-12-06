@@ -12,33 +12,50 @@ import androidx.recyclerview.widget.RecyclerView
 import imi.projekat.hotspot.ModeliZaZahteve.FollowingUserAdapter
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.UI.HomePage.PostClickHandler
+import kotlinx.android.synthetic.main.list_item_following.view.*
 
 class AdapterFollowingProfiles(private val clickHandler: FollowersImages
                                ,private var users:ArrayList<FollowingUserAdapter>,
-private val listener:OnItemClickListener
+                               private val listener:OnItemClickListener
                                ):RecyclerView.Adapter<AdapterFollowingProfiles.ViewHolder>()
+
 {
 
     inner class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView),
             OnClickListener
     {
        val username:TextView=itemView.findViewById(R.id.username)
-        val photoview:ImageView=itemView.findViewById(R.id.profilePic)
-        val dugme:Button=itemView.findViewById(R.id.unfollowButton)
+        val photoview:ImageView=itemView.profilePic
+        val dugme:Button=itemView.unfollowButton
         init {
-            dugme.setOnClickListener(this)
+
+            dugme.setOnClickListener{
+                listener.onItemClickFollow(this.layoutPosition)
+            }
+            username.setOnClickListener{
+                listener.onItemClickProfile(this.layoutPosition)
+            }
+            photoview.setOnClickListener {
+                listener.onItemClickProfile(this.layoutPosition)
+            }
         }
 
         override fun onClick(v: View?) {
-            val position:Int=adapterPosition
-            listener.onItemClick(position)
+//            val position:Int=adapterPosition
+//            listener.onItemClick(position)
+            when (itemView.id) {
+                itemView.unfollowButton.id -> listener.onItemClickFollow(this.layoutPosition)
+                itemView.profilePic.id -> listener.onItemClickProfile(this.layoutPosition)
+                itemView.username.id -> listener.onItemClickProfile(this.layoutPosition)
+            }
         }
 
 
     }
 
     interface OnItemClickListener{
-        fun onItemClick(position: Int)
+        fun onItemClickFollow(position: Int)
+        fun onItemClickProfile(position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

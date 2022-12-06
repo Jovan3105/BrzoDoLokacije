@@ -11,11 +11,13 @@ object MenadzerSesije {
     const val USER_REFRESHTOKEN = "user_refresh_token"
     const val USER_PROFILE_IMAGE="user_proifle_image"
     var logOut=false
+    var refreshProfilneSlike=0
+
+
     fun saveAuthToken(context: Context, token: String) {
         saveString(context, USER_TOKEN, token)
         APIservis.ResetServis()
     }
-
 
     fun saveRefteshToken(context: Context, token: String) {
         saveString(context, USER_REFRESHTOKEN, token)

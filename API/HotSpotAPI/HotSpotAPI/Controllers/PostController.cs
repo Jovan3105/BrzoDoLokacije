@@ -177,6 +177,21 @@ namespace HotSpotAPI.Controllers
                 return Ok(sortedlist);
             return BadRequest("ErrorWhileGettingPostsForSelectedUser");
         }
+        [HttpGet("getpostbylocation/{xosa}/{yosa}")]
+        public async Task<ActionResult<string>> GetPostsNear(string xosa, string yosa)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            double x = double.Parse(xosa);
+            double y = double.Parse(yosa);
+
+            List<getPosts> res = postService.getPostsNear(x, y);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
         [HttpGet("getpostbylocation/{location}")]
         public async Task<ActionResult<string>> GetPostsByLocation(string location)
         {
@@ -185,6 +200,57 @@ namespace HotSpotAPI.Controllers
                 return Unauthorized();
 
             List<getPosts> res = postService.getAllPostsByLocaton(location);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+
+        [HttpGet("coordinate")]
+        public async Task<ActionResult<string>> GetUserPostCoordinates()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<coordinates> res = postService.getMyCoordinates(id);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpGet("coordinate/{id}")]
+        public async Task<ActionResult<string>> GetUserPostCoordinatesById(int userId)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<coordinates> res = postService.getMyCoordinates(userId);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpGet("coordinate/{xosa}/{yosa}")]
+        public async Task<ActionResult<string>> GetPostByCoordinate(string xosa, string yosa)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            double x = double.Parse(xosa);
+            double y = double.Parse(yosa);
+            List<getPosts> res = postService.getPostsByCoordinate(x, y);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpGet("allcoordinates")]
+        public async Task<ActionResult<string>> GetAllCoordinates()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<coordinates> res = postService.getCoordinates();
             if (res != null)
                 return Ok(res);
             return BadRequest();
@@ -289,7 +355,7 @@ namespace HotSpotAPI.Controllers
             if (id == -1)
                 return Unauthorized();
 
-            userinfo u = userService.getUserInfo(idusera);
+            userinfo u = userService.getUserInfo(idusera,id);
             if (u != null)
                 return Ok(u);
             return BadRequest(null);

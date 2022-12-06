@@ -78,7 +78,7 @@ xmlns:tools="http://schemas.android.com/tools">
     <activity
         android:name="imi.projekat.hotspot.MapsActivity"
         android:exported="false"
-        android:theme="@style/Theme.Material3.Light"
+        android:theme="@style/Theme.HotSpot"
         android:label="@string/title_activity_maps" />
 
     <meta-data
