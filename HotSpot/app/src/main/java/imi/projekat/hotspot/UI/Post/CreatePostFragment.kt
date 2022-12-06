@@ -77,6 +77,7 @@ class CreatePostFragment : Fragment(),addImageInterface {
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private var longitude=""
     private var latitude=""
+    private var nazivLokacije=""
     private var locationSet=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +100,8 @@ class CreatePostFragment : Fragment(),addImageInterface {
                 // There are no request codes
                 val data: Intent? = result.data
                 longitude= data!!.getStringExtra("longitude").toString()
-                latitude= data!!.getStringExtra("latitude").toString()
+                latitude= data.getStringExtra("latitude").toString()
+                nazivLokacije= data.getStringExtra("nazivLokacije").toString()
                 locationSet=true
             }
         }
@@ -482,7 +484,8 @@ class CreatePostFragment : Fragment(),addImageInterface {
         }
         val longitude1=MultipartBody.Part.createFormData("longitude",longitude)
         val latitude1=MultipartBody.Part.createFormData("latitude",latitude)
-        viewModel.addPost(partovi,description,longitude1,latitude1,shortDescription)
+        val nazivLokacije=MultipartBody.Part.createFormData("nazivLokacije",nazivLokacije)
+        viewModel.addPost(partovi,description,longitude1,latitude1,shortDescription,nazivLokacije)
 
     }
 

@@ -123,10 +123,10 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
-    fun addPost(@Part photos:ArrayList<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part){
+    fun addPost(@Part photos:ArrayList<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part,@Part nazivLokacije:MultipartBody.Part){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
             _DodajPostResposne.emit(BaseResponse.Loading())
-            val response=repository.addPost(photos,description,longitude,latitude,shortDescription)
+            val response=repository.addPost(photos,description,longitude,latitude,shortDescription,nazivLokacije)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     _DodajPostResposne.emit(BaseResponse.Success(response.body()))

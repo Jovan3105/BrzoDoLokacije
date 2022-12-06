@@ -36,7 +36,13 @@
                 android:textColor="@color/pink1"
                 android:textSize="30sp"
                 android:textStyle="bold"/>
-
+            <ImageView
+                android:background="@color/white"
+                android:id="@+id/imageView4"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:adjustViewBounds="true"
+                android:visibility="gone"/>
             <ImageButton
                 android:id="@+id/izborTerenaDugme"
                 android:layout_width="wrap_content"

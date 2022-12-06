@@ -34,6 +34,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -59,6 +60,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
     private var lastKnownLocation: Location? = null
     private var defaultLocation = LatLng(44.01772088671875, 20.90731628415956)
     private lateinit var selectedLocation: LatLng
+    private lateinit var nazivSelektovaneLokacije:String
     private lateinit var confirmLocationButton: Button
     private lateinit var bttAnimacija:Animation
     private lateinit var top_exitAnimacija:Animation
@@ -300,8 +302,46 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
 
         googleMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
             override fun onMapClick(latlng :LatLng) {
-                setMyLocationMarker(latlng,"Selected location",null)
+                var geoCoder: Geocoder = Geocoder(applicationContext, Locale.getDefault())
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        geoCoder.getFromLocation(latlng.latitude,latlng.longitude,5,object : Geocoder.GeocodeListener{
+                            override fun onGeocode(addresses: MutableList<Address>) {
+                                var listaAdresa=addresses
+                                if(listaAdresa!=null && listaAdresa.size>0){
+                                    val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
+                                    nazivSelektovaneLokacije=listaAdresa.get(0).featureName
+                                    for (i in 0 until  listaAdresa.size){
+                                        Log.d("SESSS"+i,listaAdresa.get(i).toString())
+                                    }
+                                    setMyLocationMarker(latlng,"Selected location",null)
+                                }
+                            }
+                            override fun onError(errorMessage: String?) {
+                                super.onError(errorMessage)
 
+                            }
+
+                        })
+                    } else {
+                        var listaAdresa: MutableList<Address>?
+                        @Suppress("DEPRECATION")
+                        listaAdresa= geoCoder.getFromLocation(latlng.latitude,latlng.longitude,5)
+                        if(listaAdresa!=null && listaAdresa.size>0){
+                            val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
+//                            setLocationMarker(latLng,unetaLokacija,null)
+                            nazivSelektovaneLokacije=listaAdresa.get(0).featureName
+                            for (i in 0 until  listaAdresa.size){
+                                Log.d("SESSS"+i,listaAdresa.get(i).toString())
+                            }
+
+                            setMyLocationMarker(latlng,"Selected location",null)
+                        }
+                    }
+                }
+                catch (e:Exception){
+
+                }
             }
         })
         binding.confirmLocationButton.setOnClickListener {
@@ -320,6 +360,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback,EasyPermissions.Per
         selectedLocation = location
         markerOptions.title(title)
         markerOptions.position(location)
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
         this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(location))
         if(zoom!=null){
             this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,zoom))

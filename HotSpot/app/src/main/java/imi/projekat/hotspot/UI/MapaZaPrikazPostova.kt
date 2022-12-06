@@ -5,46 +5,58 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
+import android.media.Image
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.provider.Settings
+import android.text.TextUtils
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import imi.projekat.hotspot.KonfigAplikacije
-import imi.projekat.hotspot.MapsActivity
+import imi.projekat.hotspot.MainActivity
+import imi.projekat.hotspot.ModeliZaZahteve.singlePost
+import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.R
-import imi.projekat.hotspot.databinding.ActivityMapsBinding
-import imi.projekat.hotspot.databinding.FragmentHomePageBinding
+import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentMapaZaPrikazPostovaBinding
+import kotlinx.android.parcel.Parcelize
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
 import java.util.*
+
 
 class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
 
@@ -66,6 +78,9 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     private lateinit var searchTextTekst: EditText
     private lateinit var izborTerenaDugme: ImageButton
     private lateinit var searchDugmeActionBar: ImageButton
+    private val viewModel: MainActivityViewModel by activityViewModels()
+    private lateinit var listaPostova:ArrayList<singlePost>
+    private lateinit var customWindowAdapter:CustomInfoWindowAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,14 +119,15 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
             if(!unetaLokacija.isNullOrEmpty()){
                 var geoCoder: Geocoder = Geocoder(requireContext(), Locale.getDefault())
 
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     geoCoder.getFromLocationName(unetaLokacija,1,object : Geocoder.GeocodeListener{
                         override fun onGeocode(addresses: MutableList<Address>) {
                             var listaAdresa=addresses
                             if(listaAdresa!=null && listaAdresa.size>0){
                                 val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
-                                setLocationMarker(latLng,unetaLokacija,null)
+                                setLocationMarker(latLng,unetaLokacija,null,-1)
+                                Log.d("SES",unetaLokacija)
+                                moveCameraToLocation(latLng,10f)
                             }
                         }
                         override fun onError(errorMessage: String?) {
@@ -126,7 +142,8 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                     listaAdresa= geoCoder.getFromLocationName(unetaLokacija,1)
                     if(listaAdresa!=null && listaAdresa.size>0){
                         val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
-                        setLocationMarker(latLng,unetaLokacija,null)
+                        setLocationMarker(latLng,unetaLokacija,null,-1)
+                        moveCameraToLocation(latLng,10f)
                     }
                 }
             }
@@ -158,6 +175,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
     }
 
+
     private fun requestLocPermission(){
         EasyPermissions.requestPermissions(
             this,
@@ -167,18 +185,26 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         )
     }
 
-    private fun setLocationMarker(location:LatLng,title:String,zoom:Float?){
+    private fun setLocationMarker(location:LatLng,title:String,zoom:Float?,brojPosta:Int){
 //        googleMap.clear();
         var markerOptions: MarkerOptions = MarkerOptions()
         selectedLocation = location
         markerOptions.title(title)
         markerOptions.position(location)
+
+        val icon = BitmapFactory.decodeResource(
+            requireContext().resources,
+            R.drawable.hotspotapplogo
+        )
+        val resizedBitmap = Bitmap.createScaledBitmap(icon, icon.width/2, icon.height/2, false)
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap))
 //        this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(location))
 //        if(zoom!=null){
 //            this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,zoom))
 //        }
 
-        this.googleMap.addMarker(markerOptions)
+        var marker=this.googleMap.addMarker(markerOptions)
+        marker?.tag=brojPosta
     }
 
     private fun moveCameraToLocation(location:LatLng,zoom:Float?){
@@ -237,6 +263,28 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap=googleMap
 
+        this.googleMap.setOnMarkerClickListener(object :OnMarkerClickListener{
+            override fun onMarkerClick(p0: Marker): Boolean {
+                moveCameraToLocation(LatLng(p0.position.latitude,p0.position.longitude),null)
+                if (p0.isInfoWindowShown) {
+                    p0.hideInfoWindow()
+                    return false
+                } else {
+                    val clickCount = p0.tag as? Int
+                    p0.showInfoWindow()
+                    GlobalScope.launch {
+                        delay(500)
+                        customWindowAdapter.getInfoContents(clickCount!!)
+                    }
+                    return true
+                }
+
+
+            }
+
+        })
+
+
         if(lastKnownLocation!=null)
             moveCameraToLocation(LatLng(lastKnownLocation!!.latitude, lastKnownLocation!!.longitude),10f)
 
@@ -269,7 +317,38 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
         googleMap.setOnMapClickListener(object :GoogleMap.OnMapClickListener {
             override fun onMapClick(latlng :LatLng) {
-//                setMyLocationMarker(latlng,"Selected location",null)
+                var geoCoder: Geocoder = Geocoder(requireContext(), Locale.getDefault())
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        geoCoder.getFromLocation(latlng.latitude,latlng.longitude,1,object : Geocoder.GeocodeListener{
+                            override fun onGeocode(addresses: MutableList<Address>) {
+                                var listaAdresa=addresses
+                                if(listaAdresa!=null && listaAdresa.size>0){
+                                    val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
+                                    Log.d("SES",listaAdresa.get(0).featureName)
+                                    moveCameraToLocation(latLng,10f)
+                                }
+                            }
+                            override fun onError(errorMessage: String?) {
+                                super.onError(errorMessage)
+
+                            }
+
+                        })
+                    } else {
+                        var listaAdresa: MutableList<Address>?
+                        @Suppress("DEPRECATION")
+                        listaAdresa= geoCoder.getFromLocation(latlng.latitude,latlng.longitude,1)
+                        if(listaAdresa!=null && listaAdresa.size>0){
+                            val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
+//                            setLocationMarker(latLng,unetaLokacija,null)
+                            moveCameraToLocation(latLng,10f)
+                        }
+                    }
+                }
+                catch (e:Exception){
+
+                }
 
             }
         })
@@ -281,6 +360,47 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 //            finish();
 //        }
         binding.confirmLocationButton.startAnimation(bttAnimacija)
+
+        lifecycleScope.launch{
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.MyPostsResponse.collectLatest {
+                    if(it is BaseResponse.Success){
+                        if(it.data==null){
+                            parentFragmentManager.popBackStack()
+                            return@collectLatest
+                        }
+                        listaPostova= arrayListOf<singlePost>()
+                        listaPostova.clear()
+                        listaPostova= it.data as ArrayList<singlePost>
+//                        (activity as MainActivity?)!!.endLoadingDialog()
+                        //Log.d("BROJ Mojih POSTOVA", listaPostova.size.toString())
+                        for (i in 0 until  listaPostova.size){
+                            var latLng=LatLng(listaPostova[i].latitude, listaPostova[i].longitude)
+                            setLocationMarker(latLng,listaPostova[i].shortDescription,10f,i)
+                        }
+
+                    }
+                    if(it is BaseResponse.Error){
+                        Log.d("MyPostsErr", it.toString())
+                        (activity as MainActivity?)!!.endLoadingDialog()
+                        Toast.makeText(requireContext(), "Error while loading posts", Toast.LENGTH_SHORT).show()
+                    }
+                    if(it is BaseResponse.Loading){
+
+                    }
+                }
+            }
+        }
+        customWindowAdapter= CustomInfoWindowAdapter(requireContext(),viewModel,listaPostova)
+        this.googleMap.setInfoWindowAdapter(customWindowAdapter)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        EasyPermissions.onRequestPermissionsResult(1,permissions,grantResults,this)
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
@@ -331,4 +451,20 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         supMapFragment.getMapAsync(this)
     }
 
+
+
+
+    companion object {
+        private const val DEFAULT_ZOOM = 15
+        private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
+
+        // Keys for storing activity state.
+        private val saveData: SaveData? = null
+
+        // Used for selecting the current place.
+        private const val M_MAX_ENTRIES = 5
+    }
+
+    @Parcelize
+    private data class SaveData(var KEY_CAMERA_POSITION: CameraPosition?, var KEY_LOCATION: Location?): Parcelable
 }

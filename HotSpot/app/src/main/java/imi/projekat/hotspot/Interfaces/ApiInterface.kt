@@ -43,7 +43,7 @@ interface ApiInterface {
 
     @Multipart
     @POST("/api/Post/addpost")
-    suspend fun addPost(@Part photos:List<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude: MultipartBody.Part, @Part latitude: MultipartBody.Part, @Part shortDescription:MultipartBody.Part):Response<ResponseBody>
+    suspend fun addPost(@Part photos:List<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude: MultipartBody.Part, @Part latitude: MultipartBody.Part, @Part shortDescription:MultipartBody.Part,@Part location:MultipartBody.Part):Response<ResponseBody>
 
     @GET("/api/Post/getpost/{postid}")
     suspend fun getPostWithId(@Path("postid") postid :Int):Response<singlePost>

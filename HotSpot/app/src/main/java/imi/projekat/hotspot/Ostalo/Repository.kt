@@ -1,6 +1,7 @@
 package imi.projekat.hotspot.Ostalo
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
@@ -14,9 +15,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.Part
-import retrofit2.http.Path
 
 class Repository(){
 
@@ -42,8 +41,8 @@ class Repository(){
 
 
 
-    suspend fun addPost(@Part photos:List<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part):Response<ResponseBody>{
-        return APIservis.Servis.addPost(photos,description,longitude,latitude,shortDescription)
+    suspend fun addPost(@Part photos:List<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part,@Part nazivLokacije:MultipartBody.Part):Response<ResponseBody>{
+        return APIservis.Servis.addPost(photos,description,longitude,latitude,shortDescription,nazivLokacije)
     }
     suspend fun getAllFollowingByUSer():Response<getuser>{
         return APIservis.Servis.getAllFollowingByUSer()
@@ -92,16 +91,17 @@ class Repository(){
         val baseUrl=KonfigAplikacije.instanca.AppSettings.baseURL
 
 
-
         Glide.with(context)
             .asBitmap()
             .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .load(baseUrl + "Storage/$slikaPath")
             .fitCenter()
+            .placeholder(R.drawable.image_holder)
             //.skipMemoryCache(true)
             .signature(ObjectKey(MenadzerSesije.refreshProfilneSlike))
             .error(R.drawable.image_holder)
             .into(BitmapImageViewTarget(imageView))
+
 
     }
 }

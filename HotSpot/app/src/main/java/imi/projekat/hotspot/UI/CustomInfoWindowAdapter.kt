@@ -23,10 +23,10 @@ class CustomInfoWindowAdapter(var context:Context,var viewModel: MainActivityVie
     var mWindow: View = LayoutInflater.from(context)
         .inflate(R.layout.custom_info_window_za_marker, null)
 
-
+    val slika = mWindow.findViewById(R.id.imageView4) as ImageView
 
     private fun setInfoWindowText(marker: Marker): View {
-        val slika = mWindow.findViewById(R.id.imageView4) as ImageView
+
         val clickCount = marker.tag as? Int
 
         val title = marker.title
@@ -38,7 +38,6 @@ class CustomInfoWindowAdapter(var context:Context,var viewModel: MainActivityVie
             brojLajkova.text= "Likes: "+listaPostova[clickCount!!].brojlajkova.toString()
         }
 
-        viewModel.dajSliku(slika,"PostsFolder/"+ listaPostova[clickCount!!].photos[0],context)
         return mWindow
     }
 
@@ -52,20 +51,7 @@ class CustomInfoWindowAdapter(var context:Context,var viewModel: MainActivityVie
         return mWindow
     }
 
-
-    var handleJob: Job?=null
-
-    val exceptionHandler= CoroutineExceptionHandler{ _, throwable->onError(
-        "ConnectionError"
-    )
-        Log.d("ExceptionInMainView",throwable.localizedMessage.toString())
-    }
-
-    private fun onError(greska: String){
-        runBlocking{
-            launch {
-
-            }
-        }
+    fun getInfoContents(id:Int) {
+        viewModel.dajSliku(slika,"PostsFolder/"+ listaPostova[id!!].photos[0],context)
     }
 }
