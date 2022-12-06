@@ -28,6 +28,10 @@ namespace HotSpotAPI.Servisi
         public List<coordinates> getCoordinates();
         public List<getPosts> getPostsNear(double x, double y);
         public List<coordinates> getMyCoordinates(int id);
+        public bool addHistory(int id, string location);
+        public List<history> getHistory(int id);
+        public bool deleteHistory(int id, int postid);
+        public bool deleteAllHistory(int id);
     }
     public class PostService : IPostService
     {
@@ -499,6 +503,72 @@ namespace HotSpotAPI.Servisi
                 return false;
             kom.NumOFLikes--;
             context.SaveChanges();
+            return true;
+        }
+        public bool addHistory(int id, string location)
+        {
+            var search = context.History.FirstOrDefault(x => x.Search.Equals(location));
+            if (search == null)
+                return false;
+            History h = new History();
+            h.userID = id;
+            h.Search = location;
+            h.DateTime = DateTime.Now;
+            context.History.Add(h);
+            context.SaveChanges();
+            return true;
+        }
+
+        public List<history> getHistory(int id)
+        {
+            List<History> search = context.History.Where(x => x.userID == id).ToList();
+            if (search == null)
+                return null;
+
+            List<History> sortedlist = search.OrderByDescending(x => x.DateTime).ToList();
+            
+            List<history> lista = new List<history>();
+            int pom = 0;
+            foreach(History h in search)
+            {
+                history h1 = new history();
+                h1.location = h.Search;
+
+                if (pom >= 10)
+                {
+                    context.History.Remove(h);
+                    context.SaveChanges();
+                }
+                else
+                {
+                    lista.Add(h1);
+                }
+                pom++;
+            }
+            return lista;
+        }
+
+        public bool deleteHistory(int id, int postid)
+        {
+            History h = context.History.FirstOrDefault(x => x.userID == id && x.ID == postid);
+            if (h == null)
+                return false;
+            context.Remove(h);
+            context.SaveChanges();
+            return true;
+        }
+
+        public bool deleteAllHistory(int id)
+        {
+            List<History> history = context.History.Where(x => x.userID == id).ToList();
+            if (history == null)
+                return false;
+
+            foreach(History h in history)
+            {
+                context.Remove(h);
+                context.SaveChanges();
+            }
             return true;
         }
         public List<getPosts> getPostsPage(int brojstrane, int brojpostova)

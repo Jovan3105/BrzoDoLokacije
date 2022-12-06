@@ -160,4 +160,10 @@ namespace HotSpotAPI.ModeliZaZahteve
         public double longitude { get; set; }
         public double latitude { get; set; }
     }
+
+    public class history
+    {
+        public string location { get; set; }
+    }
+
 }

@@ -36,6 +36,27 @@ namespace HotSpotAPI.Migrations
                     b.ToTable("Followers");
                 });
 
+            modelBuilder.Entity("HotSpotAPI.Modeli.History", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Search")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("userID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("History");
+                });
+
             modelBuilder.Entity("HotSpotAPI.Modeli.Kod", b =>
                 {
                     b.Property<int>("ID")
