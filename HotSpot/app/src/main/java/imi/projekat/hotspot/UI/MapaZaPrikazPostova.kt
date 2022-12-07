@@ -31,6 +31,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -50,7 +52,9 @@ import imi.projekat.hotspot.MainActivity
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.HomePage.HomePageFragmentDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
+import imi.projekat.hotspot.databinding.DialogMapsMarkerBinding
 import imi.projekat.hotspot.databinding.FragmentMapaZaPrikazPostovaBinding
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.*
@@ -80,7 +84,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     private lateinit var searchDugmeActionBar: ImageButton
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var listaPostova:ArrayList<singlePost>
-    private lateinit var customWindowAdapter:CustomInfoWindowAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -265,21 +268,37 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
         this.googleMap.setOnMarkerClickListener(object :OnMarkerClickListener{
             override fun onMarkerClick(p0: Marker): Boolean {
+                val clickCount = p0.tag as? Int
+
                 moveCameraToLocation(LatLng(p0.position.latitude,p0.position.longitude),null)
-                if (p0.isInfoWindowShown) {
-                    p0.hideInfoWindow()
-                    return false
-                } else {
-                    val clickCount = p0.tag as? Int
-                    p0.showInfoWindow()
-                    GlobalScope.launch {
-                        delay(500)
-                        customWindowAdapter.getInfoContents(clickCount!!)
-                    }
-                    return true
+
+                val dialog=Dialog(requireContext(),R.style.MyDialog)
+                dialog.setCancelable(false)
+                dialog.setContentView(R.layout.dialog_maps_marker)
+
+                var dialogMainBinding= DialogMapsMarkerBinding.inflate(getLayoutInflater())
+
+
+                dialog.findViewById<ImageView>(R.id.btnCloseDialog).setOnClickListener{
+                    Log.d("Gasenje dialoga","Gasenje dialoga")
+                    dialog.dismiss()
+                }
+                dialog.findViewById<Button>(dialogMainBinding.showPostButton.id).setOnClickListener{
+                    dialog.dismiss()
+                    predjiNaPost(listaPostova[clickCount!!].postID)
                 }
 
 
+                viewModel.dajSliku(dialog.findViewById<ImageView>(dialogMainBinding.slikaPosta.id),"PostsFolder/"+listaPostova[clickCount!!].photos[0],requireContext())
+
+                dialog.findViewById<TextView>(dialogMainBinding.Title.id).text=listaPostova[clickCount!!].shortDescription
+                dialog.findViewById<TextView>(dialogMainBinding.numberOflikes.id).text="Number of likes:"+listaPostova[clickCount!!].brojlajkova.toString()
+                dialog.findViewById<TextView>(dialogMainBinding.postDate.id).text=listaPostova[clickCount!!].dateTime
+
+
+                dialog.show()
+                p0.hideInfoWindow()
+                return true
             }
 
         })
@@ -302,13 +321,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return
         }
         this.googleMap.isMyLocationEnabled=true
@@ -352,13 +364,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
             }
         })
-//        binding.confirmLocationButton.setOnClickListener {
-//            var data: Intent = Intent()
-//            data.putExtra("longitude",selectedLocation.longitude.toString())
-//            data.putExtra("latitude",selectedLocation.latitude.toString())
-//            setResult(AppCompatActivity.RESULT_OK, data);
-//            finish();
-//        }
         binding.confirmLocationButton.startAnimation(bttAnimacija)
 
         lifecycleScope.launch{
@@ -391,8 +396,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                 }
             }
         }
-        customWindowAdapter= CustomInfoWindowAdapter(requireContext(),viewModel,listaPostova)
-        this.googleMap.setInfoWindowAdapter(customWindowAdapter)
     }
 
     override fun onRequestPermissionsResult(
@@ -451,7 +454,10 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         supMapFragment.getMapAsync(this)
     }
 
-
+    private fun predjiNaPost(idPosta:Int){
+        val action: NavDirections = MapaZaPrikazPostovaDirections.actionMapaZaPrikazPostovaToSinglePostFragment(idPosta)
+        findNavController().navigate(action)
+    }
 
 
     companion object {
