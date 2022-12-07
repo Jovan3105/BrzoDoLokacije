@@ -323,6 +323,18 @@ namespace HotSpotAPI.Controllers
                 return BadRequest("ErrorWhileAddingHistory");
             return Ok();
         }
+        [HttpGet("history/popular"), AllowAnonymous]
+        public async Task<ActionResult<string>> GetPopularHistory()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<pophistory> res = postService.getPopularHistory();
+            if (res == null)
+                return BadRequest("ErrorWhileAddingHistory");
+            return Ok(res);
+        }
         [HttpDelete("history")]
         public async Task<ActionResult<string>> DeleteHistory(likes history)
         {

@@ -166,4 +166,10 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string location { get; set; }
     }
 
+    public class pophistory
+    {
+        public string location { get; set; }
+        public int count { get; set; }
+    }
+
 }

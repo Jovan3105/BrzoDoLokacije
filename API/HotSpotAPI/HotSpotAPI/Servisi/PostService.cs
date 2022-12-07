@@ -32,6 +32,7 @@ namespace HotSpotAPI.Servisi
         public List<history> getHistory(int id);
         public bool deleteHistory(int id, int postid);
         public bool deleteAllHistory(int id);
+        public List<pophistory> getPopularHistory();
     }
     public class PostService : IPostService
     {
@@ -410,6 +411,13 @@ namespace HotSpotAPI.Servisi
 
             context.Komentari.Remove(com);
             context.SaveChanges();
+
+            var like = context.LikeKomentara.Where(x => x.CommentID == commid).ToList();
+            foreach(var l in like)
+            {
+                context.LikeKomentara.Remove(l);
+                context.SaveChanges();
+            }
             return true;
         }
         public bool EditComment(int commid, int postId, string newtext, int id)
@@ -548,6 +556,33 @@ namespace HotSpotAPI.Servisi
             return lista;
         }
 
+        public List<pophistory> getPopularHistory()
+        {
+            List<String> search = context.History.Select(x=>x.Search).Distinct().ToList();
+            if (search == null)
+                return null;
+
+            List<History> search2 = context.History.ToList();
+            List<pophistory> pop = new List<pophistory>();
+            foreach (String h in search)
+            {
+                int count = 0;
+                foreach(History h2 in search2)
+                {
+                    if(h == h2.Search)
+                    {
+                        count++;
+                    }
+                }
+                pophistory p = new pophistory();
+                p.location = h;
+                p.count = count;
+                pop.Add(p);
+            }
+
+            List<pophistory> sortedlist = pop.OrderByDescending(x => x.count).ToList();
+            return sortedlist;
+        }
         public bool deleteHistory(int id, int postid)
         {
             History h = context.History.FirstOrDefault(x => x.userID == id && x.ID == postid);
