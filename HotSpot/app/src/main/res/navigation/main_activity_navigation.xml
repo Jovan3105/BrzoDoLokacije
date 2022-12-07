@@ -115,5 +115,9 @@
         android:id="@+id/mapaZaPrikazPostova"
         android:name="imi.projekat.hotspot.UI.MapaZaPrikazPostova"
         android:label="fragment_mapa_za_prikaz_postova"
-        tools:layout="@layout/fragment_mapa_za_prikaz_postova" />
+        tools:layout="@layout/fragment_mapa_za_prikaz_postova" >
+        <action
+            android:id="@+id/action_mapaZaPrikazPostova_to_singlePostFragment"
+            app:destination="@id/singlePostFragment" />
+    </fragment>
 </navigation>
