@@ -5,19 +5,16 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
-import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.provider.Settings
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +42,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.maps.android.clustering.Cluster
+import com.google.maps.android.clustering.ClusterItem
+import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.ClusterManager.OnClusterClickListener
+import com.google.maps.android.clustering.ClusterManager.OnClusterItemClickListener
+import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import imi.projekat.hotspot.KonfigAplikacije
@@ -52,7 +55,6 @@ import imi.projekat.hotspot.MainActivity
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.R
-import imi.projekat.hotspot.UI.HomePage.HomePageFragmentDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.DialogMapsMarkerBinding
 import imi.projekat.hotspot.databinding.FragmentMapaZaPrikazPostovaBinding
@@ -60,6 +62,7 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
@@ -84,7 +87,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     private lateinit var searchDugmeActionBar: ImageButton
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var listaPostova:ArrayList<singlePost>
-
+    private lateinit var mClusterManager: ClusterManager<MyItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +97,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         binding= FragmentMapaZaPrikazPostovaBinding.inflate(inflater,container,false)
         return binding.root
     }
@@ -265,7 +269,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap=googleMap
-
+        setUpClusterer()
         this.googleMap.setOnMarkerClickListener(object :OnMarkerClickListener{
             override fun onMarkerClick(p0: Marker): Boolean {
                 val clickCount = p0.tag as? Int
@@ -338,7 +342,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                                 if(listaAdresa!=null && listaAdresa.size>0){
                                     val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
                                     Log.d("SES",listaAdresa.get(0).featureName)
-                                    moveCameraToLocation(latLng,10f)
+                                    moveCameraToLocation(latLng,null)
                                 }
                             }
                             override fun onError(errorMessage: String?) {
@@ -366,6 +370,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         })
         binding.confirmLocationButton.startAnimation(bttAnimacija)
 
+
         lifecycleScope.launch{
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.MyPostsResponse.collectLatest {
@@ -380,10 +385,12 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 //                        (activity as MainActivity?)!!.endLoadingDialog()
                         //Log.d("BROJ Mojih POSTOVA", listaPostova.size.toString())
                         for (i in 0 until  listaPostova.size){
-                            var latLng=LatLng(listaPostova[i].latitude, listaPostova[i].longitude)
-                            setLocationMarker(latLng,listaPostova[i].shortDescription,10f,i)
+//                            var latLng=LatLng(listaPostova[i].latitude, listaPostova[i].longitude)
+//                            setLocationMarker(latLng,listaPostova[i].shortDescription,10f,i)
+                            val offsetItem = MyItem(listaPostova[i].latitude, listaPostova[i].longitude, listaPostova[i].shortDescription,"Likes:"+listaPostova[i].brojlajkova,i)
+                            mClusterManager.addItem(offsetItem)
                         }
-
+                        mClusterManager.cluster()
                     }
                     if(it is BaseResponse.Error){
                         Log.d("MyPostsErr", it.toString())
@@ -396,6 +403,75 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                 }
             }
         }
+
+    }
+
+    private fun setUpClusterer() {
+        mClusterManager = ClusterManager(requireContext(), googleMap)
+        var renderer=PlaceRenderer(requireContext(),googleMap,mClusterManager)
+        renderer.minClusterSize=1
+        mClusterManager.renderer=renderer
+
+        mClusterManager.onCameraIdle()
+
+
+
+        mClusterManager.setOnClusterClickListener(object:OnClusterClickListener<MyItem>{
+            override fun onClusterClick(cluster: Cluster<MyItem>?): Boolean {
+                var listaKlusterPostova=ArrayList<singlePost>()
+                for (i in 0 until  cluster!!.items.size){
+                    listaKlusterPostova.add(listaPostova[cluster.items.elementAt(i).getTag()])
+                }
+                viewModel.setClusterPosts(listaKlusterPostova)
+
+                findNavController().navigate(R.id.action_mapaZaPrikazPostova_to_prikazListePostova)
+
+                return true
+            }
+
+        })
+
+        mClusterManager.setOnClusterItemClickListener(object:OnClusterItemClickListener<MyItem>{
+            override fun onClusterItemClick(item: MyItem?): Boolean {
+                if (item==null)
+                    return false
+                val brojPosta=item.getTag()
+
+                moveCameraToLocation(LatLng(listaPostova[brojPosta].latitude,listaPostova[brojPosta].longitude),null)
+
+                val dialog=Dialog(requireContext(),R.style.MyDialog)
+                dialog.setCancelable(false)
+                dialog.setContentView(R.layout.dialog_maps_marker)
+
+                val dialogMainBinding= DialogMapsMarkerBinding.inflate(getLayoutInflater())
+
+
+                dialog.findViewById<ImageView>(R.id.btnCloseDialog).setOnClickListener{
+                    Log.d("Gasenje dialoga","Gasenje dialoga")
+                    dialog.dismiss()
+                }
+                dialog.findViewById<Button>(dialogMainBinding.showPostButton.id).setOnClickListener{
+                    dialog.dismiss()
+                    predjiNaPost(listaPostova[brojPosta].postID)
+                }
+
+
+                viewModel.dajSliku(dialog.findViewById<ImageView>(dialogMainBinding.slikaPosta.id),"PostsFolder/"+listaPostova[brojPosta].photos[0],requireContext())
+
+                dialog.findViewById<TextView>(dialogMainBinding.Title.id).text=listaPostova[brojPosta].shortDescription
+                dialog.findViewById<TextView>(dialogMainBinding.numberOflikes.id).text="Number of likes:"+listaPostova[brojPosta].brojlajkova.toString()
+                dialog.findViewById<TextView>(dialogMainBinding.postDate.id).text=listaPostova[brojPosta].dateTime
+
+
+                dialog.show()
+                return true
+            }
+
+        })
+
+
+        googleMap.setOnCameraIdleListener(mClusterManager)
+        googleMap.setOnMarkerClickListener(mClusterManager)
     }
 
     override fun onRequestPermissionsResult(
@@ -473,4 +549,80 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
     @Parcelize
     private data class SaveData(var KEY_CAMERA_POSITION: CameraPosition?, var KEY_LOCATION: Location?): Parcelable
+}
+
+class MyItem : ClusterItem {
+    private val mPosition: LatLng
+    private val mTitle: String
+    private val mSnippet: String
+    private var mTag: Int = 0
+
+    constructor(lat: Double, lng: Double) {
+        mPosition = LatLng(lat, lng)
+        mTitle = ""
+        mSnippet = ""
+    }
+
+    constructor(lat: Double, lng: Double, title: String, snippet: String,tag:Int) {
+        mPosition = LatLng(lat, lng)
+        mTitle = title
+        mSnippet = snippet
+        mTag=tag
+    }
+
+    override fun getPosition(): LatLng {
+        return mPosition
+    }
+
+    override fun getTitle(): String {
+        return mTitle
+    }
+
+    override fun getSnippet(): String {
+        return mSnippet
+    }
+
+    fun getTag(): Int {
+        return mTag
+    }
+}
+
+class PlaceRenderer(
+    private val context: Context,
+    map: GoogleMap,
+    clusterManager: ClusterManager<MyItem>
+) : DefaultClusterRenderer<MyItem>(context, map, clusterManager) {
+
+    /**
+     * The icon to use for each cluster item
+     */
+
+
+    /**
+     * Method called before the cluster item (the marker) is rendered.
+     * This is where marker options should be set.
+     */
+    override fun onBeforeClusterItemRendered(
+        item: MyItem,
+        markerOptions: MarkerOptions
+    ) {
+        val icon = BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.hotspotapplogo
+        )
+        val resizedBitmap = Bitmap.createScaledBitmap(icon, icon.width/2, icon.height/2, false)
+
+
+        markerOptions.title(item.title)
+            .position(item.position)
+            .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap))
+    }
+
+    /**
+     * Method called right after the cluster item (the marker) is rendered.
+     * This is where properties for the Marker object should be set.
+     */
+    override fun onClusterItemRendered(clusterItem: MyItem, marker: Marker) {
+        marker.tag = clusterItem
+    }
 }

@@ -66,6 +66,10 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     val MyPostsResponse=_MyPostsResponse.asStateFlow()
 
 
+    private val _ClusterPosts= MutableStateFlow<List<singlePost>>(ArrayList<singlePost>())
+    val ClusterPosts=_ClusterPosts.asStateFlow()
+
+
     var handleJob: Job?=null
 
     val exceptionHandler=CoroutineExceptionHandler{_,throwable->onError(
@@ -321,6 +325,13 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                     _MyPostsResponse.emit(BaseResponse.Error(content))
                 }
             }
+        }
+    }
+
+
+    fun setClusterPosts(arrayList: ArrayList<singlePost>){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _ClusterPosts.emit(arrayList)
         }
     }
 }

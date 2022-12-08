@@ -23,9 +23,6 @@
         <action
             android:id="@+id/action_homePageFragment_to_singlePostFragment"
             app:destination="@id/singlePostFragment" />
-        <action
-            android:id="@+id/action_homePageFragment_to_drugi_korisnik"
-            app:destination="@id/drugi_korisnik" />
     </fragment>
     <fragment
         android:id="@+id/createPostFragment"
@@ -119,5 +116,23 @@
         <action
             android:id="@+id/action_mapaZaPrikazPostova_to_singlePostFragment"
             app:destination="@id/singlePostFragment" />
+        <action
+            android:id="@+id/action_mapaZaPrikazPostova_to_prikazListePostova"
+            app:destination="@id/prikazListePostova" />
+    </fragment>
+    <fragment
+        android:id="@+id/prikazListePostova"
+        android:name="imi.projekat.hotspot.UI.Mapa.PrikazListePostova"
+        android:label="fragment_prikaz_liste_postova"
+        tools:layout="@layout/fragment_prikaz_liste_postova" >
+        <action
+            android:id="@+id/action_prikazListePostova_to_mapaZaPrikazPostova"
+            app:destination="@id/mapaZaPrikazPostova" />
+        <action
+            android:id="@+id/action_prikazListePostova_to_singlePostFragment"
+            app:destination="@id/singlePostFragment" />
+        <action
+            android:id="@+id/action_prikazListePostova_to_drugi_korisnik2"
+            app:destination="@id/drugi_korisnik" />
     </fragment>
 </navigation>

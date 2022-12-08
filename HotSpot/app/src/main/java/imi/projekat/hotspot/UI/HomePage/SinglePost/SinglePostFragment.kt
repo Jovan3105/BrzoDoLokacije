@@ -242,7 +242,6 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                 }
                 if(it is BaseResponse.Success){
                     nizKomentara=convertListToArraylist(it.data!!)
-                    Log.d("SES", it.data!!.size.toString())
                     if(nizKomentara.isNullOrEmpty()){
                         NoCommentsYetView.visibility=View.VISIBLE
                         sortCommentsButton.visibility=View.GONE
