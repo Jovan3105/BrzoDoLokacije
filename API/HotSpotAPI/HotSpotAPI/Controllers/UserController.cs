@@ -164,6 +164,19 @@ namespace HotSpotAPI.Controllers
                 return Ok(f);
             return BadRequest();
         }
+
+        [HttpGet("myfollowers")]
+        public async Task<ActionResult<string>> GetMyFollowers()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<follower> f = userService.getMyFollowes(id);
+            if (f != null)
+                return Ok(f);
+            return BadRequest();
+        }
         [HttpGet("follow/{brojstrane}/{brojkorisnika}")]
         public async Task<ActionResult<string>> GetFollowers(int brojstrane, int brojkorisnika)
         {
