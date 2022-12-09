@@ -23,8 +23,6 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _liveEditProfileResponse=MutableSharedFlow<BaseResponse<changeAccDataResponse>>()
     val liveEditProfileResponse=_liveEditProfileResponse.asSharedFlow()
 
-
-
     private var _DodajPostResposne= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val DodajPostResposne=_DodajPostResposne.asSharedFlow()
 
@@ -64,6 +62,9 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
 
     private val _MyPostsResponse= MutableStateFlow<BaseResponse<List<singlePost>>>(BaseResponse.Success())
     val MyPostsResponse=_MyPostsResponse.asStateFlow()
+
+    private val _AllPostsSortedResponse= MutableStateFlow<BaseResponse<List<singlePost>>>(BaseResponse.Success())
+    val AllPostsSortedResponse=_AllPostsSortedResponse.asStateFlow()
 
 
     private val _ClusterPosts= MutableStateFlow<List<singlePost>>(ArrayList<singlePost>())
@@ -323,6 +324,22 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     _MyPostsResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun getAllPostsSorted(sort:Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _AllPostsSortedResponse.emit(BaseResponse.Loading())
+            val response=repository.getAllSortedPosts(sort)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _AllPostsSortedResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _AllPostsSortedResponse.emit(BaseResponse.Error(content))
                 }
             }
         }

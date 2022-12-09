@@ -31,6 +31,7 @@ import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.MapaZaPrikazPostovaDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentHomePageBinding
 import kotlinx.coroutines.flow.collectLatest
@@ -81,11 +82,10 @@ class HomePageFragment : Fragment() {
         }
 
 
-
-
         binding.mapaDugme.setOnClickListener{
-            val intent = Intent(requireContext(), MapsActivity::class.java)
-            startActivity(intent)
+            viewModel.getAllPostsSorted(3)
+            val action: NavDirections = HomePageFragmentDirections.actionHomePageFragmentToMapaZaPrikazPostova(-1)
+            findNavController().navigate(action)
         }
 
 

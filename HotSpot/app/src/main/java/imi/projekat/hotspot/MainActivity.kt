@@ -158,6 +158,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        this.lifecycleScope.launch{
+            viewModel.AllPostsSortedResponse.collectLatest{
+                dijalog.isDismiss()
+                if(it is BaseResponse.Loading){
+                    dijalog.startLoading()
+                }
+            }
+        }
+
     }
 
     fun clearImageCache(){

@@ -78,4 +78,15 @@ interface ApiInterface {
     @GET("/api/Post/getposts")
     suspend fun getMyPosts():Response<List<singlePost>>
 
+
+    //OD STARIJEG POSTA KA NOVIJEM 0
+
+    //OD MANJE LAJKOVA KA VISE 1
+
+    //OD NOVIJEG KA STARIJEM 2
+
+    //OD VISE KA MANJE LAJKOVA 3
+    @GET("/api/Post/getsorted/{sort}")
+    suspend fun getAllSortedPosts(@Path("sort")sort:Int):Response<List<singlePost>>
+
 }

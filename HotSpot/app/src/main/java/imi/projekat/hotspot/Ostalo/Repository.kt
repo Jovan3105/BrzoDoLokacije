@@ -85,6 +85,10 @@ class Repository(){
         return APIservis.Servis.getMyPosts()
     }
 
+    suspend fun getAllSortedPosts(sort:Int):Response<List<singlePost>>{
+        return APIservis.Servis.getAllSortedPosts(sort)
+    }
+
 
     fun dajSliku(imageView: ImageView, slikaPath:String,context:Context){
 

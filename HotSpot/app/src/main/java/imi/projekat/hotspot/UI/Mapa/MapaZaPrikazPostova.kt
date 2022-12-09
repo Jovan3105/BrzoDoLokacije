@@ -30,6 +30,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.auth0.android.jwt.JWT
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -54,7 +56,10 @@ import imi.projekat.hotspot.KonfigAplikacije
 import imi.projekat.hotspot.MainActivity
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
+import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.HomePage.SinglePost.SinglePostFragmentArgs
+import imi.projekat.hotspot.UI.Profile.MyProfileFragmentDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.DialogMapsMarkerBinding
 import imi.projekat.hotspot.databinding.FragmentMapaZaPrikazPostovaBinding
@@ -88,6 +93,8 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var listaPostova:ArrayList<singlePost>
     private lateinit var mClusterManager: ClusterManager<MyItem>
+    private val args: MapaZaPrikazPostovaArgs by navArgs()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -371,34 +378,98 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         binding.confirmLocationButton.startAnimation(bttAnimacija)
 
 
-        lifecycleScope.launch{
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.MyPostsResponse.collectLatest {
-                    if(it is BaseResponse.Success){
-                        if(it.data==null){
-                            parentFragmentManager.popBackStack()
-                            return@collectLatest
-                        }
-                        listaPostova= arrayListOf<singlePost>()
-                        listaPostova.clear()
-                        listaPostova= it.data as ArrayList<singlePost>
+        val token= MenadzerSesije.getToken(requireContext())
+        val jwt= JWT(token!!)
+        val idKorisnika= jwt.getClaim("id").asString()!!.toInt()
+
+
+        //ako je trenutni korisnik izabrani korisnika
+        if(args.idKorisnika==idKorisnika) {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.MyPostsResponse.collectLatest {
+                        if (it is BaseResponse.Success) {
+                            if (it.data == null) {
+                                parentFragmentManager.popBackStack()
+                                return@collectLatest
+                            }
+                            listaPostova = arrayListOf<singlePost>()
+                            listaPostova.clear()
+                            listaPostova = it.data as ArrayList<singlePost>
 //                        (activity as MainActivity?)!!.endLoadingDialog()
-                        //Log.d("BROJ Mojih POSTOVA", listaPostova.size.toString())
-                        for (i in 0 until  listaPostova.size){
+                            //Log.d("BROJ Mojih POSTOVA", listaPostova.size.toString())
+                            for (i in 0 until listaPostova.size) {
 //                            var latLng=LatLng(listaPostova[i].latitude, listaPostova[i].longitude)
 //                            setLocationMarker(latLng,listaPostova[i].shortDescription,10f,i)
-                            val offsetItem = MyItem(listaPostova[i].latitude, listaPostova[i].longitude, listaPostova[i].shortDescription,"Likes:"+listaPostova[i].brojlajkova,i)
-                            mClusterManager.addItem(offsetItem)
+                                val offsetItem = MyItem(
+                                    listaPostova[i].latitude,
+                                    listaPostova[i].longitude,
+                                    listaPostova[i].shortDescription,
+                                    "Likes:" + listaPostova[i].brojlajkova,
+                                    i
+                                )
+                                mClusterManager.addItem(offsetItem)
+                            }
+                            mClusterManager.cluster()
                         }
-                        mClusterManager.cluster()
-                    }
-                    if(it is BaseResponse.Error){
-                        Log.d("MyPostsErr", it.toString())
-                        (activity as MainActivity?)!!.endLoadingDialog()
-                        Toast.makeText(requireContext(), "Error while loading posts", Toast.LENGTH_SHORT).show()
-                    }
-                    if(it is BaseResponse.Loading){
+                        if (it is BaseResponse.Error) {
+                            Log.d("MyPostsErr", it.toString())
+                            (activity as MainActivity?)!!.endLoadingDialog()
+                            Toast.makeText(
+                                requireContext(),
+                                "Error while loading posts",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        if (it is BaseResponse.Loading) {
 
+                        }
+                    }
+                }
+            }
+        }
+
+        //Za sve korisnike
+        if(args.idKorisnika==-1) {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.AllPostsSortedResponse.collectLatest {
+                        if (it is BaseResponse.Success) {
+                            if (it.data == null) {
+                                parentFragmentManager.popBackStack()
+                                return@collectLatest
+                            }
+                            listaPostova = arrayListOf<singlePost>()
+                            listaPostova.clear()
+                            listaPostova = it.data as ArrayList<singlePost>
+//                        (activity as MainActivity?)!!.endLoadingDialog()
+                            //Log.d("BROJ Mojih POSTOVA", listaPostova.size.toString())
+                            for (i in 0 until listaPostova.size) {
+//                            var latLng=LatLng(listaPostova[i].latitude, listaPostova[i].longitude)
+//                            setLocationMarker(latLng,listaPostova[i].shortDescription,10f,i)
+                                val offsetItem = MyItem(
+                                    listaPostova[i].latitude,
+                                    listaPostova[i].longitude,
+                                    listaPostova[i].shortDescription,
+                                    "Likes:" + listaPostova[i].brojlajkova,
+                                    i
+                                )
+                                mClusterManager.addItem(offsetItem)
+                            }
+                            mClusterManager.cluster()
+                        }
+                        if (it is BaseResponse.Error) {
+                            Log.d("MyPostsErr", it.toString())
+                            (activity as MainActivity?)!!.endLoadingDialog()
+                            Toast.makeText(
+                                requireContext(),
+                                "Error while loading posts",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        if (it is BaseResponse.Loading) {
+
+                        }
                     }
                 }
             }
