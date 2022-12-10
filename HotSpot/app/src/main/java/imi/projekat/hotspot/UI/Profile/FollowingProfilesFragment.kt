@@ -54,7 +54,7 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
                 if(it is BaseResponse.Success){
                     if(it.data!!.followers.size==0)
                     {
-                        Toast.makeText(requireContext(), "Nema followinga", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "No followers", Toast.LENGTH_SHORT).show()
                     }
                     else
                     {
@@ -86,53 +86,45 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
             }
         }
 
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.UnfollowUserResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                }
+                if(it is BaseResponse.Success){
+                    val content = it.data!!.charStream().readText().toInt()
+                    val pom=korisnici.filter { s->s.id==content }.first()
+                    pom.buttonName="Follow"
+                    adapter!!.notifyItemChanged(korisnici.indexOf(pom))
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.FollowUserResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                }
+                if(it is BaseResponse.Success){
+                    val content = it.data!!.charStream().readText().toInt()
+                    val pom=korisnici.filter { s->s.id==content }.first()
+                    pom.buttonName="Unfollow"
+                    adapter!!.notifyItemChanged(korisnici.indexOf(pom))
+                }
+            }
+        }
 
 
         return inflater.inflate(R.layout.fragment_following_profiles,container,false)
-    }
-
-
-    override fun getPicture(imageView: ImageView, slika: String) {
-        Glide.with(this)
-            .load("http://10.0.2.2:5140/Storage/ProfileImages/$slika")
-            .fitCenter()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .placeholder(R.drawable.image_holder)
-            .into(imageView)
     }
 
     override fun onItemClickFollow(position: Int) {
        val clickedItem=korisnici[position]
         if(clickedItem.buttonName=="Unfollow")
         {
-            viewLifecycleOwner.lifecycleScope.launch{
-                viewModel.UnfollowUserResponse.collectLatest{
-                    if(it is BaseResponse.Error){
-                    }
-                    if(it is BaseResponse.Success){
-                        clickedItem.buttonName="Follow"
-                        adapter!!.notifyItemChanged(position)
-                    }
-                }
-            }
             viewModel.unfollowUser(clickedItem.id)
-
-
         }
         else
         {
             viewModel.followUser(clickedItem.id)
-            viewLifecycleOwner.lifecycleScope.launch{
-                viewModel.FollowUserResponse.collectLatest{
-                    if(it is BaseResponse.Error){
-                    }
-                    if(it is BaseResponse.Success){
-                        clickedItem.buttonName="Unfollow"
-                        adapter!!.notifyItemChanged(position)
-                    }
-                }
-            }
-
         }
 
     }
@@ -143,7 +135,9 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
         findNavController().navigate(action)
     }
 
-
+    override fun getPicture(imageView: ImageView, slika: String) {
+        viewModel.dajSliku(imageView, slika,requireContext())
+    }
 
 
 }

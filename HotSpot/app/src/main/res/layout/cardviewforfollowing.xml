@@ -7,6 +7,7 @@
     app:cardBackgroundColor="@color/pink1"
     app:cardElevation="3dp"
     app:contentPadding="4dp"
+    android:layout_marginBottom="5dp"
     >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -18,34 +19,36 @@
             android:id="@+id/profilePic"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
             android:src="@drawable/default_profile_image"
-           />
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/username"
             android:layout_width="170dp"
             android:layout_height="39dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/profilePic"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="13dp"
             android:textColor="@color/white"
-            android:textSize="25sp"/>
+            android:textSize="25sp"
+            android:text="ime korisnika"
+            app:layout_constraintRight_toLeftOf="@+id/unfollowButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/profilePic"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/unfollowButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/username"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:padding="15dp"
+            android:background="@drawable/dugme_pozadina_bela"
             android:text="@string/Unfollow"
-            android:textColor="@color/white"
-            />
+            android:textColor="@color/pink1"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/username"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
 
