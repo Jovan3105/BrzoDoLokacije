@@ -89,6 +89,14 @@ class Repository(){
         return APIservis.Servis.getAllSortedPosts(sort)
     }
 
+    suspend fun postHistory(location:history):Response<ResponseBody>{
+        return APIservis.Servis.postHistory(location)
+    }
+
+    suspend fun getAllHistory():Response<ArrayList<history>>{
+        return APIservis.Servis.getAllHistory()
+    }
+
 
     fun dajSliku(imageView: ImageView, slikaPath:String,context:Context){
 

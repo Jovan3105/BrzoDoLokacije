@@ -78,6 +78,12 @@ interface ApiInterface {
     @GET("/api/Post/getposts")
     suspend fun getMyPosts():Response<List<singlePost>>
 
+    @POST("/api/Post/history")
+    suspend fun postHistory(@Body location:history):Response<ResponseBody>
+
+    @GET("/api/Post/history")
+    suspend fun getAllHistory():Response<ArrayList<history>>
+
 
     //OD STARIJEG POSTA KA NOVIJEM 0
 

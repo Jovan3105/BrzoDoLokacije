@@ -520,7 +520,7 @@ namespace HotSpotAPI.Servisi
         public bool addHistory(int id, string location)
         {
             var search = context.History.FirstOrDefault(x => x.Search.Equals(location));
-            if (search == null)
+            if (search != null)
                 return false;
             History h = new History();
             h.userID = id;

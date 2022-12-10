@@ -321,7 +321,7 @@ namespace HotSpotAPI.Controllers
             List<history> res = postService.getHistory(id);
             if (res == null)
                 return BadRequest("ErrorWhileAddingHistory");
-            return Ok();
+            return Ok(res);
         }
         [HttpGet("history/popular"), AllowAnonymous]
         public async Task<ActionResult<string>> GetPopularHistory()

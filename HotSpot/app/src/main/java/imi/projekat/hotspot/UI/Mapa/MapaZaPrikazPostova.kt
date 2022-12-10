@@ -31,6 +31,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.auth0.android.jwt.JWT
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -54,16 +57,22 @@ import com.vmadalin.easypermissions.EasyPermissions
 import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import imi.projekat.hotspot.KonfigAplikacije
 import imi.projekat.hotspot.MainActivity
+import imi.projekat.hotspot.ModeliZaZahteve.history
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.R
 import imi.projekat.hotspot.UI.HomePage.SinglePost.SinglePostFragmentArgs
+import imi.projekat.hotspot.UI.Mapa.HistoryAdapter
+import imi.projekat.hotspot.UI.Profile.AdapterFollowingProfiles
 import imi.projekat.hotspot.UI.Profile.MyProfileFragmentDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.DialogMapsMarkerBinding
 import imi.projekat.hotspot.databinding.FragmentMapaZaPrikazPostovaBinding
 import kotlinx.android.parcel.Parcelize
+import kotlinx.android.synthetic.main.activity_maps.*
+import kotlinx.android.synthetic.main.activity_maps.recycler
+import kotlinx.android.synthetic.main.fragment_following_profiles.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
@@ -73,7 +82,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
+class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks ,HistoryAdapter.OnItemClickListener{
 
     private lateinit var binding: FragmentMapaZaPrikazPostovaBinding
     private var grantedPermission=false
@@ -95,8 +104,11 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     private lateinit var searchDugmeActionBar: ImageButton
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var listaPostova:ArrayList<singlePost>
+    private lateinit var listaPretrazenihLokacija:ArrayList<history>
     private lateinit var mClusterManager: ClusterManager<MyItem>
     private val args: MapaZaPrikazPostovaArgs by navArgs()
+    private var layoutManager: RecyclerView.LayoutManager?=null
+    private var adapter: RecyclerView.Adapter<HistoryAdapter.ViewHolder>?=null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,6 +126,40 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.PostHistoryResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                    Toast.makeText(
+                        requireContext(),
+                        "Error saving history",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                if(it is BaseResponse.Success){
+                    Toast.makeText(
+                        requireContext(),
+                        "Successfully saved history",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.GetAllHistoryResponse.collectLatest{
+                if(it is BaseResponse.Error){
+                    Toast.makeText(
+                        requireContext(),
+                        "Error while trying to get history",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                if(it is BaseResponse.Success){
+                    listaPretrazenihLokacija= arrayListOf<history>()
+                    listaPretrazenihLokacija=it.data as ArrayList<history>
+                }
+            }
+        }
 
         bttAnimacija= AnimationUtils.loadAnimation(requireContext(),R.anim.bot_to_top)
         top_exitAnimacija= AnimationUtils.loadAnimation(requireContext(),R.anim.top_exit)
@@ -134,6 +180,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         searchTextDugme.setOnClickListener{
             var unetaLokacija:String=searchTextTekst.text.toString()
             if(!unetaLokacija.isNullOrEmpty()){
+                viewModel.postHistory(history(unetaLokacija))
                 var geoCoder: Geocoder = Geocoder(requireContext(), Locale.getDefault())
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -143,7 +190,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                             if(listaAdresa!=null && listaAdresa.size>0){
                                 val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
                                 setLocationMarker(latLng,unetaLokacija,null,-1)
-                                Log.d("SES",unetaLokacija)
                                 moveCameraToLocation(latLng,10f)
                             }
                         }
@@ -187,7 +233,12 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         }
 
         searchDugmeActionBar.setOnClickListener{
+            viewModel.getAllHistory()
             showSearch()
+        }
+
+        searchTextView.setOnClickListener{
+
         }
 
     }
@@ -201,6 +252,16 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
             Manifest.permission.ACCESS_FINE_LOCATION
         )
     }
+
+//    private fun showAdapter(){
+//        if(listaPretrazenihLokacija.size!=0){
+//            Log.d("showAdapter",listaPretrazenihLokacija.size.toString())
+//            //layoutManager= LinearLayoutManager(requireContext())
+//            adapter=HistoryAdapter(listaPretrazenihLokacija,this@MapaZaPrikazPostova)
+//            //recycler.layoutManager=layoutManager
+//            recycler.adapter=adapter
+//        }
+//    }
 
     private fun setLocationMarker(location:LatLng,title:String,zoom:Float?,brojPosta:Int){
 //        googleMap.clear();
@@ -240,6 +301,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         }
         binding.linearLayoutMaps.startAnimation(top_enterAnimacija)
         binding.linearLayoutMaps.visibility=View.VISIBLE
+
     }
 
     private fun fetchLocation() {
@@ -668,6 +730,10 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
     @Parcelize
     private data class SaveData(var KEY_CAMERA_POSITION: CameraPosition?, var KEY_LOCATION: Location?): Parcelable
+
+    override fun onItemClickFollow(position: Int) {
+        Log.d("munze","kliknuto")
+    }
 }
 
 class MyItem : ClusterItem {

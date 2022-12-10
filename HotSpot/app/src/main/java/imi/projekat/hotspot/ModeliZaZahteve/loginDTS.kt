@@ -34,6 +34,10 @@ data class FollowingUserPom(
     val userPhoto:String
 )
 
+data class history(
+    val location:String
+)
+
 data class FollowingUserAdapter(
     val id:Int,
     val username: String,

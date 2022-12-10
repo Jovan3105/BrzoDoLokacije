@@ -87,7 +87,7 @@
         android:orientation="horizontal"
         android:background="@color/white"
         android:paddingLeft="10dp"
-        android:visibility="gone"
+
         map:layout_constraintEnd_toEndOf="parent"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toBottomOf="@+id/app_barLayout">
@@ -95,6 +95,7 @@
         <EditText
             android:imeOptions="actionDone"
             android:singleLine="true"
+            android:clickable="true"
             android:id="@+id/searchTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -116,6 +117,14 @@
             android:src="@drawable/ic_baseline_check_24"
             map:layout_constraintTop_toTopOf="parent"
             map:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            map:layout_constraintTop_toBottomOf="@+id/searchTextDugme"
+            />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

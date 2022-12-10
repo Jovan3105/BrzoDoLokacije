@@ -70,6 +70,11 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private val _ClusterPosts= MutableStateFlow<List<singlePost>>(ArrayList<singlePost>())
     val ClusterPosts=_ClusterPosts.asStateFlow()
 
+    private val _PostHistoryResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val PostHistoryResponse=_PostHistoryResponse.asSharedFlow()
+
+    private val _GetAllHistoryResponse= MutableSharedFlow<BaseResponse<ArrayList<history>>>()
+    val GetAllHistoryResponse=_GetAllHistoryResponse.asSharedFlow()
 
     var handleJob: Job?=null
 
@@ -349,6 +354,36 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     fun setClusterPosts(arrayList: ArrayList<singlePost>){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
             _ClusterPosts.emit(arrayList)
+        }
+    }
+
+    fun postHistory(location:history){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.postHistory(location)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _PostHistoryResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _PostHistoryResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun getAllHistory(){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.getAllHistory()
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _GetAllHistoryResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _GetAllHistoryResponse.emit(BaseResponse.Error(content))
+                }
+            }
         }
     }
 }
