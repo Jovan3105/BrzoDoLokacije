@@ -253,7 +253,7 @@ namespace HotSpotAPI.Servisi
                 u.photo = "";
             else
             {
-                u.photo = Directory.GetFiles(basepath1, "user" + pom.ID + ".jpg")
+                u.photo = Directory.GetFiles(basepath1, "user" + idUser + ".jpg")
                                  .Select(Path.GetFileName)
                                  .ToList().First();
             }
@@ -412,7 +412,7 @@ namespace HotSpotAPI.Servisi
                 numOfLikes += post.NumOfLikes;
             }
             si.prosecanbrojlajkova = (double)numOfLikes/ (double)posts.Count();
-            var posts2 = context.Postovi.Where(x => x.UserID == id).Select(x => x.Location).Distinct();
+            var posts2 = context.Postovi.Where(x => x.UserID == id).Select(x => new { x.longitude, x.latitude }).Distinct();
             si.brojlokacija = posts2.Count();
             return si;
         }

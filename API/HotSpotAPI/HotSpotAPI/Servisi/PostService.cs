@@ -366,7 +366,10 @@ namespace HotSpotAPI.Servisi
                 var user = context.Korisnici.FirstOrDefault(x => x.ID == c.UserID);
                 if (user == null)
                     return null;
-                kom.userPhoto = user.ProfileImage;
+                string basepath = storageService.CreatePhoto();
+                kom.userPhoto = Directory.GetFiles(basepath, "user" + user.ID + ".jpg")
+                                     .Select(Path.GetFileName)
+                                     .ToList().First();
                 kom.username = user.Username;
                 kom.text = c.Text;
                 kom.time = c.DateTime;
