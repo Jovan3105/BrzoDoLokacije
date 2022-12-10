@@ -113,6 +113,7 @@ class PrikazListePostova : Fragment(), PostClickHandler {
                         for (i in 0 until  listaPostova.size){
                             if(listaPostova[i].postID==content.toInt()){
                                 listaPostova[i].likedByMe=true
+                                listaPostova[i].brojlajkova++
                                 break
                             }
                         }
@@ -133,6 +134,7 @@ class PrikazListePostova : Fragment(), PostClickHandler {
                         for (i in 0 until  listaPostova.size){
                             if(listaPostova[i].postID==content.toInt()){
                                 listaPostova[i].likedByMe=false
+                                listaPostova[i].brojlajkova--
                                 break
                             }
                         }

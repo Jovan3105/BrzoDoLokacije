@@ -66,6 +66,9 @@ import imi.projekat.hotspot.databinding.FragmentMapaZaPrikazPostovaBinding
 import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -375,7 +378,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
             }
         })
-        binding.confirmLocationButton.startAnimation(bttAnimacija)
 
 
         val token= MenadzerSesije.getToken(requireContext())
@@ -531,8 +533,54 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
                 dialog.findViewById<TextView>(dialogMainBinding.Title.id).text=listaPostova[brojPosta].shortDescription
                 dialog.findViewById<TextView>(dialogMainBinding.numberOflikes.id).text="Number of likes:"+listaPostova[brojPosta].brojlajkova.toString()
-                dialog.findViewById<TextView>(dialogMainBinding.postDate.id).text=listaPostova[brojPosta].dateTime
 
+
+                var output: String=""
+                val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    var curentDate: LocalDateTime = LocalDateTime.now()
+                    val postDate = LocalDateTime.parse(listaPostova[brojPosta].dateTime)
+                    var pom= Duration.between(postDate,curentDate).toDays()
+                    when {
+
+                        pom >=27->{
+                            val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                            val formatter = SimpleDateFormat("dd.MM.yyyy")
+                            output = formatter.format(parser.parse(listaPostova[brojPosta].dateTime))
+                        }
+                        pom in 2..26 -> {
+                            output=pom.toString()+" days ago"
+                        }
+                        pom.toInt() ==1->{
+                            output=pom.toString()+" day ago"
+                        }
+                        pom < 1-> {
+                            var sati= Duration.between(postDate,curentDate).toHours()
+                            when{
+                                sati.toInt()==0->{
+                                    output="Just now"
+                                }
+                                sati.toInt()==1->{
+                                    output=sati.toString()+" hour ago"
+                                }
+                                else->{
+                                    output=sati.toString()+" hours ago"
+                                }
+                            }
+                        }
+
+                        else -> {
+                            output="ERROR"
+                        }
+                    }
+
+
+
+                } else {
+                    val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                    val formatter = SimpleDateFormat("dd.MM.yyyy HH:mm")
+                    output = formatter.format(parser.parse(listaPostova[brojPosta].dateTime))
+                }
+                dialog.findViewById<TextView>(dialogMainBinding.postDate.id).text=output
 
                 dialog.show()
                 return true

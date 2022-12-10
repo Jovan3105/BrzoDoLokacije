@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,20 +41,14 @@ class ListaPostovaAdapter(
         val circleIndicator3:CircleIndicator3=itemView.findViewById(R.id.circleIndikator)
         val viewPager:ViewPager2=itemView.findViewById(binding.viewPager2.id)
         val VremeView:TextView=itemView.findViewById(binding.VremeView.id)
+        val BrojLajkovaView:TextView=itemView.findViewById(binding.BrojLajkovaView.id)
         val KratakOpis:TextView=itemView.findViewById(binding.KratakOpis.id)
         val likeDugme: ImageButton=itemView.findViewById(binding.likeButton.id)
         val VlasnikPostaLayout:LinearLayout=itemView.findViewById(binding.VlasnikPostaLayout.id)
+        var brojLajkova=0
+        val lajkDugme:ImageButton=itemView.findViewById(binding.likeButton.id)
         init{
             binding.root.setOnClickListener(this)
-
-
-            binding.likeButton.setOnClickListener{
-                if(ListaPostova[bindingAdapterPosition].likedByMe==false){
-                    clickHandler.likePost(likeDTS(ListaPostova[bindingAdapterPosition].postID))
-                    return@setOnClickListener
-                }
-                clickHandler.dislikePost(likeDTS(ListaPostova[bindingAdapterPosition].postID))
-            }
 
             binding.VlasnikPostaLayout.setOnClickListener{
                 clickHandler.clickOnUser(ListaPostova[bindingAdapterPosition].ownerID)
@@ -174,12 +169,24 @@ class ListaPostovaAdapter(
 
         holder.KratakOpis.text=post.shortDescription
         holder.VremeView.text=output
+        holder.BrojLajkovaView.text=post.brojlajkova.toString()+" likes"
         if(post.likedByMe)
             holder.likeDugme.setImageResource(R.drawable.puno_srce)
         else{
             holder.likeDugme.setImageResource(R.drawable.prazno_srce)
         }
 
+        holder.lajkDugme.setOnClickListener{
+            if(post.likedByMe==false){
+                holder.likeDugme.setImageResource(R.drawable.puno_srce)
+                var brojLajkova=post.brojlajkova+1
+                clickHandler.likePost(likeDTS(post.postID))
+                return@setOnClickListener
+            }
+            holder.likeDugme.setImageResource(R.drawable.prazno_srce)
+            clickHandler.dislikePost(likeDTS(post.postID))
+            var brojLajkova=post.brojlajkova-1
+        }
 
         holder.initImageCarousel(post.photos as ArrayList<String>)
         holder.setupTransformer()

@@ -137,7 +137,7 @@ namespace HotSpotAPI.Controllers
             bool res = userService.followUser(id, userid);
             if (!res)
                 return BadRequest();
-            return Ok();
+            return Ok(userid);
         }
         [HttpPost("unfollow/{userid}")]
         public async Task<ActionResult<string>> UnfollowUser(int userid)
@@ -149,7 +149,7 @@ namespace HotSpotAPI.Controllers
             bool res = userService.unfollowUser(id, userid);
             if (!res)
                 return BadRequest();
-            return Ok();
+            return Ok(userid);
         }
 
         [HttpGet("follow")]

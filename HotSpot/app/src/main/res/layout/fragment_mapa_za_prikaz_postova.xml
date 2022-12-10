@@ -67,22 +67,6 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/confirmLocationButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
-        android:background="@drawable/dugme_pozadina_bela"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:text="@string/Confirm"
-        android:textColor="@color/pink1"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        map:layout_constraintBottom_toBottomOf="parent"
-        map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintStart_toStartOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayoutMaps"
         android:layout_width="match_parent"

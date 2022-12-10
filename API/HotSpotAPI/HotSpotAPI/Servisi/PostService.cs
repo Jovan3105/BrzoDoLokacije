@@ -188,6 +188,7 @@ namespace HotSpotAPI.Servisi
                 p.shortDescription = post.shortDescription;
                 p.longitude = post.longitude;
                 p.latitude = post.latitude;
+                p.brojlajkova = post.NumOfLikes;
                 p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
@@ -215,6 +216,7 @@ namespace HotSpotAPI.Servisi
                 p.longitude = post.longitude;
                 p.latitude = post.latitude;
                 p.postID = post.ID;
+                p.brojlajkova = post.NumOfLikes;
                 string basepath = storageService.CreatePost();
                 p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
                                      .Select(Path.GetFileName)
@@ -226,7 +228,7 @@ namespace HotSpotAPI.Servisi
         }
         public getPosts getPost(int id, int postID)
         {
-            Post post = context.Postovi.FirstOrDefault(x => x.UserID == id && x.ID == postID);
+            Post post = context.Postovi.FirstOrDefault(x => x.ID == postID);
             if (post == null)
                 return null;
             getPosts p = new getPosts();
@@ -238,9 +240,10 @@ namespace HotSpotAPI.Servisi
             p.shortDescription = post.shortDescription;
             p.latitude = post.latitude;
             p.longitude = post.longitude;
+            p.brojlajkova = post.NumOfLikes;
             p.postID = post.ID;
             string basepath = storageService.CreatePost();
-            p.photos = Directory.GetFiles(basepath, "user" + id + "post" + post.ID + "*")
+            p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
                                      .Select(Path.GetFileName)
                                      .ToList();
             return p;
@@ -262,6 +265,7 @@ namespace HotSpotAPI.Servisi
                 p.shortDescription = post.shortDescription;
                 p.latitude = post.latitude;
                 p.longitude = post.longitude;
+                p.brojlajkova = post.NumOfLikes;
                 p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
