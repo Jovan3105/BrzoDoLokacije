@@ -24,9 +24,9 @@ namespace HotSpotAPI.Servisi
         public bool addCommLike(int id, int postid, int commid);
         public bool dislikeComm(int id, int postid, int commid);
         public List<getPosts> getPostsPage(int brojstrane, int brojpostova);
-        public List<getPosts> getPostsByCoordinate(double x, double y);
+        public List<getPosts> getPostsByCoordinate(decimal x, decimal y);
         public List<coordinates> getCoordinates();
-        public List<getPosts> getPostsNear(double x, double y);
+        public List<getPosts> getPostsNear(decimal x, decimal y);
         public List<coordinates> getMyCoordinates(int id);
         public bool addHistory(int id, string location);
         public List<history> getHistory(int id);
@@ -63,8 +63,8 @@ namespace HotSpotAPI.Servisi
             p.DateTime = DateTime.Now;
             p.NumOfPhotos = newPost.photos.Count;
             p.shortDescription = newPost.shortDescription;
-            p.longitude = Convert.ToDouble(newPost.longitude);
-            p.latitude = Convert.ToDouble(newPost.latitude);
+            p.longitude = Convert.ToDecimal(newPost.longitude);
+            p.latitude = Convert.ToDecimal(newPost.latitude);
             context.Postovi.Add(p);
             context.SaveChanges();
 
@@ -199,9 +199,9 @@ namespace HotSpotAPI.Servisi
 
             return postsList;
         }
-        public List<getPosts> getPostsNear(double x, double y)
+        public List<getPosts> getPostsNear(decimal x, decimal y)
         {
-            List<Post> posts = context.Postovi.Where(pom => (pom.latitude > x-0.2 && pom.latitude < x+0.2) && (pom.longitude > x - 0.2 && pom.longitude < x + 0.2)).ToList();
+            List<Post> posts = context.Postovi.Where(pom => (pom.latitude > x-(decimal)0.2 && pom.latitude < x+(decimal)0.2) && (pom.longitude > x - (decimal)0.2 && pom.longitude < x + (decimal)0.2)).ToList();
             List<getPosts> postsList = new List<getPosts>();
 
             foreach (Post post in posts)
@@ -248,7 +248,7 @@ namespace HotSpotAPI.Servisi
                                      .ToList();
             return p;
         }
-        public List<getPosts> getPostsByCoordinate(double x, double y)
+        public List<getPosts> getPostsByCoordinate(decimal x, decimal y)
         {
             List<Post> postovi = context.Postovi.Where(pom => pom.latitude == x && pom.longitude == y).ToList();
             if (postovi == null)

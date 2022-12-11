@@ -234,11 +234,11 @@ namespace HotSpotAPI.Migrations
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
-                    b.Property<double>("latitude")
-                        .HasColumnType("double");
+                    b.Property<decimal>("latitude")
+                        .HasColumnType("decimal(65,30)");
 
-                    b.Property<double>("longitude")
-                        .HasColumnType("double");
+                    b.Property<decimal>("longitude")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("shortDescription")
                         .IsRequired()

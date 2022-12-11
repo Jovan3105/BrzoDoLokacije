@@ -184,8 +184,8 @@ namespace HotSpotAPI.Controllers
             if (id == -1)
                 return Unauthorized();
 
-            double x = double.Parse(xosa);
-            double y = double.Parse(yosa);
+            decimal x = decimal.Parse(xosa);
+            decimal y = decimal.Parse(yosa);
 
             List<getPosts> res = postService.getPostsNear(x, y);
             if (res != null)
@@ -236,8 +236,8 @@ namespace HotSpotAPI.Controllers
             if (id == -1)
                 return Unauthorized();
 
-            double x = double.Parse(xosa);
-            double y = double.Parse(yosa);
+            decimal x = decimal.Parse(xosa);
+            decimal y = decimal.Parse(yosa);
             List<getPosts> res = postService.getPostsByCoordinate(x, y);
             if (res != null)
                 return Ok(res);
