@@ -101,6 +101,9 @@
         <action
             android:id="@+id/action_followingProfilesFragment_to_drugi_korisnik"
             app:destination="@id/drugi_korisnik" />
+        <action
+            android:id="@+id/action_followingProfilesFragment_to_homePageFragment"
+            app:destination="@id/homePageFragment" />
     </fragment>
     <fragment
         android:id="@+id/drugi_korisnik"
