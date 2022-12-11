@@ -445,6 +445,11 @@ namespace HotSpotAPI.Servisi
             var post = context.Postovi.FirstOrDefault(x => x.ID == postid);
             if (post == null)
                 return false;
+
+            var lajk = context.Likes.FirstOrDefault(x=>x.UserID==id && x.PostID==postid);
+            if (lajk != null)
+                return false;
+
             post.NumOfLikes++;
 
             Like l = new Like();
