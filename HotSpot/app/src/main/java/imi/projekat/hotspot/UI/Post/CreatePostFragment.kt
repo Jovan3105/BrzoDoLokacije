@@ -44,6 +44,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
 import imi.projekat.hotspot.BuildConfig
+import imi.projekat.hotspot.MainActivity
 import imi.projekat.hotspot.MapsActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
@@ -117,7 +118,9 @@ class CreatePostFragment : Fragment(),addImageInterface {
                     Log.d(content,content)
                     val id = UpravljanjeResursima.getResourceString(content,requireContext())
                     Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.action_createPostFragment_to_homePageFragment)
+
+                    (activity as MainActivity).bottomMenu.getItem(0).setChecked(true)
+                    (activity as MainActivity).bottomMenu.performIdentifierAction((activity as MainActivity).bottomMenu.getItem(0).itemId,0)
                 }
             }
         }
@@ -393,7 +396,8 @@ class CreatePostFragment : Fragment(),addImageInterface {
     override fun removeImage(id: Int) {
         var pom=id
         imageList.removeAt(pom)
-       imageListUri.removeAt(pom)
+        if(imageListUri.getOrNull(pom)!=null)
+            imageListUri.removeAt(pom)
         if(imageList.size==0){
             praznaLista=true
             val myimage = (ResourcesCompat.getDrawable(viewPager2.resources, R.drawable.addimagevector, null) as VectorDrawable).toBitmap()
