@@ -97,6 +97,10 @@ class Repository(){
         return APIservis.Servis.getAllHistory()
     }
 
+    suspend fun DeleteHistory(location:String):Response<ResponseBody>{
+        return APIservis.Servis.DeleteHistory(location)
+    }
+
 
     fun dajSliku(imageView: ImageView, slikaPath:String,context:Context){
 

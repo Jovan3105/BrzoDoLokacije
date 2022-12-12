@@ -131,6 +131,11 @@ namespace HotSpotAPI.ModeliZaZahteve
         public int postid { get; set; }
     }
 
+    public class his
+    {
+        public string location { get; set; }= string.Empty;
+    }
+
     public class comlikes
     {
         public int postid { get; set; }

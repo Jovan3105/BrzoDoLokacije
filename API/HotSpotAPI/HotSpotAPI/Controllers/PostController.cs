@@ -336,13 +336,13 @@ namespace HotSpotAPI.Controllers
             return Ok(res);
         }
         [HttpDelete("history")]
-        public async Task<ActionResult<string>> DeleteHistory(likes history)
+        public async Task<ActionResult<string>> DeleteHistory(his history)
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            bool res = postService.deleteHistory(id, history.postid);
+            bool res = postService.deleteHistory(id, history.location);
             if (!res)
                 return BadRequest("ErrorWhileAddingHistory");
             return Ok();

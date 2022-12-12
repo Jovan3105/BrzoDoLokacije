@@ -83,6 +83,7 @@
             android:imeOptions="actionDone"
             android:singleLine="true"
             android:id="@+id/searchTextView"
+            android:clickable="true"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/insert_location"
@@ -103,6 +104,29 @@
             android:src="@drawable/ic_baseline_check_24"
             map:layout_constraintTop_toTopOf="parent"
             map:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="match_parent"
+            map:layout_constraintTop_toBottomOf="@+id/searchTextDugme"/>
+
+
+
+        <ImageButton
+            android:id="@+id/exitRecycler"
+            android:layout_width="30dp"
+            android:visibility="gone"
+            android:layout_height="30dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_baseline_arrow_drop_up_24"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toBottomOf="@+id/recycler" />
+
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

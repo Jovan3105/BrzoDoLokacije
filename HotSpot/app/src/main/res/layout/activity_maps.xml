@@ -118,12 +118,7 @@
             map:layout_constraintTop_toTopOf="parent"
             map:layout_constraintEnd_toEndOf="parent"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            map:layout_constraintTop_toBottomOf="@+id/searchTextDugme"
-            />
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,8 +19,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/clockImage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:src="@drawable/clock_svgrepo_com"
             app:layout_constraintBottom_toBottomOf="parent"
 
@@ -31,12 +31,27 @@
             android:id="@+id/searched"
             android:layout_width="350dp"
             android:layout_height="39dp"
-            android:textColor="@color/white"
-            android:textSize="25sp"
+            android:clickable="true"
+            android:textColor="@color/black"
+            android:textSize="20sp"
             android:text="ime korisnika"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/clockImage"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <ImageButton
+            android:id="@+id/deleteHistoryItem"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/x_thin_svgrepo_com"
+            android:text="@string/Unfollow"
+            android:textColor="@color/pink1"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/searched"
+            app:layout_constraintTop_toTopOf="parent"/>
 
 
 

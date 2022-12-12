@@ -15,6 +15,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.provider.Settings
+import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -71,8 +72,9 @@ import imi.projekat.hotspot.databinding.DialogMapsMarkerBinding
 import imi.projekat.hotspot.databinding.FragmentMapaZaPrikazPostovaBinding
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.activity_maps.*
-import kotlinx.android.synthetic.main.activity_maps.recycler
 import kotlinx.android.synthetic.main.fragment_following_profiles.*
+import kotlinx.android.synthetic.main.fragment_following_profiles.recycler
+import kotlinx.android.synthetic.main.fragment_mapa_za_prikaz_postova.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
@@ -101,6 +103,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     private lateinit var searchTextDugme: ImageButton
     private lateinit var searchTextTekst: EditText
     private lateinit var izborTerenaDugme: ImageButton
+    private lateinit var izadjiIzRecyclera:ImageButton
     private lateinit var searchDugmeActionBar: ImageButton
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var listaPostova:ArrayList<singlePost>
@@ -108,7 +111,8 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     private lateinit var mClusterManager: ClusterManager<MyItem>
     private val args: MapaZaPrikazPostovaArgs by navArgs()
     private var layoutManager: RecyclerView.LayoutManager?=null
-    private var adapter: RecyclerView.Adapter<HistoryAdapter.ViewHolder>?=null
+    private var adapter: HistoryAdapter?=null
+    private var indikator:Int=0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,6 +130,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.getAllHistory()
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.PostHistoryResponse.collectLatest{
                 if(it is BaseResponse.Error){
@@ -148,15 +153,13 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.GetAllHistoryResponse.collectLatest{
                 if(it is BaseResponse.Error){
-                    Toast.makeText(
-                        requireContext(),
-                        "Error while trying to get history",
-                        Toast.LENGTH_SHORT
-                    ).show()
+
                 }
                 if(it is BaseResponse.Success){
                     listaPretrazenihLokacija= arrayListOf<history>()
                     listaPretrazenihLokacija=it.data as ArrayList<history>
+                    if(listaPretrazenihLokacija.size==0)
+                        listaPretrazenihLokacija= ArrayList<history>()
                 }
             }
         }
@@ -168,6 +171,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         searchTextTekst=binding.root.findViewById(binding.searchTextView.id)
         izborTerenaDugme=binding.root.findViewById(binding.izborTerenaDugme.id)
         searchDugmeActionBar=binding.root.findViewById(binding.searchDugmeActionBar.id)
+        izadjiIzRecyclera=binding.root.findViewById(binding.exitRecycler.id)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         fusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(requireContext())
 
@@ -178,39 +182,14 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         requestLocPermission()
 
         searchTextDugme.setOnClickListener{
-            var unetaLokacija:String=searchTextTekst.text.toString()
-            if(!unetaLokacija.isNullOrEmpty()){
-                viewModel.postHistory(history(unetaLokacija))
-                var geoCoder: Geocoder = Geocoder(requireContext(), Locale.getDefault())
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    geoCoder.getFromLocationName(unetaLokacija,1,object : Geocoder.GeocodeListener{
-                        override fun onGeocode(addresses: MutableList<Address>) {
-                            var listaAdresa=addresses
-                            if(listaAdresa!=null && listaAdresa.size>0){
-                                val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
-                                setLocationMarker(latLng,unetaLokacija,null,-1)
-                                moveCameraToLocation(latLng,10f)
-                            }
-                        }
-                        override fun onError(errorMessage: String?) {
-                            super.onError(errorMessage)
-
-                        }
-
-                    })
-                } else {
-                    var listaAdresa: MutableList<Address>?
-                    @Suppress("DEPRECATION")
-                    listaAdresa= geoCoder.getFromLocationName(unetaLokacija,1)
-                    if(listaAdresa!=null && listaAdresa.size>0){
-                        val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
-                        setLocationMarker(latLng,unetaLokacija,null,-1)
-                        moveCameraToLocation(latLng,10f)
-                    }
-                }
-            }
+           findLocation()
         }
+
+        izadjiIzRecyclera.setOnClickListener{
+            binding.recycler.visibility=View.GONE
+            binding.exitRecycler.visibility=View.GONE
+        }
+
 
         izborTerenaDugme.setOnClickListener{
             val popupMenu = PopupMenu(requireContext(),izborTerenaDugme)
@@ -233,14 +212,130 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         }
 
         searchDugmeActionBar.setOnClickListener{
-            viewModel.getAllHistory()
+            if(binding.recycler.visibility== View.VISIBLE){
+                binding.recycler.visibility=View.GONE
+                binding.exitRecycler.visibility=View.GONE
+            }
             showSearch()
         }
 
-        searchTextView.setOnClickListener{
+        searchTextTekst.setOnFocusChangeListener { v, hasFocus ->
+            if(hasFocus)
+            {
+                CreateAdapter()
+                if(listaPretrazenihLokacija.size!=0)
+                {
+                    showAdapter()
+                }
+
+            }
+        }
+
+        searchTextTekst.setOnClickListener {
+            if(listaPretrazenihLokacija.size!=0){
+                if(binding.recycler.visibility== View.GONE){
+                    //binding.recycler.startAnimation(top_exitAnimacija)
+                    binding.recycler.visibility=View.VISIBLE
+                    binding.exitRecycler.visibility=View.VISIBLE
+                }
+            }
 
         }
 
+    }
+
+    private fun findLocation(){
+        var unetaLokacija:String=searchTextTekst.text.toString()
+        if(!unetaLokacija.isNullOrEmpty()){
+            var geoCoder: Geocoder = Geocoder(requireContext(), Locale.getDefault())
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                geoCoder.getFromLocationName(unetaLokacija,1,object : Geocoder.GeocodeListener{
+                    override fun onGeocode(addresses: MutableList<Address>) {
+                        var listaAdresa=addresses
+
+                        if(listaAdresa!=null && listaAdresa.size>0){
+                            viewModel.postHistory(history(unetaLokacija))
+                            if(binding.recycler.visibility== View.VISIBLE){
+                                binding.recycler.startAnimation(top_exitAnimacija)
+                                binding.recycler.visibility=View.GONE
+                                binding.exitRecycler.visibility=View.GONE
+                            }
+                            checkLocations(unetaLokacija)
+                            adapter!!.update(listaPretrazenihLokacija)
+                            recycler.layoutManager=layoutManager
+                            recycler.adapter=adapter
+
+                            val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
+                            setLocationMarker(latLng,unetaLokacija,null,-1)
+                            moveCameraToLocation(latLng,10f)
+                            return
+                        }
+                        Toast.makeText(
+                            requireContext(),
+                            "Insert valid location",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                    }
+                    override fun onError(errorMessage: String?) {
+                        super.onError(errorMessage)
+
+                    }
+
+                })
+            } else {
+                var listaAdresa: MutableList<Address>?
+                @Suppress("DEPRECATION")
+                listaAdresa= geoCoder.getFromLocationName(unetaLokacija,1)
+                if(listaAdresa!=null && listaAdresa.size>0){
+                    viewModel.postHistory(history(unetaLokacija))
+                    if(binding.recycler.visibility== View.VISIBLE){
+                        binding.recycler.startAnimation(top_exitAnimacija)
+                        binding.recycler.visibility=View.GONE
+                        binding.exitRecycler.visibility=View.GONE
+                    }
+                    checkLocations(unetaLokacija)
+                    // listaPretrazenihLokacija[indikator]=history(unetaLokacija)
+                    //indikator+=1
+                    //listaPretrazenihLokacija.add(0, history(unetaLokacija))
+                    adapter!!.update(listaPretrazenihLokacija)
+                    recycler.layoutManager=layoutManager
+                    recycler.adapter=adapter
+
+                    val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
+                    setLocationMarker(latLng,unetaLokacija,null,-1)
+                    moveCameraToLocation(latLng,10f)
+                }
+                else
+                {
+                    Toast.makeText(
+                        requireContext(),
+                        "Insert valid location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            }
+        }
+    }
+
+    private fun checkLocations(lokacija:String){
+        for (i in 0 until  listaPretrazenihLokacija.size){
+            if(listaPretrazenihLokacija[i].location==lokacija)
+            {
+
+                listaPretrazenihLokacija.removeAt(i)
+                listaPretrazenihLokacija.add(0,history(lokacija))
+                return
+
+            }
+        }
+        listaPretrazenihLokacija.add(0,history(lokacija))
+        if(listaPretrazenihLokacija.size>5)
+        {
+            listaPretrazenihLokacija.removeAt(5)
+        }
     }
 
 
@@ -253,15 +348,16 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         )
     }
 
-//    private fun showAdapter(){
-//        if(listaPretrazenihLokacija.size!=0){
-//            Log.d("showAdapter",listaPretrazenihLokacija.size.toString())
-//            //layoutManager= LinearLayoutManager(requireContext())
-//            adapter=HistoryAdapter(listaPretrazenihLokacija,this@MapaZaPrikazPostova)
-//            //recycler.layoutManager=layoutManager
-//            recycler.adapter=adapter
-//        }
-//    }
+    private fun CreateAdapter(){
+        if(adapter==null){
+            layoutManager= LinearLayoutManager(requireContext())
+            adapter=HistoryAdapter(listaPretrazenihLokacija,this@MapaZaPrikazPostova)
+            recycler.layoutManager=layoutManager
+            recycler.adapter=adapter
+        }
+
+
+    }
 
     private fun setLocationMarker(location:LatLng,title:String,zoom:Float?,brojPosta:Int){
 //        googleMap.clear();
@@ -291,6 +387,18 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         if(zoom!=null){
             this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,zoom))
         }
+    }
+
+    private fun showAdapter(){
+        if(binding.recycler.visibility== View.VISIBLE){
+            binding.recycler.startAnimation(top_exitAnimacija)
+            binding.recycler.visibility=View.GONE
+            binding.exitRecycler.visibility=View.GONE
+            return
+        }
+        binding.recycler.startAnimation(top_enterAnimacija)
+        binding.recycler.visibility=View.VISIBLE
+        binding.exitRecycler.visibility=View.VISIBLE
     }
 
     private fun showSearch(){
@@ -331,7 +439,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
             }
         }
         task.addOnFailureListener {
-            Log.d("Greska","Nije nadjena lokacija")
             moveCameraToLocation(LatLng(defaultLocation.latitude,defaultLocation.longitude),10f)
 
         }
@@ -356,7 +463,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
 
                 dialog.findViewById<ImageView>(R.id.btnCloseDialog).setOnClickListener{
-                    Log.d("Gasenje dialoga","Gasenje dialoga")
                     dialog.dismiss()
                 }
                 dialog.findViewById<Button>(dialogMainBinding.showPostButton.id).setOnClickListener{
@@ -413,7 +519,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                                 var listaAdresa=addresses
                                 if(listaAdresa!=null && listaAdresa.size>0){
                                     val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
-                                    Log.d("SES",listaAdresa.get(0).featureName)
                                     moveCameraToLocation(latLng,null)
                                 }
                             }
@@ -461,7 +566,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                             listaPostova.clear()
                             listaPostova = it.data as ArrayList<singlePost>
 //                        (activity as MainActivity?)!!.endLoadingDialog()
-                            //Log.d("BROJ Mojih POSTOVA", listaPostova.size.toString())
                             for (i in 0 until listaPostova.size) {
 //                            var latLng=LatLng(listaPostova[i].latitude, listaPostova[i].longitude)
 //                            setLocationMarker(latLng,listaPostova[i].shortDescription,10f,i)
@@ -477,7 +581,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                             mClusterManager.cluster()
                         }
                         if (it is BaseResponse.Error) {
-                            Log.d("MyPostsErr", it.toString())
                             (activity as MainActivity?)!!.endLoadingDialog()
                             Toast.makeText(
                                 requireContext(),
@@ -507,7 +610,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                             listaPostova.clear()
                             listaPostova = it.data as ArrayList<singlePost>
 //                        (activity as MainActivity?)!!.endLoadingDialog()
-                            //Log.d("BROJ Mojih POSTOVA", listaPostova.size.toString())
                             for (i in 0 until listaPostova.size) {
 //                            var latLng=LatLng(listaPostova[i].latitude, listaPostova[i].longitude)
 //                            setLocationMarker(latLng,listaPostova[i].shortDescription,10f,i)
@@ -523,7 +625,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                             mClusterManager.cluster()
                         }
                         if (it is BaseResponse.Error) {
-                            Log.d("MyPostsErr", it.toString())
                             (activity as MainActivity?)!!.endLoadingDialog()
                             Toast.makeText(
                                 requireContext(),
@@ -582,7 +683,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
 
                 dialog.findViewById<ImageView>(R.id.btnCloseDialog).setOnClickListener{
-                    Log.d("Gasenje dialoga","Gasenje dialoga")
                     dialog.dismiss()
                 }
                 dialog.findViewById<Button>(dialogMainBinding.showPostButton.id).setOnClickListener{
@@ -691,7 +791,6 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
         var dialog: Dialog? = GoogleApiAvailability.getInstance().getErrorDialog(this,result,1000)
         if (dialog != null) {
-            Log.d("NEMA","GOOGLE SERVISA")
             dialog.show()
         }
         return false
@@ -731,8 +830,23 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     @Parcelize
     private data class SaveData(var KEY_CAMERA_POSITION: CameraPosition?, var KEY_LOCATION: Location?): Parcelable
 
-    override fun onItemClickFollow(position: Int) {
-        Log.d("munze","kliknuto")
+    override fun onItemClickForSearch(position: Int) {
+        searchTextTekst.setText(listaPretrazenihLokacija[position].location)
+        findLocation()
+
+    }
+
+    override fun onItemClickForDelete(position: Int) {
+        //viewModel.DeleteHistory(listaPretrazenihLokacija[position].location)
+        listaPretrazenihLokacija.removeAt(position)
+        adapter!!.update(listaPretrazenihLokacija)
+        if(listaPretrazenihLokacija.size==0)
+        {
+            binding.recycler.visibility=View.GONE
+            binding.exitRecycler.visibility=View.GONE
+        }
+        //recycler.layoutManager=layoutManager
+        //recycler.adapter=adapter
     }
 }
 

@@ -30,7 +30,7 @@ namespace HotSpotAPI.Servisi
         public List<coordinates> getMyCoordinates(int id);
         public bool addHistory(int id, string location);
         public List<history> getHistory(int id);
-        public bool deleteHistory(int id, int postid);
+        public bool deleteHistory(int id, string postid);
         public bool deleteAllHistory(int id);
         public List<pophistory> getPopularHistory();
     }
@@ -549,7 +549,7 @@ namespace HotSpotAPI.Servisi
                 history h1 = new history();
                 h1.location = h.Search;
 
-                if (pom >= 10)
+                if (pom >= 5)
                 {
                     context.History.Remove(h);
                     context.SaveChanges();
@@ -590,9 +590,9 @@ namespace HotSpotAPI.Servisi
             List<pophistory> sortedlist = pop.OrderByDescending(x => x.count).ToList();
             return sortedlist;
         }
-        public bool deleteHistory(int id, int postid)
+        public bool deleteHistory(int id, string postid)
         {
-            History h = context.History.FirstOrDefault(x => x.userID == id && x.ID == postid);
+            History h = context.History.FirstOrDefault(x => x.userID == id && x.Search == postid);
             if (h == null)
                 return false;
             context.Remove(h);

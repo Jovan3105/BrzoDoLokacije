@@ -284,6 +284,21 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
+    fun DeleteHistory(location: String){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.DeleteHistory(location)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+
+                }
+            }
+        }
+    }
+
     fun unfollowUser(UserId: Int){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
             val response=repository.UnfollowUser(UserId)
