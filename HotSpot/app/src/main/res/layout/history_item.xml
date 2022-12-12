@@ -14,23 +14,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
+        android:layout_gravity="center"
         android:id="@+id/mojLayout"
-        android:padding="2dp">
+        android:padding="5dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/clockImage"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="10dp"
             android:src="@drawable/clock_svgrepo_com"
             app:layout_constraintBottom_toBottomOf="parent"
 
+            app:layout_constraintEnd_toStartOf="@+id/searched"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/searched"
             android:layout_width="350dp"
-            android:layout_height="39dp"
+            android:layout_height="0dp"
+            android:paddingStart="10dp"
             android:clickable="true"
             android:textColor="@color/black"
             android:textSize="20sp"
