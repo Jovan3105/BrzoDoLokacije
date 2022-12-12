@@ -37,7 +37,7 @@ class RecyclerAdapter(
         holder.commentText.text = nizKomentara[position].text.trim()
 
 
-
+        Log.d("slika",nizKomentara[position].userPhoto)
         if(!nizKomentara[position].userPhoto.isNullOrEmpty()){
             clickHandler.getPicture(holder.commentPhoto,"ProfileImages/"+nizKomentara[position].userPhoto)
         }

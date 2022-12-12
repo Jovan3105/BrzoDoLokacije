@@ -260,6 +260,22 @@ class SinglePostFragment : Fragment(), PostClickHandler {
 //                    val content = it.data!!.charStream().readText()
 //                    val id = UpravljanjeResursima.getResourceString(content,requireContext())
 //                    Toast.makeText(requireContext(), id, Toast.LENGTH_SHORT).show()
+                    val token=MenadzerSesije.getToken(requireContext())
+                    val jwt= JWT(token!!)
+                    val userPhoto=jwt.getClaim("photo").asString()
+                    Log.d("slika123123",userPhoto!!)
+                    if(!userPhoto.isNullOrEmpty()){
+
+                        var pom2=userPhoto.split("\\")
+                        if(pom2.size==1)
+                            pom2=userPhoto.split("/")
+
+                        nizKomentara.add(singleComment(0,idUser,commentText,"-1", pom2[2],userName))
+
+                        NoCommentsYetView.visibility=View.GONE
+                        showComments(nizKomentara)
+                        return@collectLatest
+                    }
                     nizKomentara.add(singleComment(0,idUser,commentText,"-1","",userName))
                     NoCommentsYetView.visibility=View.GONE
                     showComments(nizKomentara)
