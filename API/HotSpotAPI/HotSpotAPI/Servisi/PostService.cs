@@ -367,9 +367,15 @@ namespace HotSpotAPI.Servisi
                 if (user == null)
                     return null;
                 string basepath = storageService.CreatePhoto();
-                kom.userPhoto = Directory.GetFiles(basepath, "user" + user.ID + ".jpg")
+                if (user.ProfileImage != "")
+                {
+                    kom.userPhoto = Directory.GetFiles(basepath, "user" + user.ID + ".jpg")
                                      .Select(Path.GetFileName)
                                      .ToList().First();
+                }
+                    
+                else
+                    kom.userPhoto = "";
                 kom.username = user.Username;
                 kom.text = c.Text;
                 kom.time = c.DateTime;
