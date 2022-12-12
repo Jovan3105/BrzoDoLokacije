@@ -131,6 +131,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getAllHistory()
+        Log.d("OnViewCreated","Kocka i kocka")
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.PostHistoryResponse.collectLatest{
                 if(it is BaseResponse.Error){
@@ -158,8 +159,9 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                 if(it is BaseResponse.Success){
                     listaPretrazenihLokacija= arrayListOf<history>()
                     listaPretrazenihLokacija=it.data as ArrayList<history>
-                    if(listaPretrazenihLokacija.size==0)
-                        listaPretrazenihLokacija= ArrayList<history>()
+                    Log.d("lista pretrazenih lokacija",listaPretrazenihLokacija.size.toString())
+//                    if(listaPretrazenihLokacija.size==0)
+//                        listaPretrazenihLokacija= ArrayList<history>()
                 }
             }
         }
@@ -263,7 +265,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                             }
                             checkLocations(unetaLokacija)
                             adapter!!.update(listaPretrazenihLokacija)
-                            recycler.layoutManager=layoutManager
+                           // recycler.layoutManager=layoutManager
                             recycler.adapter=adapter
 
                             val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
@@ -300,7 +302,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                     //indikator+=1
                     //listaPretrazenihLokacija.add(0, history(unetaLokacija))
                     adapter!!.update(listaPretrazenihLokacija)
-                    recycler.layoutManager=layoutManager
+                    //recycler.layoutManager=layoutManager
                     recycler.adapter=adapter
 
                     val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
@@ -349,12 +351,11 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     }
 
     private fun CreateAdapter(){
-        if(adapter==null){
-            layoutManager= LinearLayoutManager(requireContext())
-            adapter=HistoryAdapter(listaPretrazenihLokacija,this@MapaZaPrikazPostova)
-            recycler.layoutManager=layoutManager
-            recycler.adapter=adapter
-        }
+        layoutManager= LinearLayoutManager(requireContext())
+        adapter=HistoryAdapter(listaPretrazenihLokacija,this@MapaZaPrikazPostova)
+        recycler.layoutManager=layoutManager
+        recycler.adapter=adapter
+
 
 
     }
