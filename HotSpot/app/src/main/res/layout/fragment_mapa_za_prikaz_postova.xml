@@ -36,7 +36,13 @@
                 android:textColor="@color/pink1"
                 android:textSize="30sp"
                 android:textStyle="bold"/>
-
+            <ImageView
+                android:background="@color/white"
+                android:id="@+id/imageView4"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:adjustViewBounds="true"
+                android:visibility="gone"/>
             <ImageButton
                 android:id="@+id/izborTerenaDugme"
                 android:layout_width="wrap_content"
@@ -61,22 +67,6 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/confirmLocationButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
-        android:background="@drawable/dugme_pozadina_bela"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:text="@string/Confirm"
-        android:textColor="@color/pink1"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        map:layout_constraintBottom_toBottomOf="parent"
-        map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintStart_toStartOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayoutMaps"
         android:layout_width="match_parent"
@@ -93,6 +83,7 @@
             android:imeOptions="actionDone"
             android:singleLine="true"
             android:id="@+id/searchTextView"
+            android:clickable="true"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/insert_location"
@@ -113,6 +104,29 @@
             android:src="@drawable/ic_baseline_check_24"
             map:layout_constraintTop_toTopOf="parent"
             map:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="match_parent"
+            map:layout_constraintTop_toBottomOf="@+id/searchTextDugme"/>
+
+
+
+        <ImageButton
+            android:id="@+id/exitRecycler"
+            android:layout_width="30dp"
+            android:visibility="gone"
+            android:layout_height="30dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_baseline_arrow_drop_up_24"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toBottomOf="@+id/recycler" />
+
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

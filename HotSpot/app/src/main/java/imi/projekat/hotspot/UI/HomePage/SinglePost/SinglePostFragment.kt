@@ -72,12 +72,13 @@ class SinglePostFragment : Fragment(), PostClickHandler {
     private lateinit var adapter: ImageAdapterHomePage
     private lateinit var circleIndicator: CircleIndicator3
     private lateinit var opisTekstView: TextView
+    private lateinit var brojLajkovaTextView: TextView
     private lateinit var kratakOpisView: TextView
     private var currentSort=-1
     private lateinit var layoutManager: RecyclerView.LayoutManager
     private lateinit var recyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>
     private lateinit var nizKomentara: ArrayList<singleComment>
-
+    private var brojLajkova=0
     private val args: SinglePostFragmentArgs by navArgs()
     private lateinit var likeDugme:ImageButton
     private lateinit var vremeTextView:TextView
@@ -112,6 +113,7 @@ class SinglePostFragment : Fragment(), PostClickHandler {
     ): View? {
         binding= FragmentSinglePostBinding.inflate(inflater,container,false)
         opisTekstView=binding.root.findViewById(binding.DuziOpis.id)
+        brojLajkovaTextView=binding.root.findViewById(binding.BrojLajkovaView.id)
         kratakOpisView=binding.root.findViewById(binding.KratakOpis.id)
         likeDugme=binding.root.findViewById(binding.likeButton.id)
         vremeTextView=binding.root.findViewById(binding.vremeTextView.id)
@@ -140,6 +142,8 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                     initImageCarousel(0)
                     setupTransformer()
                     opisTekstView.text=it.data?.description
+                    brojLajkova= it.data?.brojlajkova!!
+                    brojLajkovaTextView.setText(brojLajkova.toString()+" Likes")
                     kratakOpisView.text=it.data?.shortDescription
                     lajkovano= it.data?.likedByMe!!
                     if(it.data?.likedByMe == true)
@@ -207,6 +211,7 @@ class SinglePostFragment : Fragment(), PostClickHandler {
 
                 }
                 is BaseResponse.Error->{
+                    Toast.makeText(requireContext(), "Error while loading post", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -242,7 +247,6 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                 }
                 if(it is BaseResponse.Success){
                     nizKomentara=convertListToArraylist(it.data!!)
-                    Log.d("SES", it.data!!.size.toString())
                     if(nizKomentara.isNullOrEmpty()){
                         NoCommentsYetView.visibility=View.VISIBLE
                         sortCommentsButton.visibility=View.GONE
@@ -290,9 +294,13 @@ class SinglePostFragment : Fragment(), PostClickHandler {
 
         likeDugme.setOnClickListener{
             if(lajkovano){
+                brojLajkova--
+                brojLajkovaTextView.setText(brojLajkova.toString()+" Likes")
                 viewModel.dislikePost(likeDTS(args.idPosta))
                 return@setOnClickListener
             }
+            brojLajkova++
+            brojLajkovaTextView.setText(brojLajkova.toString()+" Likes")
             viewModel.likePost(likeDTS(args.idPosta))
         }
     }

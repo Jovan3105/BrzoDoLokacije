@@ -22,6 +22,7 @@ namespace HotSpotAPI.Servisi
         public bool unfollowUser(int userid, int followid);
         public specialInfo getSpecialInfo(int id);
         public List<follower> getPageFollowers(int id, int brojstrane, int brojkorisnika);
+        public List<follower> getMyFollowes(int id);
     }
     public class UserService : IUserService
     {
@@ -225,6 +226,14 @@ namespace HotSpotAPI.Servisi
                 context.Followers.Remove(f);
                 context.SaveChanges();
             }
+
+            List<History> history = context.History.Where(x => x.userID == id).ToList();
+            foreach (History h in history)
+            {
+                context.History.Remove(h);
+                context.SaveChanges();
+            }
+
             return true;
         }
         public userinfo getUserInfo(int idFollow, int idUser)
@@ -238,9 +247,18 @@ namespace HotSpotAPI.Servisi
                 u.following = true;
             else
                 u.following=false;
+
+            string basepath1 = storageService.CreatePhoto();
+            if (user.ProfileImage == "" || user.ProfileImage == null)
+                u.photo = "";
+            else
+            {
+                u.photo = Directory.GetFiles(basepath1, "user" + idUser + ".jpg")
+                                 .Select(Path.GetFileName)
+                                 .ToList().First();
+            }
             u.username = user.Username;
             u.email=user.Email;
-            u.photo = user.ProfileImage;
             return u;
         }
         public string getUsernameById(int id)
@@ -289,6 +307,36 @@ namespace HotSpotAPI.Servisi
             context.SaveChanges();
             return true;
         }
+        public List<follower> getMyFollowes(int id)
+        {
+            var fol = context.Followers.Where(x => x.followID == id).ToList();
+            Debug.WriteLine(fol);
+            if (fol == null)
+                return null;
+
+            List<follower> fols = new List<follower>();
+            string basepath1 = storageService.CreatePhoto();
+            foreach (Followers f in fol)
+            {
+                follower f1 = new follower();
+                f1.username = getUsernameById(f.userID);
+                if (f1.username == "" || f1.username == null)
+                    return null;
+                var pom = context.Korisnici.FirstOrDefault(x => x.ID == f.userID);
+
+                if (pom.ProfileImage == "" || pom.ProfileImage == null)
+                    f1.userPhoto = "";
+                else
+                {
+                    f1.userPhoto = Directory.GetFiles(basepath1, "user" + pom.ID + ".jpg")
+                                     .Select(Path.GetFileName)
+                                     .ToList().First();
+                }
+                f1.ID = f.userID;
+                fols.Add(f1);
+            }
+            return fols;
+        }
         public List<follower> getfollowUser(int id)
         {
             var fol = context.Followers.Where(x => x.userID == id).ToList();
@@ -298,7 +346,8 @@ namespace HotSpotAPI.Servisi
 
             List<follower> fols = new List<follower>();
             //string pom;
-            foreach(Followers f in fol)
+            string basepath1 = storageService.CreatePhoto();
+            foreach (Followers f in fol)
             {
                 follower f1 = new follower();
                 f1.username = getUsernameById(f.followID);
@@ -306,7 +355,14 @@ namespace HotSpotAPI.Servisi
                     return null;
                 var pom = context.Korisnici.FirstOrDefault(x => x.ID == f.followID);
 
-                f1.userPhoto = pom.ProfileImage;
+                if (pom.ProfileImage == "" || pom.ProfileImage == null)
+                    f1.userPhoto = "";
+                else
+                {
+                    f1.userPhoto = Directory.GetFiles(basepath1, "user" + pom.ID + ".jpg")
+                                     .Select(Path.GetFileName)
+                                     .ToList().First();
+                }
                 f1.ID = f.followID;
                 fols.Add(f1);
             }
@@ -319,7 +375,7 @@ namespace HotSpotAPI.Servisi
             Debug.WriteLine(fol);
             if (fol == null)
                 return null;
-
+            string basepath1 = storageService.CreatePhoto();
             List<follower> fols = new List<follower>();
             //string pom;
             for (int i = (brojstrane - 1) * brojkorisnika; i < (brojstrane * brojkorisnika); i++)
@@ -330,7 +386,14 @@ namespace HotSpotAPI.Servisi
                     return null;
                 var pom = context.Korisnici.FirstOrDefault(x => x.ID == fol[i].followID);
 
-                f1.userPhoto = pom.ProfileImage;
+                if (pom.ProfileImage == "" || pom.ProfileImage == null)
+                    f1.userPhoto = "";
+                else
+                {
+                    f1.userPhoto = Directory.GetFiles(basepath1, "user" + pom.ID + ".jpg")
+                                     .Select(Path.GetFileName)
+                                     .ToList().First();
+                }
                 f1.ID = fol[i].followID;
                 fols.Add(f1);
             }
@@ -349,7 +412,7 @@ namespace HotSpotAPI.Servisi
                 numOfLikes += post.NumOfLikes;
             }
             si.prosecanbrojlajkova = (double)numOfLikes/ (double)posts.Count();
-            var posts2 = context.Postovi.Where(x => x.UserID == id).Select(x => x.Location).Distinct();
+            var posts2 = context.Postovi.Where(x => x.UserID == id).Select(x => new { x.longitude, x.latitude }).Distinct();
             si.brojlokacija = posts2.Count();
             return si;
         }

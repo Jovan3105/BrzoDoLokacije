@@ -24,8 +24,8 @@
             android:id="@+id/action_homePageFragment_to_singlePostFragment"
             app:destination="@id/singlePostFragment" />
         <action
-            android:id="@+id/action_homePageFragment_to_drugi_korisnik"
-            app:destination="@id/drugi_korisnik" />
+            android:id="@+id/action_homePageFragment_to_mapaZaPrikazPostova"
+            app:destination="@id/mapaZaPrikazPostova" />
     </fragment>
     <fragment
         android:id="@+id/createPostFragment"
@@ -65,7 +65,7 @@
             android:id="@+id/action_myProfileFragment_to_followingProfilesFragment"
             app:destination="@id/followingProfilesFragment" />
         <action
-            android:id="@+id/action_myProfileFragment_to_mapaZaPrikazPostova"
+            android:id="@+id/action_myProfileFragment_to_mapaZaPrikazPostova2"
             app:destination="@id/mapaZaPrikazPostova" />
     </fragment>
     <fragment
@@ -101,6 +101,9 @@
         <action
             android:id="@+id/action_followingProfilesFragment_to_drugi_korisnik"
             app:destination="@id/drugi_korisnik" />
+        <action
+            android:id="@+id/action_followingProfilesFragment_to_homePageFragment"
+            app:destination="@id/homePageFragment" />
     </fragment>
     <fragment
         android:id="@+id/drugi_korisnik"
@@ -115,5 +118,30 @@
         android:id="@+id/mapaZaPrikazPostova"
         android:name="imi.projekat.hotspot.UI.MapaZaPrikazPostova"
         android:label="fragment_mapa_za_prikaz_postova"
-        tools:layout="@layout/fragment_mapa_za_prikaz_postova" />
+        tools:layout="@layout/fragment_mapa_za_prikaz_postova" >
+        <action
+            android:id="@+id/action_mapaZaPrikazPostova_to_singlePostFragment"
+            app:destination="@id/singlePostFragment" />
+        <action
+            android:id="@+id/action_mapaZaPrikazPostova_to_prikazListePostova"
+            app:destination="@id/prikazListePostova" />
+        <argument
+            android:name="idKorisnika"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/prikazListePostova"
+        android:name="imi.projekat.hotspot.UI.Mapa.PrikazListePostova"
+        android:label="fragment_prikaz_liste_postova"
+        tools:layout="@layout/fragment_prikaz_liste_postova" >
+        <action
+            android:id="@+id/action_prikazListePostova_to_mapaZaPrikazPostova"
+            app:destination="@id/mapaZaPrikazPostova" />
+        <action
+            android:id="@+id/action_prikazListePostova_to_singlePostFragment"
+            app:destination="@id/singlePostFragment" />
+        <action
+            android:id="@+id/action_prikazListePostova_to_drugi_korisnik2"
+            app:destination="@id/drugi_korisnik" />
+    </fragment>
 </navigation>

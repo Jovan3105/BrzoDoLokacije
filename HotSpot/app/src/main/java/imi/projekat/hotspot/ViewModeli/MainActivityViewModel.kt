@@ -23,8 +23,6 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private var _liveEditProfileResponse=MutableSharedFlow<BaseResponse<changeAccDataResponse>>()
     val liveEditProfileResponse=_liveEditProfileResponse.asSharedFlow()
 
-
-
     private var _DodajPostResposne= MutableSharedFlow<BaseResponse<ResponseBody>>()
     val DodajPostResposne=_DodajPostResposne.asSharedFlow()
 
@@ -65,6 +63,18 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
     private val _MyPostsResponse= MutableStateFlow<BaseResponse<List<singlePost>>>(BaseResponse.Success())
     val MyPostsResponse=_MyPostsResponse.asStateFlow()
 
+    private val _AllPostsSortedResponse= MutableStateFlow<BaseResponse<List<singlePost>>>(BaseResponse.Success())
+    val AllPostsSortedResponse=_AllPostsSortedResponse.asStateFlow()
+
+
+    private val _ClusterPosts= MutableStateFlow<List<singlePost>>(ArrayList<singlePost>())
+    val ClusterPosts=_ClusterPosts.asStateFlow()
+
+    private val _PostHistoryResponse= MutableSharedFlow<BaseResponse<ResponseBody>>()
+    val PostHistoryResponse=_PostHistoryResponse.asSharedFlow()
+
+    private val _GetAllHistoryResponse= MutableSharedFlow<BaseResponse<ArrayList<history>>>()
+    val GetAllHistoryResponse=_GetAllHistoryResponse.asSharedFlow()
 
     var handleJob: Job?=null
 
@@ -123,10 +133,10 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
-    fun addPost(@Part photos:ArrayList<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part){
+    fun addPost(@Part photos:ArrayList<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part,@Part nazivLokacije:MultipartBody.Part){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
             _DodajPostResposne.emit(BaseResponse.Loading())
-            val response=repository.addPost(photos,description,longitude,latitude,shortDescription)
+            val response=repository.addPost(photos,description,longitude,latitude,shortDescription,nazivLokacije)
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){
                     _DodajPostResposne.emit(BaseResponse.Success(response.body()))
@@ -274,6 +284,21 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
         }
     }
 
+    fun DeleteHistory(location: String){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.DeleteHistory(location)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+
+                }
+            }
+        }
+    }
+
     fun unfollowUser(UserId: Int){
         handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
             val response=repository.UnfollowUser(UserId)
@@ -319,6 +344,59 @@ class MainActivityViewModel(private val repository:Repository=Repository()) :Vie
                 else{
                     val content = response.errorBody()!!.charStream().readText()
                     _MyPostsResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun getAllPostsSorted(sort:Int){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _AllPostsSortedResponse.emit(BaseResponse.Loading())
+            val response=repository.getAllSortedPosts(sort)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _AllPostsSortedResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _AllPostsSortedResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+
+    fun setClusterPosts(arrayList: ArrayList<singlePost>){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            _ClusterPosts.emit(arrayList)
+        }
+    }
+
+    fun postHistory(location:history){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.postHistory(location)
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _PostHistoryResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _PostHistoryResponse.emit(BaseResponse.Error(content))
+                }
+            }
+        }
+    }
+
+    fun getAllHistory(){
+        handleJob= CoroutineScope(Dispatchers.IO+exceptionHandler).launch {
+            val response=repository.getAllHistory()
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    _GetAllHistoryResponse.emit(BaseResponse.Success(response.body()))
+                }
+                else{
+                    val content = response.errorBody()!!.charStream().readText()
+                    _GetAllHistoryResponse.emit(BaseResponse.Error(content))
                 }
             }
         }

@@ -15,15 +15,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.auth0.android.jwt.JWT
-import imi.projekat.hotspot.LoginActivity
-import imi.projekat.hotspot.MainActivity
-import imi.projekat.hotspot.MapsActivity
+import imi.projekat.hotspot.*
 import imi.projekat.hotspot.ModeliZaZahteve.singlePost
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
-import imi.projekat.hotspot.R
+import imi.projekat.hotspot.UI.MapaZaPrikazPostovaDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentMyProfileBinding
 import kotlinx.coroutines.flow.collectLatest
@@ -150,7 +149,11 @@ class MyProfileFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            findNavController().navigate(R.id.action_myProfileFragment_to_mapaZaPrikazPostova)
+            val token=MenadzerSesije.getToken(requireContext())
+            jwt= JWT(token!!)
+            val idKorisnika= jwt.getClaim("id").asString()!!.toInt()
+            val action: NavDirections = MyProfileFragmentDirections.actionMyProfileFragmentToMapaZaPrikazPostova2(idKorisnika)
+            findNavController().navigate(action)
 
         }
 

@@ -43,7 +43,7 @@ interface ApiInterface {
 
     @Multipart
     @POST("/api/Post/addpost")
-    suspend fun addPost(@Part photos:List<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude: MultipartBody.Part, @Part latitude: MultipartBody.Part, @Part shortDescription:MultipartBody.Part):Response<ResponseBody>
+    suspend fun addPost(@Part photos:List<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude: MultipartBody.Part, @Part latitude: MultipartBody.Part, @Part shortDescription:MultipartBody.Part,@Part location:MultipartBody.Part):Response<ResponseBody>
 
     @GET("/api/Post/getpost/{postid}")
     suspend fun getPostWithId(@Path("postid") postid :Int):Response<singlePost>
@@ -77,5 +77,25 @@ interface ApiInterface {
 
     @GET("/api/Post/getposts")
     suspend fun getMyPosts():Response<List<singlePost>>
+
+    @POST("/api/Post/history")
+    suspend fun postHistory(@Body location:history):Response<ResponseBody>
+
+    @GET("/api/Post/history")
+    suspend fun getAllHistory():Response<ArrayList<history>>
+
+
+    @DELETE("/api/Post/history")
+    suspend fun DeleteHistory(@Body location:String):Response<ResponseBody>
+
+    //OD STARIJEG POSTA KA NOVIJEM 0
+
+    //OD MANJE LAJKOVA KA VISE 1
+
+    //OD NOVIJEG KA STARIJEM 2
+
+    //OD VISE KA MANJE LAJKOVA 3
+    @GET("/api/Post/getsorted/{sort}")
+    suspend fun getAllSortedPosts(@Path("sort")sort:Int):Response<List<singlePost>>
 
 }

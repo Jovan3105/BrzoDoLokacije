@@ -1,6 +1,7 @@
 package imi.projekat.hotspot.Ostalo
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
@@ -14,9 +15,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.Part
-import retrofit2.http.Path
 
 class Repository(){
 
@@ -42,8 +41,8 @@ class Repository(){
 
 
 
-    suspend fun addPost(@Part photos:List<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part):Response<ResponseBody>{
-        return APIservis.Servis.addPost(photos,description,longitude,latitude,shortDescription)
+    suspend fun addPost(@Part photos:List<MultipartBody.Part>, @Part description:MultipartBody.Part, @Part longitude:MultipartBody.Part, @Part latitude:MultipartBody.Part, @Part shortDescription:MultipartBody.Part,@Part nazivLokacije:MultipartBody.Part):Response<ResponseBody>{
+        return APIservis.Servis.addPost(photos,description,longitude,latitude,shortDescription,nazivLokacije)
     }
     suspend fun getAllFollowingByUSer():Response<getuser>{
         return APIservis.Servis.getAllFollowingByUSer()
@@ -86,11 +85,26 @@ class Repository(){
         return APIservis.Servis.getMyPosts()
     }
 
+    suspend fun getAllSortedPosts(sort:Int):Response<List<singlePost>>{
+        return APIservis.Servis.getAllSortedPosts(sort)
+    }
+
+    suspend fun postHistory(location:history):Response<ResponseBody>{
+        return APIservis.Servis.postHistory(location)
+    }
+
+    suspend fun getAllHistory():Response<ArrayList<history>>{
+        return APIservis.Servis.getAllHistory()
+    }
+
+    suspend fun DeleteHistory(location:String):Response<ResponseBody>{
+        return APIservis.Servis.DeleteHistory(location)
+    }
+
 
     fun dajSliku(imageView: ImageView, slikaPath:String,context:Context){
 
         val baseUrl=KonfigAplikacije.instanca.AppSettings.baseURL
-
 
 
         Glide.with(context)
@@ -98,10 +112,12 @@ class Repository(){
             .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .load(baseUrl + "Storage/$slikaPath")
             .fitCenter()
+            .placeholder(R.drawable.image_holder)
             //.skipMemoryCache(true)
             .signature(ObjectKey(MenadzerSesije.refreshProfilneSlike))
             .error(R.drawable.image_holder)
             .into(BitmapImageViewTarget(imageView))
+
 
     }
 }

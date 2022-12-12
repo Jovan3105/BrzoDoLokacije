@@ -4,56 +4,59 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
-    app:cardBackgroundColor="@color/pink1"
+    app:cardBackgroundColor="@color/white"
     app:cardElevation="3dp"
     app:contentPadding="4dp"
     android:layout_marginBottom="5dp"
     >
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/relativeLayout"
-        android:padding="16dp">
+        android:clickable="true"
+        android:id="@+id/mojLayout"
+        android:padding="2dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profilePic"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/default_profile_image"
+            android:id="@+id/clockImage"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/clock_svgrepo_com"
             app:layout_constraintBottom_toBottomOf="parent"
 
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/username"
-            android:layout_width="170dp"
+            android:id="@+id/searched"
+            android:layout_width="350dp"
             android:layout_height="39dp"
-            android:textColor="@color/white"
-            android:textSize="25sp"
+            android:clickable="true"
+            android:textColor="@color/black"
+            android:textSize="20sp"
             android:text="ime korisnika"
-            app:layout_constraintRight_toLeftOf="@+id/unfollowButton"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/profilePic"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintLeft_toRightOf="@+id/clockImage"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/unfollowButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/dugme_pozadina_bela"
+        <ImageButton
+            android:id="@+id/deleteHistoryItem"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/x_thin_svgrepo_com"
             android:text="@string/Unfollow"
             android:textColor="@color/pink1"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/username"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintLeft_toRightOf="@+id/searched"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+
 
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 </androidx.cardview.widget.CardView>

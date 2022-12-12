@@ -342,17 +342,16 @@ namespace HotSpotAPI.Servisi
                 }
             }
 
-            string path = storageService.CreatePhoto();
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            path = Path.Combine(path, "user" + id + ".jpg");
-            if (File.Exists(path))
-                System.IO.File.Delete(path);
-
             if (user.slika!=null)
             {
-               
+                string path = storageService.CreatePhoto();
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                path = Path.Combine(path, "user" + id + ".jpg");
+                if (File.Exists(path))
+                    System.IO.File.Delete(path);
+
                 korisnik.ProfileImage = path;
                 indPromeneSlike = true;
                 using (FileStream stream = System.IO.File.Create(path))
@@ -360,12 +359,7 @@ namespace HotSpotAPI.Servisi
                     user.slika.CopyTo(stream);
                     stream.Flush();
                 }
-            }
-            else
-            {
-                korisnik.ProfileImage = "";
-            }
-            
+            }            
             _context.SaveChanges();
 
             

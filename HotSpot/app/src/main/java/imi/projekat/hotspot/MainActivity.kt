@@ -11,8 +11,10 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
+import android.view.Menu
 import android.view.Window
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -41,6 +44,7 @@ import imi.projekat.hotspot.UI.Profile.MyProfileFragment
 import imi.projekat.hotspot.UI.Profile.MyProfileFragmentDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.ActivityMainBinding
+import kotlinx.android.synthetic.main.fragment_home_page.view.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
@@ -50,7 +54,8 @@ class MainActivity : AppCompatActivity() {
     private val viewModel by viewModels<MainActivityViewModel>()
     val dijalog= LoadingDialog(this)
     private lateinit var navKontroler: NavController
-
+    private lateinit var homeDugme:Button
+    public lateinit var bottomMenu:Menu
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityMainBinding.inflate(layoutInflater)
@@ -59,13 +64,10 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(view)
 
-
-
         val navHostFragment=supportFragmentManager.findFragmentById(R.id.fragmentContainerViewMainActivity) as NavHostFragment
         navKontroler=navHostFragment.navController
         binding.bottomNavigationView2.setOnItemSelectedListener {
             val fragmentInstance = (supportFragmentManager.findFragmentById(R.id.fragmentContainerViewMainActivity) as NavHostFragment).childFragmentManager.primaryNavigationFragment
-
 
             when (it.itemId) {
                 R.id.home -> {
@@ -158,6 +160,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        this.lifecycleScope.launch{
+            viewModel.AllPostsSortedResponse.collectLatest{
+                dijalog.isDismiss()
+                if(it is BaseResponse.Loading){
+                    dijalog.startLoading()
+                }
+            }
+        }
+
+        val bottomNavigationView: BottomNavigationView
+        bottomNavigationView =
+            binding.root.findViewById(binding.bottomNavigationView2.id) as BottomNavigationView
+        bottomMenu =bottomNavigationView.menu
+
     }
 
     fun clearImageCache(){
@@ -180,5 +196,6 @@ class MainActivity : AppCompatActivity() {
     fun endLoadingDialog(){
         dijalog.isDismiss()
     }
+
 
 }

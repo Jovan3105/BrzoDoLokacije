@@ -184,8 +184,8 @@ namespace HotSpotAPI.Controllers
             if (id == -1)
                 return Unauthorized();
 
-            double x = double.Parse(xosa);
-            double y = double.Parse(yosa);
+            decimal x = decimal.Parse(xosa);
+            decimal y = decimal.Parse(yosa);
 
             List<getPosts> res = postService.getPostsNear(x, y);
             if (res != null)
@@ -236,8 +236,8 @@ namespace HotSpotAPI.Controllers
             if (id == -1)
                 return Unauthorized();
 
-            double x = double.Parse(xosa);
-            double y = double.Parse(yosa);
+            decimal x = decimal.Parse(xosa);
+            decimal y = decimal.Parse(yosa);
             List<getPosts> res = postService.getPostsByCoordinate(x, y);
             if (res != null)
                 return Ok(res);
@@ -298,6 +298,67 @@ namespace HotSpotAPI.Controllers
             return Ok();
         }
 
+        [HttpPost("history")]
+        public async Task<ActionResult<string>> AddHistory(history his)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = postService.addHistory(id, his.location);
+            if (!res)
+                return BadRequest("ErrorWhileAddingHistory");
+            return Ok();
+        }
+
+        [HttpGet("history")]
+        public async Task<ActionResult<string>> GetHistory()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<history> res = postService.getHistory(id);
+            if (res == null)
+                return BadRequest("ErrorWhileAddingHistory");
+            return Ok(res);
+        }
+        [HttpGet("history/popular"), AllowAnonymous]
+        public async Task<ActionResult<string>> GetPopularHistory()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            List<pophistory> res = postService.getPopularHistory();
+            if (res == null)
+                return BadRequest("ErrorWhileAddingHistory");
+            return Ok(res);
+        }
+        [HttpDelete("history")]
+        public async Task<ActionResult<string>> DeleteHistory(his history)
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = postService.deleteHistory(id, history.location);
+            if (!res)
+                return BadRequest("ErrorWhileAddingHistory");
+            return Ok();
+        }
+        [HttpDelete("history/deleteall")]
+        public async Task<ActionResult<string>> DeleteAllHistory()
+        {
+            int id = userService.GetUserId();
+            if (id == -1)
+                return Unauthorized();
+
+            bool res = postService.deleteAllHistory(id);
+            if (!res)
+                return BadRequest("ErrorWhileAddingHistory");
+            return Ok();
+        }
         [HttpGet("comments/{postid}")]
         public async Task<ActionResult<string>> GetComments(int postid)
         {

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotSpotAPI.Migrations
 {
     [DbContext(typeof(MySqlDbContext))]
-    [Migration("20221202154613_migracija")]
+    [Migration("20221211155838_migracija")]
     partial class migracija
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,27 @@ namespace HotSpotAPI.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Followers");
+                });
+
+            modelBuilder.Entity("HotSpotAPI.Modeli.History", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Search")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("userID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("History");
                 });
 
             modelBuilder.Entity("HotSpotAPI.Modeli.Kod", b =>
@@ -215,11 +236,11 @@ namespace HotSpotAPI.Migrations
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
-                    b.Property<double>("latitude")
-                        .HasColumnType("double");
+                    b.Property<decimal>("latitude")
+                        .HasColumnType("decimal(65,30)");
 
-                    b.Property<double>("longitude")
-                        .HasColumnType("double");
+                    b.Property<decimal>("longitude")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("shortDescription")
                         .IsRequired()

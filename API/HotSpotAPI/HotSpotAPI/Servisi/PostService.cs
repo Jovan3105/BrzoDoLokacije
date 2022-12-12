@@ -24,10 +24,15 @@ namespace HotSpotAPI.Servisi
         public bool addCommLike(int id, int postid, int commid);
         public bool dislikeComm(int id, int postid, int commid);
         public List<getPosts> getPostsPage(int brojstrane, int brojpostova);
-        public List<getPosts> getPostsByCoordinate(double x, double y);
+        public List<getPosts> getPostsByCoordinate(decimal x, decimal y);
         public List<coordinates> getCoordinates();
-        public List<getPosts> getPostsNear(double x, double y);
+        public List<getPosts> getPostsNear(decimal x, decimal y);
         public List<coordinates> getMyCoordinates(int id);
+        public bool addHistory(int id, string location);
+        public List<history> getHistory(int id);
+        public bool deleteHistory(int id, string postid);
+        public bool deleteAllHistory(int id);
+        public List<pophistory> getPopularHistory();
     }
     public class PostService : IPostService
     {
@@ -58,8 +63,8 @@ namespace HotSpotAPI.Servisi
             p.DateTime = DateTime.Now;
             p.NumOfPhotos = newPost.photos.Count;
             p.shortDescription = newPost.shortDescription;
-            p.longitude = Convert.ToDouble(newPost.longitude);
-            p.latitude = Convert.ToDouble(newPost.latitude);
+            p.longitude = Convert.ToDecimal(newPost.longitude);
+            p.latitude = Convert.ToDecimal(newPost.latitude);
             context.Postovi.Add(p);
             context.SaveChanges();
 
@@ -183,6 +188,7 @@ namespace HotSpotAPI.Servisi
                 p.shortDescription = post.shortDescription;
                 p.longitude = post.longitude;
                 p.latitude = post.latitude;
+                p.brojlajkova = post.NumOfLikes;
                 p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
@@ -193,9 +199,9 @@ namespace HotSpotAPI.Servisi
 
             return postsList;
         }
-        public List<getPosts> getPostsNear(double x, double y)
+        public List<getPosts> getPostsNear(decimal x, decimal y)
         {
-            List<Post> posts = context.Postovi.Where(pom => (pom.latitude > x-0.2 && pom.latitude < x+0.2) && (pom.longitude > x - 0.2 && pom.longitude < x + 0.2)).ToList();
+            List<Post> posts = context.Postovi.Where(pom => (pom.latitude > x-(decimal)0.2 && pom.latitude < x+(decimal)0.2) && (pom.longitude > x - (decimal)0.2 && pom.longitude < x + (decimal)0.2)).ToList();
             List<getPosts> postsList = new List<getPosts>();
 
             foreach (Post post in posts)
@@ -210,6 +216,7 @@ namespace HotSpotAPI.Servisi
                 p.longitude = post.longitude;
                 p.latitude = post.latitude;
                 p.postID = post.ID;
+                p.brojlajkova = post.NumOfLikes;
                 string basepath = storageService.CreatePost();
                 p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
                                      .Select(Path.GetFileName)
@@ -221,7 +228,7 @@ namespace HotSpotAPI.Servisi
         }
         public getPosts getPost(int id, int postID)
         {
-            Post post = context.Postovi.FirstOrDefault(x => x.UserID == id && x.ID == postID);
+            Post post = context.Postovi.FirstOrDefault(x => x.ID == postID);
             if (post == null)
                 return null;
             getPosts p = new getPosts();
@@ -233,14 +240,15 @@ namespace HotSpotAPI.Servisi
             p.shortDescription = post.shortDescription;
             p.latitude = post.latitude;
             p.longitude = post.longitude;
+            p.brojlajkova = post.NumOfLikes;
             p.postID = post.ID;
             string basepath = storageService.CreatePost();
-            p.photos = Directory.GetFiles(basepath, "user" + id + "post" + post.ID + "*")
+            p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
                                      .Select(Path.GetFileName)
                                      .ToList();
             return p;
         }
-        public List<getPosts> getPostsByCoordinate(double x, double y)
+        public List<getPosts> getPostsByCoordinate(decimal x, decimal y)
         {
             List<Post> postovi = context.Postovi.Where(pom => pom.latitude == x && pom.longitude == y).ToList();
             if (postovi == null)
@@ -257,6 +265,7 @@ namespace HotSpotAPI.Servisi
                 p.shortDescription = post.shortDescription;
                 p.latitude = post.latitude;
                 p.longitude = post.longitude;
+                p.brojlajkova = post.NumOfLikes;
                 p.postID = post.ID;
                 string basepath = storageService.CreatePost();
                 p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
@@ -357,7 +366,10 @@ namespace HotSpotAPI.Servisi
                 var user = context.Korisnici.FirstOrDefault(x => x.ID == c.UserID);
                 if (user == null)
                     return null;
-                kom.userPhoto = user.ProfileImage;
+                string basepath = storageService.CreatePhoto();
+                kom.userPhoto = Directory.GetFiles(basepath, "user" + user.ID + ".jpg")
+                                     .Select(Path.GetFileName)
+                                     .ToList().First();
                 kom.username = user.Username;
                 kom.text = c.Text;
                 kom.time = c.DateTime;
@@ -406,6 +418,13 @@ namespace HotSpotAPI.Servisi
 
             context.Komentari.Remove(com);
             context.SaveChanges();
+
+            var like = context.LikeKomentara.Where(x => x.CommentID == commid).ToList();
+            foreach(var l in like)
+            {
+                context.LikeKomentara.Remove(l);
+                context.SaveChanges();
+            }
             return true;
         }
         public bool EditComment(int commid, int postId, string newtext, int id)
@@ -426,6 +445,11 @@ namespace HotSpotAPI.Servisi
             var post = context.Postovi.FirstOrDefault(x => x.ID == postid);
             if (post == null)
                 return false;
+
+            var lajk = context.Likes.FirstOrDefault(x=>x.UserID==id && x.PostID==postid);
+            if (lajk != null)
+                return false;
+
             post.NumOfLikes++;
 
             Like l = new Like();
@@ -499,6 +523,99 @@ namespace HotSpotAPI.Servisi
                 return false;
             kom.NumOFLikes--;
             context.SaveChanges();
+            return true;
+        }
+        public bool addHistory(int id, string location)
+        {
+            var search = context.History.FirstOrDefault(x => x.Search.Equals(location));
+            if (search != null)
+                return false;
+            History h = new History();
+            h.userID = id;
+            h.Search = location;
+            h.DateTime = DateTime.Now;
+            context.History.Add(h);
+            context.SaveChanges();
+            return true;
+        }
+
+        public List<history> getHistory(int id)
+        {
+            List<History> search = context.History.Where(x => x.userID == id).ToList();
+            if (search == null)
+                return null;
+
+            List<History> sortedlist = search.OrderByDescending(x => x.DateTime).ToList();
+            
+            List<history> lista = new List<history>();
+            int pom = 0;
+            foreach(History h in search)
+            {
+                history h1 = new history();
+                h1.location = h.Search;
+
+                if (pom >= 5)
+                {
+                    context.History.Remove(h);
+                    context.SaveChanges();
+                }
+                else
+                {
+                    lista.Add(h1);
+                }
+                pom++;
+            }
+            return lista;
+        }
+
+        public List<pophistory> getPopularHistory()
+        {
+            List<String> search = context.History.Select(x=>x.Search).Distinct().ToList();
+            if (search == null)
+                return null;
+
+            List<History> search2 = context.History.ToList();
+            List<pophistory> pop = new List<pophistory>();
+            foreach (String h in search)
+            {
+                int count = 0;
+                foreach(History h2 in search2)
+                {
+                    if(h == h2.Search)
+                    {
+                        count++;
+                    }
+                }
+                pophistory p = new pophistory();
+                p.location = h;
+                p.count = count;
+                pop.Add(p);
+            }
+
+            List<pophistory> sortedlist = pop.OrderByDescending(x => x.count).ToList();
+            return sortedlist;
+        }
+        public bool deleteHistory(int id, string postid)
+        {
+            History h = context.History.FirstOrDefault(x => x.userID == id && x.Search == postid);
+            if (h == null)
+                return false;
+            context.Remove(h);
+            context.SaveChanges();
+            return true;
+        }
+
+        public bool deleteAllHistory(int id)
+        {
+            List<History> history = context.History.Where(x => x.userID == id).ToList();
+            if (history == null)
+                return false;
+
+            foreach(History h in history)
+            {
+                context.Remove(h);
+                context.SaveChanges();
+            }
             return true;
         }
         public List<getPosts> getPostsPage(int brojstrane, int brojpostova)

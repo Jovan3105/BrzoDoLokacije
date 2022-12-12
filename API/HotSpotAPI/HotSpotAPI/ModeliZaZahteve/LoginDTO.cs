@@ -74,8 +74,8 @@ namespace HotSpotAPI.ModeliZaZahteve
         public string profilephoto { get; set; } = string.Empty;
         public string description { get; set; } = string.Empty;
         public string location { get; set; } = string.Empty;
-        public double longitude { get; set; } = 0;
-        public double latitude { get; set; } = 0;
+        public decimal longitude { get; set; } = 0;
+        public decimal latitude { get; set; } = 0;
         public DateTime DateTime { get; set; }
         public List<string> photos { get; set; }
         public int brojslika { get; set; }
@@ -131,6 +131,11 @@ namespace HotSpotAPI.ModeliZaZahteve
         public int postid { get; set; }
     }
 
+    public class his
+    {
+        public string location { get; set; }= string.Empty;
+    }
+
     public class comlikes
     {
         public int postid { get; set; }
@@ -157,7 +162,19 @@ namespace HotSpotAPI.ModeliZaZahteve
     }
     public class coordinates
     {
-        public double longitude { get; set; }
-        public double latitude { get; set; }
+        public decimal longitude { get; set; }
+        public decimal latitude { get; set; }
     }
+
+    public class history
+    {
+        public string location { get; set; }
+    }
+
+    public class pophistory
+    {
+        public string location { get; set; }
+        public int count { get; set; }
+    }
+
 }

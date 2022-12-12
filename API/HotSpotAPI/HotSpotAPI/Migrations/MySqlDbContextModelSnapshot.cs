@@ -36,6 +36,27 @@ namespace HotSpotAPI.Migrations
                     b.ToTable("Followers");
                 });
 
+            modelBuilder.Entity("HotSpotAPI.Modeli.History", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Search")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("userID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("History");
+                });
+
             modelBuilder.Entity("HotSpotAPI.Modeli.Kod", b =>
                 {
                     b.Property<int>("ID")
@@ -213,11 +234,11 @@ namespace HotSpotAPI.Migrations
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
-                    b.Property<double>("latitude")
-                        .HasColumnType("double");
+                    b.Property<decimal>("latitude")
+                        .HasColumnType("decimal(65,30)");
 
-                    b.Property<double>("longitude")
-                        .HasColumnType("double");
+                    b.Property<decimal>("longitude")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("shortDescription")
                         .IsRequired()
