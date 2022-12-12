@@ -115,7 +115,7 @@
             android:drawableStart="@drawable/ic_baseline_location_on_24"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:text="@string/my_posts_on_map"
+            android:text="@string/posts_on_map"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"

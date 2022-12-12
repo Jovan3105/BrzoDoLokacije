@@ -25,4 +25,5 @@ namespace HotSpotAPI.Controllers
             return File(System.IO.File.ReadAllBytes("app.apk"), "application/octet-stream", Path.GetFileName("app.apk"));
         }
     }
+    //"DefaultConnection": "server=localhost;database=hotspot_db;user=hotspot;password=Hotspot1!;"
 }

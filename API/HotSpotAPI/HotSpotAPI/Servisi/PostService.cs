@@ -246,6 +246,8 @@ namespace HotSpotAPI.Servisi
             p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
                                      .Select(Path.GetFileName)
                                      .ToList();
+            p.ownerID = post.UserID;
+            
             return p;
         }
         public List<getPosts> getPostsByCoordinate(decimal x, decimal y)
@@ -367,9 +369,15 @@ namespace HotSpotAPI.Servisi
                 if (user == null)
                     return null;
                 string basepath = storageService.CreatePhoto();
-                kom.userPhoto = Directory.GetFiles(basepath, "user" + user.ID + ".jpg")
+                if (user.ProfileImage != "")
+                {
+                    kom.userPhoto = Directory.GetFiles(basepath, "user" + user.ID + ".jpg")
                                      .Select(Path.GetFileName)
                                      .ToList().First();
+                }
+                    
+                else
+                    kom.userPhoto = "";
                 kom.username = user.Username;
                 kom.text = c.Text;
                 kom.time = c.DateTime;

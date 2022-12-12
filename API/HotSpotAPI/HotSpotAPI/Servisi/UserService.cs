@@ -10,6 +10,8 @@ namespace HotSpotAPI.Servisi
     public interface IUserService
     {
         public int GetUserId();
+
+        public Korisnik GetUserWithId(int id);
         string chengePassInDataBase(password password, out bool ind);
         public string ConfirmCode(string username, string code, out bool ind);
         public bool checkCode(vercode ver);
@@ -53,6 +55,12 @@ namespace HotSpotAPI.Servisi
                     rez = -1;
             }
             return rez;
+        }
+
+        public Korisnik GetUserWithId(int id)
+        {
+            var user = context.Korisnici.FirstOrDefault(x => x.ID == id);
+            return user;
         }
 
         public string ConfirmCode(string username, string code, out bool ind)
@@ -253,7 +261,7 @@ namespace HotSpotAPI.Servisi
                 u.photo = "";
             else
             {
-                u.photo = Directory.GetFiles(basepath1, "user" + idUser + ".jpg")
+                u.photo = Directory.GetFiles(basepath1, "user" + idFollow + ".jpg")
                                  .Select(Path.GetFileName)
                                  .ToList().First();
             }

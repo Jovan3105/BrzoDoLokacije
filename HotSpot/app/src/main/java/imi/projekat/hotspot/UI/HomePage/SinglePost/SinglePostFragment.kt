@@ -45,6 +45,7 @@ import imi.projekat.hotspot.R
 import imi.projekat.hotspot.UI.HomePage.PostClickHandler
 import imi.projekat.hotspot.UI.HomePage.RecyclerAdapter
 import imi.projekat.hotspot.UI.LoginRegister.ConfirmEmailArgs
+import imi.projekat.hotspot.UI.Mapa.PrikazListePostovaDirections
 import imi.projekat.hotspot.UI.Profile.FollowingProfilesFragmentDirections
 import imi.projekat.hotspot.ViewModeli.MainActivityViewModel
 import imi.projekat.hotspot.databinding.FragmentSinglePostBinding
@@ -85,6 +86,8 @@ class SinglePostFragment : Fragment(), PostClickHandler {
     private var lajkovano:Boolean = false
     private lateinit var NoCommentsYetView:LinearLayout
     private lateinit var sortCommentsButton:TextInputLayout
+    private lateinit var ImeKorisnika: TextView
+    private lateinit var SlikaKorisnika:ImageView
 
 
     override fun onResume() {
@@ -119,6 +122,8 @@ class SinglePostFragment : Fragment(), PostClickHandler {
         vremeTextView=binding.root.findViewById(binding.vremeTextView.id)
         NoCommentsYetView = binding.root.findViewById(binding.NoCommentsYetView.id)
         sortCommentsButton = binding.root.findViewById(binding.textInputLayout.id)
+        ImeKorisnika=binding.root.findViewById(binding.ImeKorisnika.id)
+        SlikaKorisnika=binding.root.findViewById(binding.SlikaKorisnika.id)
         return binding.root
     }
 
@@ -197,6 +202,22 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                         output = formatter.format(parser.parse(it.data?.dateTime))
                     }
                     vremeTextView.text=output
+
+                    var photoPath= it.data.profilephoto
+                    if(!photoPath.isNullOrEmpty()){
+                        var pom2=photoPath.split("\\")
+                        if(pom2.size==1){
+                            pom2=photoPath.split("/")
+                        }
+                        viewModel.dajSliku(SlikaKorisnika,"ProfileImages/"+pom2[2],requireContext())
+                    }
+                    ImeKorisnika.text= it.data.username
+                    val ownerId=it.data.ownerID
+                    binding.VlasnikPostaLayout.setOnClickListener{
+                        val action: NavDirections = SinglePostFragmentDirections.actionSinglePostFragmentToDrugiKorisnik(ownerId)
+                        findNavController().navigate(action)
+                    }
+
                     initImageCarousel(0)
                     setupTransformer()
 

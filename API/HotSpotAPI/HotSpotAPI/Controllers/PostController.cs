@@ -1,4 +1,5 @@
-﻿using HotSpotAPI.ModeliZaZahteve;
+﻿using HotSpotAPI.Modeli;
+using HotSpotAPI.ModeliZaZahteve;
 using HotSpotAPI.Servisi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -111,6 +112,9 @@ namespace HotSpotAPI.Controllers
 
             getPosts res = postService.getPost(id, postid);
 
+            Korisnik korisnik=userService.GetUserWithId(res.ownerID);
+
+
             List<likes> lajkovi = postService.getLikes(id);
 
             if (res == null)
@@ -124,6 +128,8 @@ namespace HotSpotAPI.Controllers
                         break;
                     }
                 }
+            res.username = korisnik.Username;
+            res.profilephoto = korisnik.ProfileImage;
             return Ok(res);
         }
         [HttpGet("getsorted/{sort}")]
@@ -335,14 +341,14 @@ namespace HotSpotAPI.Controllers
                 return BadRequest("ErrorWhileAddingHistory");
             return Ok(res);
         }
-        [HttpDelete("history")]
-        public async Task<ActionResult<string>> DeleteHistory(his history)
+        [HttpDelete("history/{location}")]
+        public async Task<ActionResult<string>> DeleteHistory(string location)
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            bool res = postService.deleteHistory(id, history.location);
+            bool res = postService.deleteHistory(id,location);
             if (!res)
                 return BadRequest("ErrorWhileAddingHistory");
             return Ok();
