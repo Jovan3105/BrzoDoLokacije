@@ -203,7 +203,13 @@ class SinglePostFragment : Fragment(), PostClickHandler {
                     }
                     vremeTextView.text=output
 
+
+
                     var photoPath= it.data.profilephoto
+
+                    Log.d("SES1",photoPath)
+                    Log.d("SES2",it.data.username)
+
                     if(!photoPath.isNullOrEmpty()){
                         var pom2=photoPath.split("\\")
                         if(pom2.size==1){

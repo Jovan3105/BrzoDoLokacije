@@ -123,6 +123,7 @@ class Drugi_korisnik : Fragment() {
 //                            pom2=photoPath.split("/")
 //                            viewModel.dajSliku(profileImage,"ProfileImages/"+pom2[0],requireContext())
 //                        }
+                        Log.d("SLIKA KOR",it.toString())
                         viewModel.dajSliku(profileImage,"ProfileImages/"+photoPath,requireContext())
                     }
                 }

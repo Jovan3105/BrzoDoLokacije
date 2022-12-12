@@ -606,6 +606,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                                 }
                                 listaPostova = arrayListOf<singlePost>()
                                 listaPostova.clear()
+                                mClusterManager.clearItems()
                                 listaPostova = it.data as ArrayList<singlePost>
 //                        (activity as MainActivity?)!!.endLoadingDialog()
                                 for (i in 0 until listaPostova.size) {
