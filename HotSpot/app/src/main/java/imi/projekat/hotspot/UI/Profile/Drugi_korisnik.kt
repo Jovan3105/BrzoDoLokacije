@@ -14,10 +14,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.auth0.android.jwt.JWT
 import imi.projekat.hotspot.LoginActivity
+import imi.projekat.hotspot.MainActivity
 import imi.projekat.hotspot.Ostalo.BaseResponse
 import imi.projekat.hotspot.Ostalo.MenadzerSesije
 import imi.projekat.hotspot.Ostalo.UpravljanjeResursima
@@ -50,7 +52,20 @@ class Drugi_korisnik : Fragment() {
         binding= FragmentDrugiKorisnikBinding.inflate(inflater)
         val view=inflater.inflate(R.layout.fragment_drugi_korisnik,container,false)
         profileImage=view.findViewById(binding.profileImage.id)
+
+        val token=MenadzerSesije.getToken(requireContext())
+        jwt= JWT(token!!)
+        val idKorisnika= jwt.getClaim("id").asString()!!.toInt()
+
+        if(idKorisnika==args.userID){
+            (activity as MainActivity).bottomMenu.getItem(2).setChecked(true)
+            (activity as MainActivity).bottomMenu.performIdentifierAction((activity as MainActivity).bottomMenu.getItem(2).itemId,0)
+        }
+
+
         viewModel.getUserWithID(args.userID)
+
+
 
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.UnfollowUserResponse.collectLatest{
@@ -94,13 +109,21 @@ class Drugi_korisnik : Fragment() {
                     }
                     username.text=it.data!!.username
                     email.text=it.data!!.email
+
+
+                    binding.PostsOnMapButton.setOnClickListener {
+                        val action: NavDirections = Drugi_korisnikDirections.actionDrugiKorisnikToMapaZaPrikazPostova(args.userID)
+                        findNavController().navigate(action)
+                    }
+
                     var photoPath = it.data!!.photo
                     if(!photoPath.isNullOrEmpty()){
-                        var pom2=photoPath.split("\\")
-                        if(pom2.size==1)
-                            pom2=photoPath.split("/")
-
-                        viewModel.dajSliku(profileImage,"ProfileImages/"+pom2[2],requireContext())
+                        //var pom2=photoPath.split("\\")
+//                        if(pom2.size==1){
+//                            pom2=photoPath.split("/")
+//                            viewModel.dajSliku(profileImage,"ProfileImages/"+pom2[0],requireContext())
+//                        }
+                        viewModel.dajSliku(profileImage,"ProfileImages/"+photoPath,requireContext())
                     }
                 }
             }
@@ -118,6 +141,7 @@ class Drugi_korisnik : Fragment() {
             FollowOrUnfollow()
         }
 
+
     }
 
     private fun FollowOrUnfollow(){
@@ -130,5 +154,6 @@ class Drugi_korisnik : Fragment() {
             viewModel.unfollowUser(args.userID)
         }
     }
+
 
 }

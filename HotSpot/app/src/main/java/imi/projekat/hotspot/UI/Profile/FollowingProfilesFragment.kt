@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingProfiles.OnItemClickListener{
     private val viewModel: MainActivityViewModel by activityViewModels()
     private lateinit var binding:FragmentFollowingProfilesBinding
-    private lateinit var bindingMainActivity: ActivityMainBinding
     private lateinit var korisnici:ArrayList<FollowingUserAdapter>
     private var layoutManager:RecyclerView.LayoutManager?=null
     private var adapter:RecyclerView.Adapter<AdapterFollowingProfiles.ViewHolder>?=null
@@ -40,9 +39,12 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        viewModel.GetAllFollowingByUser()
         binding=FragmentFollowingProfilesBinding.inflate(inflater)
-        bindingMainActivity=ActivityMainBinding.inflate(layoutInflater)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.liveAllFollowingByUser.collectLatest{
                 if(it is BaseResponse.Error){
@@ -57,15 +59,8 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
 
                         PostsOnMapButton.setOnClickListener{
 
-
-                            //menu.performIdentifierAction(.itemId,0)
-//                            var menuItem:BottomNavigationItemView=bindingMainActivity.root.findViewById(menu.getItem(0).itemId)
-//                            menuItem.callOnClick()
                             (activity as MainActivity).bottomMenu.getItem(0).setChecked(true)
                             (activity as MainActivity).bottomMenu.performIdentifierAction((activity as MainActivity).bottomMenu.getItem(0).itemId,0)
-//                            val action: NavDirections = FollowingProfilesFragmentDirections.actionFollowingProfilesFragmentToHomePageFragment()
-//                            findNavController().navigate(action)
-
                         }
                     }
                     else
@@ -75,12 +70,12 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
                             var korisnik:FollowingUserAdapter
                             if(it.data!!.followers[i].userPhoto.isNullOrEmpty())
                             {
-                                korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,"","Unfollow")
+                                korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,"ProfileImages/","Unfollow")
                             }
                             else
                             {
-                                val pom=it.data!!.followers[i].userPhoto.split("\\")
-                                 korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,pom[2],"Unfollow")
+
+                                korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,"ProfileImages/"+it.data!!.followers[i].userPhoto,"Unfollow")
                             }
 
                             korisnici.add(korisnik)
@@ -123,10 +118,9 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
                 }
             }
         }
-
-
-        return binding.root
+        viewModel.GetAllFollowingByUser()
     }
+
 
     override fun onItemClickFollow(position: Int) {
        val clickedItem=korisnici[position]
