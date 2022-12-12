@@ -341,14 +341,14 @@ namespace HotSpotAPI.Controllers
                 return BadRequest("ErrorWhileAddingHistory");
             return Ok(res);
         }
-        [HttpDelete("history")]
-        public async Task<ActionResult<string>> DeleteHistory(his history)
+        [HttpDelete("history/{location}")]
+        public async Task<ActionResult<string>> DeleteHistory(string location)
         {
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
 
-            bool res = postService.deleteHistory(id, history.location);
+            bool res = postService.deleteHistory(id,location);
             if (!res)
                 return BadRequest("ErrorWhileAddingHistory");
             return Ok();

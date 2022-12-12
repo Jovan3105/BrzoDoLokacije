@@ -70,7 +70,7 @@ class FollowingProfilesFragment : Fragment(),FollowersImages,AdapterFollowingPro
                             var korisnik:FollowingUserAdapter
                             if(it.data!!.followers[i].userPhoto.isNullOrEmpty())
                             {
-                                korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,"ProfileImages/","Unfollow")
+                                korisnik=FollowingUserAdapter(it.data!!.followers[i].id,it.data!!.followers[i].username,"","Unfollow")
                             }
                             else
                             {

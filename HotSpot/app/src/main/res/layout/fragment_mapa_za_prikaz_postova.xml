@@ -116,9 +116,9 @@
 
         <ImageButton
             android:id="@+id/exitRecycler"
-            android:layout_width="30dp"
+            android:layout_width="40dp"
             android:visibility="gone"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:padding="5dp"
             android:src="@drawable/ic_baseline_arrow_drop_up_24"
             map:layout_constraintEnd_toEndOf="parent"

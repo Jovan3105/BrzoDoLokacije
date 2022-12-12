@@ -134,18 +134,10 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
         viewLifecycleOwner.lifecycleScope.launch{
             viewModel.PostHistoryResponse.collectLatest{
                 if(it is BaseResponse.Error){
-                    Toast.makeText(
-                        requireContext(),
-                        "Error saving history",
-                        Toast.LENGTH_SHORT
-                    ).show()
+
                 }
                 if(it is BaseResponse.Success){
-                    Toast.makeText(
-                        requireContext(),
-                        "Successfully saved history",
-                        Toast.LENGTH_SHORT
-                    ).show()
+
                 }
             }
         }
@@ -297,11 +289,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                         binding.exitRecycler.visibility=View.GONE
                     }
                     checkLocations(unetaLokacija)
-                    // listaPretrazenihLokacija[indikator]=history(unetaLokacija)
-                    //indikator+=1
-                    //listaPretrazenihLokacija.add(0, history(unetaLokacija))
                     adapter!!.update(listaPretrazenihLokacija)
-                    //recycler.layoutManager=layoutManager
                     recycler.adapter=adapter
 
                     val latLng=LatLng(listaAdresa.get(0).latitude,listaAdresa.get(0).longitude)
@@ -359,13 +347,22 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
 
     }
 
-    private fun setLocationMarker(location:LatLng,title:String,zoom:Float?,brojPosta:Int){
+    private fun setLocationMarker(location:LatLng,title:String,zoom:Float?,brojPosta:Int) {
 //        googleMap.clear();
         var markerOptions: MarkerOptions = MarkerOptions()
         selectedLocation = location
         markerOptions.title(title)
         markerOptions.position(location)
+        if (brojPosta == -1)
+        {
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            this.googleMap.animateCamera(CameraUpdateFactory.newLatLng(location))
+            if(zoom!=null){
+                this.googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location,zoom))
+            }
 
+            return
+        }
         val icon = BitmapFactory.decodeResource(
             requireContext().resources,
             R.drawable.hotspotapplogo
@@ -652,7 +649,9 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
                                 listaPostova = arrayListOf<singlePost>()
                                 listaPostova.clear()
                                 listaPostova = it.data as ArrayList<singlePost>
+                                Log.d("Velicina liste postova",listaPostova.size.toString())
 //                        (activity as MainActivity?)!!.endLoadingDialog()
+                                mClusterManager.clearItems()
                                 for (i in 0 until listaPostova.size) {
 //                            var latLng=LatLng(listaPostova[i].latitude, listaPostova[i].longitude)
 //                            setLocationMarker(latLng,listaPostova[i].shortDescription,10f,i)
@@ -889,7 +888,7 @@ class MapaZaPrikazPostova : Fragment(), OnMapReadyCallback, EasyPermissions.Perm
     }
 
     override fun onItemClickForDelete(position: Int) {
-        //viewModel.DeleteHistory(listaPretrazenihLokacija[position].location)
+        viewModel.DeleteHistory(listaPretrazenihLokacija[position].location)
         listaPretrazenihLokacija.removeAt(position)
         adapter!!.update(listaPretrazenihLokacija)
         if(listaPretrazenihLokacija.size==0)

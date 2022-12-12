@@ -85,8 +85,8 @@ interface ApiInterface {
     suspend fun getAllHistory():Response<ArrayList<history>>
 
 
-    @DELETE("/api/Post/history")
-    suspend fun DeleteHistory(@Body location:String):Response<ResponseBody>
+    @DELETE("/api/Post/history/{location}")
+    suspend fun DeleteHistory(@Path("location") location:String):Response<ResponseBody>
 
     //OD STARIJEG POSTA KA NOVIJEM 0
 
