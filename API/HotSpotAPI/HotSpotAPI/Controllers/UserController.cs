@@ -134,6 +134,8 @@ namespace HotSpotAPI.Controllers
             if (id == -1)
                 return Unauthorized();
 
+            if(userid == id)
+                return BadRequest();
             bool res = userService.followUser(id, userid);
             if (!res)
                 return BadRequest();
@@ -145,6 +147,9 @@ namespace HotSpotAPI.Controllers
             int id = userService.GetUserId();
             if (id == -1)
                 return Unauthorized();
+
+            if (userid == id)
+                return BadRequest();
 
             bool res = userService.unfollowUser(id, userid);
             if (!res)
