@@ -246,6 +246,8 @@ namespace HotSpotAPI.Servisi
             p.photos = Directory.GetFiles(basepath, "user" + post.UserID + "post" + post.ID + "*")
                                      .Select(Path.GetFileName)
                                      .ToList();
+            p.ownerID = post.UserID;
+            
             return p;
         }
         public List<getPosts> getPostsByCoordinate(decimal x, decimal y)
